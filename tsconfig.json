@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+      "experimentalDecorators": true,
+      "emitDecoratorMetadata": true,
+      "target": "ES6",
+      "lib": ["esnext"],
+      "module": "commonjs",
+      "preserveConstEnums": true,
+      "esModuleInterop": true
+    },
+    "include": ["lambda/**/*.ts", "common/**/*.ts"]
+  }

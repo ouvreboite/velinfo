@@ -1,0 +1,94 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: velinfo.fr serveless application
+
+Globals:
+  Function:
+    Timeout: 50
+
+Resources:
+  # Lambdas
+  FetchStationsAvailabilities:
+    Type: AWS::Serverless::Function
+    DependsOn: CurrentAvailabilityTable
+    Properties:
+      FunctionName: FetchStationsAvailabilities
+      Description: Fetch the station availabilities from the Paris API every minute and update the current availability dynamo table
+      CodeUri: lambda/FetchStationsAvailabilities
+      Handler: app.lambdaHandler
+      Runtime: nodejs12.x
+      Environment: 
+        Variables:
+          AVAILABILITY_TABLE_NAME: !Ref CurrentAvailabilityTable
+      Events:
+          FetchStationsEveryMinute:
+            Type: Schedule
+            Properties:
+              Schedule: rate(1 minute)
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: !Ref CurrentAvailabilityTable
+
+  ComputeHourlyStatistics:
+    Type: AWS::Serverless::Function
+    DependsOn:
+      - CurrentAvailabilityTable
+      - HourlyStatisticsTable
+    Properties:
+      FunctionName: ComputeHourlyStatistics
+      Description: Process every update of the current availability table to compute hourly usage stats for each station
+      CodeUri: lambda/ComputeHourlyStatistics
+      Handler: app.lambdaHandler
+      Runtime: nodejs12.x
+      Environment: 
+        Variables:
+          STATISTICS_TABLE_NAME: !Ref HourlyStatisticsTable
+      Events:
+        StreamAvailability:
+          Type: DynamoDB
+          Properties:
+            Stream: 
+              !GetAtt CurrentAvailabilityTable.StreamArn
+            StartingPosition: LATEST
+            BatchSize: 1
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: !Ref HourlyStatisticsTable
+   
+  # Dynamo tables
+  CurrentAvailabilityTable: 
+    Type: AWS::DynamoDB::Table
+    Properties: 
+      TableName: CurrentAvailability
+      KeySchema: 
+        - AttributeName: id
+          KeyType: HASH
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S 
+      ProvisionedThroughput: 
+        ReadCapacityUnits: 3
+        WriteCapacityUnits: 10
+      StreamSpecification:
+        StreamViewType: NEW_IMAGE
+
+  HourlyStatisticsTable: 
+    Type: AWS::DynamoDB::Table
+    Properties: 
+      TableName: HourlyStatistics
+      KeySchema: 
+        - AttributeName: stats_day
+          KeyType: HASH
+        - AttributeName: stats_datetime
+          KeyType: RANGE
+      AttributeDefinitions:
+      - AttributeName: stats_day
+        AttributeType: S
+      - AttributeName: stats_datetime
+        AttributeType: S
+      ProvisionedThroughput: 
+        ReadCapacityUnits: 2
+        WriteCapacityUnits: 5
+      TimeToLiveSpecification:
+        AttributeName : timetolive
+        Enabled : true

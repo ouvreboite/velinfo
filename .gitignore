@@ -1,0 +1,5 @@
+samconfig.toml
+.aws-sam
+.vscode
+node_modules
+package-lock.json

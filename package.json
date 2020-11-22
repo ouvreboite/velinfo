@@ -1,0 +1,33 @@
+{
+  "name": "velinfo",
+  "version": "1.0.0",
+  "description": "A serveless application to detect locked Velib (Paris bicycle sharing system)",
+  "scripts": {
+    "build": "webpack-cli",
+    "clean": "rimraf .aws-sam .vscode"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ouvreboite/velinfo.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ouvreboite/velinfo/issues"
+  },
+  "homepage": "https://github.com/ouvreboite/velinfo#readme",
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.64",
+    "aws-sam-webpack-plugin": "^0.7.0",
+    "ts-loader": "^8.0.11",
+    "typescript": "^4.1.2",
+    "webpack": "^5.6.0",
+    "webpack-cli": "^4.2.0",
+    "class-transformer": "^0.3.1",
+    "reflect-metadata": "^0.1.13"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.797.0",
+    "axios": "^0.21.0"
+  }
+}
