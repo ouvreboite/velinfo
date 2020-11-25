@@ -55,16 +55,16 @@ Resources:
       - DynamoDBCrudPolicy:
           TableName: !Ref HourlyStatisticsTable
 
-  ComputeExpectedColdActivity:
+  ComputeExpectedColdActivities:
     Type: AWS::Serverless::Function
     DependsOn:
       - CurrentAvailabilityTable
       - HourlyStatisticsTable
       - ExpectedColdActivityTable
     Properties:
-      FunctionName: ComputeExpectedColdActivity
+      FunctionName: ComputeExpectedColdActivities
       Description: Compute the expected activity that every station should have seen since it became cold
-      CodeUri: lambda/ComputeExpectedColdActivity
+      CodeUri: lambda/ComputeExpectedColdActivities
       Handler: app.lambdaHandler
       Runtime: nodejs12.x
       Environment: 
