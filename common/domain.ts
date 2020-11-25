@@ -53,6 +53,22 @@ export class StationsHourlyStatistics {
     totalActivity: number;
 }
 
+export class StationsExpectedActivities {
+    constructor() {
+        this.byStationCode = new Map();
+    }
+    @Type(() => ExpectedActivity)
+    byStationCode: Map<string, ExpectedActivity>;
+    @TransformDate()
+    fetchDateTime: Date;
+}
+
+export class ExpectedActivity {
+    value: number;
+    @TransformDate()
+    coldSince?: Date;
+}
+
 export function TransformDate() {
     const toPlain = Transform(value => (value as Date).toISOString(), {
         toPlainOnly: true

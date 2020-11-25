@@ -54,6 +54,36 @@ Resources:
       Policies:
       - DynamoDBCrudPolicy:
           TableName: !Ref HourlyStatisticsTable
+
+  ComputeExpectedColdActivities:
+    Type: AWS::Serverless::Function
+    DependsOn:
+      - CurrentAvailabilityTable
+      - HourlyStatisticsTable
+      - ExpectedColdActivityTable
+    Properties:
+      FunctionName: ComputeExpectedColdActivities
+      Description: Compute the expected activity that every station should have seen since it became cold
+      CodeUri: lambda/ComputeExpectedColdActivities
+      Handler: app.lambdaHandler
+      Runtime: nodejs12.x
+      Environment: 
+        Variables:
+          STATISTICS_TABLE_NAME: !Ref HourlyStatisticsTable
+          EXPECTED_COLD_ACTIVITY_TABLE_NAME: !Ref ExpectedColdActivityTable
+      Events:
+        StreamAvailability:
+          Type: DynamoDB
+          Properties:
+            Stream: 
+              !GetAtt CurrentAvailabilityTable.StreamArn
+            StartingPosition: LATEST
+            BatchSize: 1
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: !Ref HourlyStatisticsTable
+      - DynamoDBCrudPolicy:
+          TableName: !Ref ExpectedColdActivityTable
    
   # Dynamo tables
   CurrentAvailabilityTable: 
@@ -92,3 +122,17 @@ Resources:
       TimeToLiveSpecification:
         AttributeName : timetolive
         Enabled : true
+
+  ExpectedColdActivityTable: 
+    Type: AWS::DynamoDB::Table
+    Properties: 
+      TableName: ExpectedColdActivity
+      KeySchema: 
+        - AttributeName: id
+          KeyType: HASH
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S 
+      ProvisionedThroughput: 
+        ReadCapacityUnits: 3
+        WriteCapacityUnits: 5

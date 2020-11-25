@@ -2,8 +2,7 @@ import axios from 'axios';
 import { StationAvailability, StationsFetchedAvailabilities } from "../../common/domain";
 export { fetchAvailabilities };
 
-let parisAPIurl: string = 'https://opendata.paris.fr/api/records/1.0/search/?dataset=velib-disponibilite-en-temps-reel&q=&rows=10000';
-
+const parisAPIurl: string = 'https://opendata.paris.fr/api/records/1.0/search/?dataset=velib-disponibilite-en-temps-reel&q=&rows=10000';
 
 async function fetchAvailabilities(): Promise<StationsFetchedAvailabilities> {
     const response = await axios.get(parisAPIurl);
