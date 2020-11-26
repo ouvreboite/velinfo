@@ -11,3 +11,7 @@ export function deltaSeconds(date1: Date, date2: Date): number{
     let seconds = diff / 1000;
     return Math.abs(seconds);
 }
+
+export function deltaMinutes(date1: Date, date2: Date): number{
+    return deltaSeconds(date1, date2)/60;
+}

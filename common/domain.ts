@@ -1,4 +1,5 @@
-import { Type, Transform } from 'class-transformer';
+import { Type } from 'class-transformer';
+import { TransformDate } from './classTranformerUtil';
 
 export class StationAvailability {
     stationCode: string;
@@ -69,17 +70,25 @@ export class ExpectedActivity {
     coldSince?: Date;
 }
 
-export function TransformDate() {
-    const toPlain = Transform(value => (value as Date).toISOString(), {
-        toPlainOnly: true
-    });
+export class StationsStates {
+    constructor() {
+        this.byStationCode = new Map();
+    }
+    @Type(() => StationState)
+    byStationCode: Map<string, StationState>;
+    @TransformDate()
+    fetchDateTime: Date;
+}
 
-    const toClass = Transform(value => new Date(value), {
-        toClassOnly: true
-    });
+export class StationState {
+    status: Status;
+    expectedActivity: number;
+    @TransformDate()
+    coldSince?: Date;
+}
 
-    return function (target: any, key: string) {
-        toPlain(target, key);
-        toClass(target, key);
-    };
+export enum Status {
+    Ok = "Ok",
+    Cold = "Cold",
+    Locked = "Locked"
 }
