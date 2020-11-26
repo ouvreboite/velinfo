@@ -84,7 +84,35 @@ Resources:
           TableName: !Ref HourlyStatisticsTable
       - DynamoDBCrudPolicy:
           TableName: !Ref ExpectedColdActivityTable
-   
+  ComputeStationsStates:
+    Type: AWS::Serverless::Function
+    DependsOn:
+      - StationStateTable
+      - ExpectedColdActivityTable
+    Properties:
+      FunctionName: ComputeStationsStates
+      Description: Compute the state of each station
+      CodeUri: lambda/ComputeStationsStates
+      Handler: app.lambdaHandler
+      Runtime: nodejs12.x
+      Environment: 
+        Variables:
+          STATES_TABLE_NAME: !Ref StationStateTable
+          COLD_THRESHOLD_MINUTES_MIN: 5
+          COLD_THRESHOLD_MINUTES_MAX: 1080 #18 hours
+          LOCKED_ACTIVITY_THRESHOLD: 50
+      Events:
+        StreamExpectedActivity:
+          Type: DynamoDB
+          Properties:
+            Stream: 
+              !GetAtt ExpectedColdActivityTable.StreamArn
+            StartingPosition: LATEST
+            BatchSize: 1
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: !Ref StationStateTable
+          
   # Dynamo tables
   CurrentAvailabilityTable: 
     Type: AWS::DynamoDB::Table
@@ -127,6 +155,22 @@ Resources:
     Type: AWS::DynamoDB::Table
     Properties: 
       TableName: ExpectedColdActivity
+      KeySchema: 
+        - AttributeName: id
+          KeyType: HASH
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S 
+      ProvisionedThroughput: 
+        ReadCapacityUnits: 3
+        WriteCapacityUnits: 5
+      StreamSpecification:
+        StreamViewType: NEW_IMAGE
+
+  StationStateTable: 
+    Type: AWS::DynamoDB::Table
+    Properties: 
+      TableName: StationState
       KeySchema: 
         - AttributeName: id
           KeyType: HASH
