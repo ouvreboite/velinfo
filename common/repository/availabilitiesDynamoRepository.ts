@@ -1,14 +1,17 @@
-import {DynamoDB} from "aws-sdk";
+
+import * as uninstrumentedAWS from 'aws-sdk';
+import * as AWSXRay from 'aws-xray-sdk';
 import {StationsFetchedAvailabilities} from "../domain";
 import {classToDynamo, dynamoToClass} from "../dynamoTransformer";
 export {updateAvailabilities, getAvailabilities};
 
-const client: DynamoDB.DocumentClient = new DynamoDB.DocumentClient();
+const AWS = AWSXRay.captureAWS(uninstrumentedAWS);
+const client: AWS.DynamoDB.DocumentClient = new AWS.DynamoDB.DocumentClient();
 const availabilityTableName: string = process.env.AVAILABILITY_TABLE_NAME;
 
 async function updateAvailabilities(fetchedAvailabilities: StationsFetchedAvailabilities) {
     let dynamoObject = classToDynamo(fetchedAvailabilities);
-    let request: DynamoDB.DocumentClient.UpdateItemInput = {
+    let request: AWS.DynamoDB.DocumentClient.UpdateItemInput = {
         TableName: availabilityTableName,
         Key: {
             "id": 'currentAvailability'
@@ -26,7 +29,7 @@ async function updateAvailabilities(fetchedAvailabilities: StationsFetchedAvaila
 }
 
 async function getAvailabilities(): Promise<StationsFetchedAvailabilities> {
-    let request: DynamoDB.DocumentClient.GetItemInput = {
+    let request: AWS.DynamoDB.DocumentClient.GetItemInput = {
         TableName: availabilityTableName,
         Key: {
             id: 'currentAvailability'

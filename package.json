@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "aws-sdk": "^2.797.0",
+    "aws-xray-sdk": "^3.2.0",
     "axios": "^0.21.0"
   }
 }

@@ -1,17 +1,19 @@
-import {DynamoDB} from "aws-sdk";
+import * as uninstrumentedAWS from 'aws-sdk';
+import * as AWSXRay from 'aws-xray-sdk';
 import {stripToHour} from "../dateUtil";
 import {StationsHourlyStatistics} from "../domain";
 import {classToDynamo, dynamoToClass} from "../dynamoTransformer";
 export {updateHourlyStats, getHourlyStats};
 
-const client = new DynamoDB.DocumentClient();
+const AWS = AWSXRay.captureAWS(uninstrumentedAWS);
+const client: AWS.DynamoDB.DocumentClient = new AWS.DynamoDB.DocumentClient();
 const statisticsTableName = process.env.STATISTICS_TABLE_NAME;
 const ttlDays = 60;
 
 async function updateHourlyStats(hourlyStats: StationsHourlyStatistics) {
     let timetolive = new Date(hourlyStats.statsDateTime.getTime() + ttlDays * 24 * 60 * 60 * 1000);
     let dynamoObject = classToDynamo(hourlyStats);
-    let request: DynamoDB.DocumentClient.UpdateItemInput = {
+    let request: AWS.DynamoDB.DocumentClient.UpdateItemInput = {
         TableName: statisticsTableName,
         Key: {
             stats_day: dynamoObject.statsDay,
@@ -36,7 +38,7 @@ async function getHourlyStats(statsTime: Date): Promise<StationsHourlyStatistics
     let statsDay = statsTime.toISOString().substring(0, 10);
     let statsDatetime = statsTime.toISOString();
 
-    let request: DynamoDB.DocumentClient.GetItemInput ={
+    let request: AWS.DynamoDB.DocumentClient.GetItemInput ={
         TableName: statisticsTableName,
         Key: {
             stats_day: statsDay,
