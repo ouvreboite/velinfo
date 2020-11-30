@@ -1,14 +1,16 @@
-import {DynamoDB} from "aws-sdk";
+import * as uninstrumentedAWS from 'aws-sdk';
+import * as AWSXRay from 'aws-xray-sdk';
 import {StationsExpectedActivities} from "../domain";
 import {classToDynamo, dynamoToClass} from "../dynamoTransformer";
 export {updateExpectedColdActivities, getExpectedColdActivities};
 
-const client: DynamoDB.DocumentClient = new DynamoDB.DocumentClient();
+const AWS = AWSXRay.captureAWS(uninstrumentedAWS);
+const client: AWS.DynamoDB.DocumentClient = new AWS.DynamoDB.DocumentClient();
 const expectedActivitiesTableName: string = process.env.EXPECTED_COLD_ACTIVITY_TABLE_NAME;
 
 async function updateExpectedColdActivities(expectedActivities: StationsExpectedActivities) {
     let dynamoObject = classToDynamo(expectedActivities);
-    let request: DynamoDB.DocumentClient.UpdateItemInput = {
+    let request: AWS.DynamoDB.DocumentClient.UpdateItemInput = {
         TableName: expectedActivitiesTableName,
         Key: {
             "id": 'currentExpectedActivity'
@@ -25,7 +27,7 @@ async function updateExpectedColdActivities(expectedActivities: StationsExpected
 }
 
 async function getExpectedColdActivities(): Promise<StationsExpectedActivities> {
-    let request: DynamoDB.DocumentClient.GetItemInput = {
+    let request: AWS.DynamoDB.DocumentClient.GetItemInput = {
         TableName: expectedActivitiesTableName,
         Key: {
             id: 'currentExpectedActivity'
