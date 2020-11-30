@@ -84,6 +84,7 @@ Resources:
           TableName: !Ref HourlyStatisticsTable
       - DynamoDBCrudPolicy:
           TableName: !Ref ExpectedColdActivityTable
+
   ComputeStationsStates:
     Type: AWS::Serverless::Function
     DependsOn:
@@ -112,6 +113,36 @@ Resources:
       Policies:
       - DynamoDBCrudPolicy:
           TableName: !Ref StationStateTable
+  
+  GetStations:
+    Type: AWS::Serverless::Function
+    DependsOn:
+      - StationStateTable
+      - CurrentAvailabilityTable
+    Properties:
+      FunctionName: GetStations
+      Description: Get the current stations states
+      CodeUri: lambda/GetStations
+      Handler: app.lambdaHandler
+      Runtime: nodejs12.x
+      Environment: 
+        Variables:
+          STATES_TABLE_NAME: !Ref StationStateTable
+          AVAILABILITY_TABLE_NAME: !Ref CurrentAvailabilityTable
+      Tracing: Active
+      Events:
+        GetApi:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Method: GET
+            Path: /stations
+            TimeoutInMillis: 15000
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: !Ref StationStateTable
+      - DynamoDBCrudPolicy:
+          TableName: !Ref CurrentAvailabilityTable
           
   # Dynamo tables
   CurrentAvailabilityTable: 
@@ -125,8 +156,8 @@ Resources:
         - AttributeName: id
           AttributeType: S 
       ProvisionedThroughput: 
-        ReadCapacityUnits: 3
-        WriteCapacityUnits: 10
+        ReadCapacityUnits: 2
+        WriteCapacityUnits: 8
       StreamSpecification:
         StreamViewType: NEW_IMAGE
 
@@ -145,8 +176,8 @@ Resources:
       - AttributeName: stats_datetime
         AttributeType: S
       ProvisionedThroughput: 
-        ReadCapacityUnits: 2
-        WriteCapacityUnits: 5
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 3
       TimeToLiveSpecification:
         AttributeName : timetolive
         Enabled : true
@@ -162,8 +193,8 @@ Resources:
         - AttributeName: id
           AttributeType: S 
       ProvisionedThroughput: 
-        ReadCapacityUnits: 3
-        WriteCapacityUnits: 5
+        ReadCapacityUnits: 2
+        WriteCapacityUnits: 3
       StreamSpecification:
         StreamViewType: NEW_IMAGE
 
@@ -178,5 +209,25 @@ Resources:
         - AttributeName: id
           AttributeType: S 
       ProvisionedThroughput: 
-        ReadCapacityUnits: 3
-        WriteCapacityUnits: 5
+        ReadCapacityUnits: 2
+        WriteCapacityUnits: 4
+
+  #Http API
+  HttpApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      DefinitionBody:
+        info:
+          title:
+            Ref: AWS::StackName
+          version: "1.0"
+        openapi: 3.0.1
+        paths:
+          /stations:
+            get:
+              responses: {}
+
+Outputs:
+  HttpApiUrl:
+    Value:
+      Fn::Sub: 'https://${HttpApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/'
