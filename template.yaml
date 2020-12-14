@@ -6,6 +6,16 @@ Globals:
   Function:
     Timeout: 50
 
+Parameters:
+  CertificateArn:
+    Type: String
+  ApiDomainName:
+    Type: String
+  HostedZoneId:
+    Type: String
+  FrontendBucketName:
+    Type: String
+
 Resources:
   # Lambdas
   FetchStationsAvailabilities:
@@ -216,6 +226,14 @@ Resources:
   HttpApi:
     Type: AWS::Serverless::HttpApi
     Properties:
+      Domain:
+        DomainName: 
+          Ref: ApiDomainName
+        CertificateArn: 
+          Ref: CertificateArn
+        Route53:
+          HostedZoneId: 
+            Ref: HostedZoneId
       DefinitionBody:
         info:
           title:
@@ -227,7 +245,38 @@ Resources:
             get:
               responses: {}
 
+  #Website
+  WebsiteS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: 
+        Ref: FrontendBucketName
+      AccessControl: PublicRead
+      WebsiteConfiguration:
+        IndexDocument: index.html
+  BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      PolicyDocument:
+        Id: MyPolicy
+        Version: 2012-10-17
+        Statement:
+          - Sid: PublicReadForGetBucketObjects
+            Effect: Allow
+            Principal: '*'
+            Action: 's3:GetObject'
+            Resource: !Join 
+              - ''
+              - - 'arn:aws:s3:::'
+                - !Ref WebsiteS3Bucket
+                - /*
+      Bucket: !Ref WebsiteS3Bucket
+
 Outputs:
   HttpApiUrl:
     Value:
       Fn::Sub: 'https://${HttpApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/'
+  WebsiteBucketUrl:
+    Description: 'S3 Bucket Url'
+    Value: !GetAtt 'WebsiteS3Bucket.WebsiteURL'
+    
