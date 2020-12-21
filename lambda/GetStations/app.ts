@@ -17,8 +17,8 @@ export const lambdaHandler = async () => {
         station.electrical = availability.electrical;
         station.mechanical = availability.mechanical;
         station.coldSince = availability.coldSince;
-        if(stationStates.byStationCode.has(stationCode) 
-            && stationStates.byStationCode.get(stationCode).coldSince == availability.coldSince){
+        if(stationStates.byStationCode.has(stationCode)){
+            station.expectedActivity = stationStates.byStationCode.get(stationCode).expectedActivity;
             station.state = stationStates.byStationCode.get(stationCode).status;
         }else{
             station.state = Status.Ok;
@@ -44,4 +44,5 @@ class Station{
     electrical: number;
     mechanical: number;
     coldSince: Date;
+    expectedActivity?: number;
 }

@@ -8,6 +8,10 @@ import { deltaSeconds } from "../../common/dateUtil";
 
 export const lambdaHandler = async (event: DynamoDBStreamEvent) => {
     let availabilities = extractStationsFetchedAvailabilities(event);
+    if(!availabilities.fetchDateTime){
+        console.error("No fetchDateTime in event, pass");
+        return;
+    }
     let [medianPastActivities, previousExpectedActivities] = await Promise
         .all([getMedianPastActivitiesForSameHourAndDay(availabilities.fetchDateTime), getExpectedColdActivities()])
 
@@ -26,12 +30,12 @@ export const lambdaHandler = async (event: DynamoDBStreamEvent) => {
 function buildExpectedActivities(previousExpectedActivities: StationsExpectedActivities, availabilities: StationsFetchedAvailabilities, medianPastActivities: Map<string, number>): StationsExpectedActivities {
     let expectedActivities = new StationsExpectedActivities();
     expectedActivities.fetchDateTime = availabilities.fetchDateTime;
-    let delta = deltaSeconds(expectedActivities.fetchDateTime, previousExpectedActivities.fetchDateTime);
+    let deltaTimeInSeconds = deltaSeconds(expectedActivities.fetchDateTime, previousExpectedActivities.fetchDateTime);
 
     availabilities.byStationCode.forEach((availability, stationCode) => {
         let expectedActivity = buildExpectedActivity(
             availability, previousExpectedActivities.byStationCode.get(stationCode),
-            delta, medianPastActivities
+            deltaTimeInSeconds, medianPastActivities
         );
         expectedActivities.byStationCode.set(stationCode, expectedActivity);
     });
@@ -39,14 +43,15 @@ function buildExpectedActivities(previousExpectedActivities: StationsExpectedAct
     return expectedActivities;
 }
 
-function buildExpectedActivity(availability: StationAvailability, prevExpectedActivity: ExpectedActivity, delta: number, expectedActivitiesForHour: Map<string, number>): ExpectedActivity {
+function buildExpectedActivity(availability: StationAvailability, prevExpectedActivity: ExpectedActivity, deltaTimeInSeconds: number, expectedActivitiesForHour: Map<string, number>): ExpectedActivity {
     if (!availability.coldSince) {
         return new ExpectedActivity();
     }
 
+    let expectedActivityOnDelta = (expectedActivitiesForHour.get(availability.stationCode) || 10) * deltaTimeInSeconds / 3600;
+
     let expectedActivity = new ExpectedActivity();
     expectedActivity.coldSince = availability.coldSince;
-    let expectedActivityOnDelta = (expectedActivitiesForHour.get(availability.stationCode) || 10) * delta / 3600
     if (prevExpectedActivity && prevExpectedActivity.value) {
         expectedActivity.value = prevExpectedActivity.value + expectedActivityOnDelta;
     } else {
@@ -57,6 +62,8 @@ function buildExpectedActivity(availability: StationAvailability, prevExpectedAc
 }
 
 async function getMedianPastActivitiesForSameHourAndDay(date: Date): Promise<Map<string, number>> {
+    var date = new Date(date.getTime());
+
     date.setDate(date.getDate() - 1);
     let oneWeekAgoPromise = getHourlyStats(date)
 
@@ -95,20 +102,19 @@ function appendActivities(statistics: Map<string, Statistic>, activities: Map<st
     });
 }
 
-function median(mapOfArray: Map<string, number[]>): Map<string, number> {
-    return Object.keys(mapOfArray)
-        .reduce(function (medians, key) {
-            let arr = mapOfArray.get(key);
-            if (arr.length == 0) {
-                medians.set(key, 0);
-            }
-            else {
-                let arrSort = arr.sort();
-                let mid = Math.ceil(arr.length / 2);
-                let median = arr.length % 2 == 0 ? (arrSort[mid] + arrSort[mid - 1]) / 2 : arrSort[mid - 1];
-                medians.set(key, median);
-            }
 
-            return medians;
-        }, new Map());
+function median(mapOfArray: Map<string, number[]>): Map<string, number> {
+    var medianMap = new Map<string, number>();
+    mapOfArray.forEach(function (arr, key) {
+        if (arr.length == 0) {
+            medianMap.set(key, 0);
+        }
+        else {
+            let arrSort = arr.sort();
+            let mid = Math.ceil(arr.length / 2);
+            let median = arr.length % 2 == 0 ? (arrSort[mid] + arrSort[mid - 1]) / 2 : arrSort[mid - 1];
+            medianMap.set(key, median);
+        }
+    });
+    return medianMap;
 }

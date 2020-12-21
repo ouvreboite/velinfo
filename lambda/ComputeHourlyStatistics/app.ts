@@ -7,6 +7,11 @@ import {stripToHour} from "../../common/dateUtil";
 
 export const lambdaHandler = async (event: DynamoDBStreamEvent) => {
     var currentStationsAvailabilities = extractStationsFetchedAvailabilities(event);
+    if(!currentStationsAvailabilities.fetchDateTime){
+        console.error("No fetchDateTime in event, pass");
+        return;
+    }
+
     var statsHour = stripToHour(currentStationsAvailabilities.fetchDateTime)
     var prevStats = await getHourlyStats(currentStationsAvailabilities.fetchDateTime);
     var statisticsMap = buildStatisticMap(currentStationsAvailabilities, prevStats);
