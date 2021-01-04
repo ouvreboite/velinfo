@@ -31,6 +31,26 @@ export class StationsFetchedAvailabilities {
     mostRecentOfficialDueDateTime: Date;
 }
 
+export class StationCharacteristics {
+    stationCode: string;
+    name: string;
+    longitude: number;
+    latitude: number;
+    capacity: number;
+}
+
+export class StationsFetchedCharacteristics {
+    constructor() {
+        this.byStationCode = new Map();
+    }
+    @Type(() => StationCharacteristics)
+    byStationCode: Map<string, StationCharacteristics>;
+    @TransformDate()
+    fetchDateTime: Date;
+    @TransformDate()
+    officialDateTime: Date;
+}
+
 export class Statistic {
     activity: number;
     minElectrical: number;
