@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import {fetchAvailabilities} from "./parisAPIClient";
+import {fetchAvailabilities} from "./velibStationsStatusClient";
 import {updateAvailabilities, getAvailabilities} from "../../common/repository/availabilitiesDynamoRepository";
 import {StationAvailability, StationsFetchedAvailabilities} from "../../common/domain";
 

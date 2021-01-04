@@ -12,10 +12,9 @@ export const lambdaHandler = async () => {
     for (const [stationCode, availability] of availabilities.byStationCode) {
         let station = new Station();
         station.code = stationCode;
-        station.name = availability.name;
-        station.capacity = availability.capacity;
         station.electrical = availability.electrical;
         station.mechanical = availability.mechanical;
+        station.empty = availability.empty;
         station.coldSince = availability.coldSince;
         if(stationStates.byStationCode.has(stationCode)){
             station.expectedActivity = stationStates.byStationCode.get(stationCode).expectedActivity;
@@ -36,13 +35,11 @@ export const lambdaHandler = async () => {
 
 class Station{
     code: string;
-    name: string;
-    latitude: number;
-    longitude: number;
     state: Status;
     capacity: number;
     electrical: number;
     mechanical: number;
+    empty: number;
     coldSince: Date;
     expectedActivity?: number;
 }
