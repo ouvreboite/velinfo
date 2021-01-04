@@ -42,12 +42,12 @@ function buildStatisticMap(fetchedAvailabilities: StationsFetchedAvailabilities,
                 activity: availability.activity,
                 minElectrical: availability.electrical,
                 minMechanical: availability.mechanical,
-                minEmpty: availability.capacity - (availability.electrical + availability.mechanical)
+                minEmpty: availability.empty ?? 100
             });
         }
         else {
             var prevStat = prevStats.byStationCode.get(availability.stationCode);
-            var emptySlots = availability.capacity - (availability.electrical + availability.mechanical);
+            var emptySlots = availability.empty ?? 100;
             var activity = availability.activity + prevStat.activity;
             statisticsMap.set(availability.stationCode, {
                 activity: activity,

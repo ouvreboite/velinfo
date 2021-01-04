@@ -3,12 +3,9 @@ import { TransformDate } from './classTranformerUtil';
 
 export class StationAvailability {
     stationCode: string;
-    name: string;
-    longitude: number;
-    latitude: number;
     electrical: number;
     mechanical: number;
-    capacity: number;
+    empty: number;
     installed: boolean;
     renting: boolean;
     returning: boolean;
