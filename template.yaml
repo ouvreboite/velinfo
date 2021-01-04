@@ -31,13 +31,34 @@ Resources:
         Variables:
           AVAILABILITY_TABLE_NAME: !Ref CurrentAvailabilityTable
       Events:
-          FetchStationsEveryMinute:
+          EveryMinute:
             Type: Schedule
             Properties:
               Schedule: rate(1 minute)
       Policies:
       - DynamoDBCrudPolicy:
           TableName: !Ref CurrentAvailabilityTable
+
+  FetchStationsCharacteristics:
+    Type: AWS::Serverless::Function
+    DependsOn: CurrentCharacteristicsTable
+    Properties:
+      FunctionName: FetchStationsCharacteristics
+      Description: Fetch the station characteristics from the Velib API every hour and update the current characteristics dynamo table
+      CodeUri: lambda/FetchStationsCharacteristics
+      Handler: app.lambdaHandler
+      Runtime: nodejs12.x
+      Environment: 
+        Variables:
+          CHARACTERISTICS_TABLE_NAME: !Ref CurrentCharacteristicsTable
+      Events:
+          EveryHour:
+            Type: Schedule
+            Properties:
+              Schedule: rate(1 hour)
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: !Ref CurrentCharacteristicsTable
 
   ComputeHourlyStatistics:
     Type: AWS::Serverless::Function
@@ -170,6 +191,20 @@ Resources:
         WriteCapacityUnits: 8
       StreamSpecification:
         StreamViewType: NEW_IMAGE
+
+  CurrentCharacteristicsTable: 
+    Type: AWS::DynamoDB::Table
+    Properties: 
+      TableName: CurrentCharacteristics
+      KeySchema: 
+        - AttributeName: id
+          KeyType: HASH
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S 
+      ProvisionedThroughput: 
+        ReadCapacityUnits: 2
+        WriteCapacityUnits: 8
 
   HourlyStatisticsTable: 
     Type: AWS::DynamoDB::Table
