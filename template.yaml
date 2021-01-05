@@ -160,6 +160,7 @@ Resources:
         Variables:
           STATES_TABLE_NAME: !Ref StationStateTable
           AVAILABILITY_TABLE_NAME: !Ref CurrentAvailabilityTable
+          CHARACTERISTICS_TABLE_NAME: !Ref CurrentCharacteristicsTable
       Tracing: Active
       Events:
         GetApi:
@@ -174,6 +175,8 @@ Resources:
           TableName: !Ref StationStateTable
       - DynamoDBCrudPolicy:
           TableName: !Ref CurrentAvailabilityTable
+      - DynamoDBCrudPolicy:
+          TableName: !Ref CurrentCharacteristicsTable
           
   # Dynamo tables
   CurrentAvailabilityTable: 
