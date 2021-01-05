@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { StationAvailability, StationCharacteristics, StationsFetchedAvailabilities, StationsFetchedCharacteristics } from "../../common/domain";
+import { OfficialStatus, StationAvailability, StationCharacteristics, StationsFetchedAvailabilities, StationsFetchedCharacteristics } from "../../common/domain";
 export { fetchAvailabilities };
 
 const stationsStatusUrl: string = 'https://velib-metropole-opendata.smoove.pro/opendata/Velib_Metropole/station_status.json';
@@ -19,9 +19,7 @@ function mapVelibAPI(data: any): StationsFetchedAvailabilities {
             availability.empty = stationAvailability.num_docks_available;
             availability.mechanical = stationAvailability.num_bikes_available_types[0].mechanical;
             availability.electrical = stationAvailability.num_bikes_available_types[1].ebike;
-            availability.installed = stationAvailability.is_installed == 1;
-            availability.renting = stationAvailability.is_renting == 1;
-            availability.returning = stationAvailability.is_returning == 1;
+            availability.officialStatus = officialStatus(stationAvailability.is_installed == 1,stationAvailability.is_renting == 1,stationAvailability.is_returning == 1);
             return availability;
         })
         .reduce(function (map: Map<string, StationCharacteristics>, characteristics: StationCharacteristics) {
@@ -37,4 +35,17 @@ function mapVelibAPI(data: any): StationsFetchedAvailabilities {
     fetchedAvailabilities.fetchDateTime = new Date();
     fetchedAvailabilities.mostRecentOfficialDueDateTime = mostRecentDueDate;
     return fetchedAvailabilities;
+}
+
+function officialStatus(installed: boolean, renting: boolean, returning: boolean): OfficialStatus {
+    if(installed && returning && renting)
+        return OfficialStatus.Ok;
+    else if(!installed)
+        return OfficialStatus.NotInstalled;     
+    else if(!renting && returning)
+        return OfficialStatus.NotRenting; 
+    else if(!returning && renting)
+        return OfficialStatus.NotReturning; 
+    else 
+        return OfficialStatus.NotRentingNotReturning;
 }

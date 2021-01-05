@@ -6,9 +6,7 @@ export class StationAvailability {
     electrical: number;
     mechanical: number;
     empty: number;
-    installed: boolean;
-    renting: boolean;
-    returning: boolean;
+    officialStatus: OfficialStatus;
     deltaElectrical?: number;
     deltaMechanical?: number;
     activity?: number;
@@ -108,4 +106,12 @@ export enum Status {
     Ok = "Ok",
     Cold = "Cold",
     Locked = "Locked"
+}
+
+export enum OfficialStatus {
+    Ok = "Ok",
+    NotInstalled = "NotInstalled",
+    NotRenting = "NotRenting",
+    NotReturning = "NotReturning",
+    NotRentingNotReturning = "NotRentingNotReturning"
 }
