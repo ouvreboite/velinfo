@@ -9,5 +9,7 @@ sam deploy
 ``` 
 Frontend
 ```
-aws s3 cp frontend s3://velinfo-frontend --recursive
+cd frontend
+ng build --prod
+aws s3 cp dist/velinfo s3://velinfo-frontend --recursive
 ```
