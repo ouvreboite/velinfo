@@ -16,9 +16,10 @@ function mapVelibAPI(data: any): StationsFetchedCharacteristics {
         .map(stationCharacteristic => {
             var characteristics = new StationCharacteristics();
             characteristics.stationCode = stationCharacteristic.stationCode;
-            characteristics.name = stationCharacteristic.name;
+            characteristics.name = stationCharacteristic.name.trim();
             characteristics.longitude = stationCharacteristic.lon;
             characteristics.latitude = stationCharacteristic.lat;
+            characteristics.capacity = stationCharacteristic.capacity;
             return characteristics;
         })
         .reduce(function (map: Map<string, StationCharacteristics>, characteristics: StationCharacteristics) {
