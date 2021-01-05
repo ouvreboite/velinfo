@@ -1,4 +1,5 @@
 import "reflect-metadata";
+import { CurrentStations, Station } from "../../common/api";
 import { Status } from "../../common/domain";
 import { getAvailabilities } from "../../common/repository/availabilitiesDynamoRepository";
 import { getCharacteristics } from "../../common/repository/characteristicsDynamoRepository";
@@ -8,7 +9,7 @@ export const lambdaHandler = async () => {
     let [availabilities, stationCharacteristics, stationStates] = await Promise
         .all([getAvailabilities(), getCharacteristics(), getStationsStates()])
 
-    let stations = {};
+    let stations: Station[] = [];
     for (const [stationCode, characteristics] of stationCharacteristics.byStationCode) {
         let station = new Station();
         station.code = stationCode;
@@ -33,28 +34,12 @@ export const lambdaHandler = async () => {
             station.state = Status.Ok;
         }
         
-        stations[stationCode] = station;
+        stations.push(station);
     }
     
     return {
         fetchDateTime: availabilities.fetchDateTime,
         mostRecentOfficialDueDateTime: availabilities.mostRecentOfficialDueDateTime,
         stations: stations
-      }
-
-}
-
-class Station{
-    code: string;
-    name: string;
-    latitude: number;
-    longitude: number;
-    state: Status;
-    capacity: number;
-    electrical: number;
-    mechanical: number;
-    empty: number;
-    officialStatus: string;
-    coldSince: Date;
-    expectedActivity?: number;
+    } as CurrentStations;
 }
