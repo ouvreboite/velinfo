@@ -156,6 +156,7 @@ Resources:
       CodeUri: lambda/GetStations
       Handler: app.lambdaHandler
       Runtime: nodejs12.x
+      MemorySize: 1769 #minimal memory to have a full vCPU
       Environment: 
         Variables:
           STATES_TABLE_NAME: !Ref StationStateTable
