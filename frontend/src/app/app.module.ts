@@ -43,7 +43,7 @@ import { StationPageComponent } from './station-page/station-page.component';
     MatToolbarModule,
     MatSlideToggleModule,
     AgmCoreModule.forRoot({
-      apiKey: 'AIzaSyCuEIkVSz3DGMJEWM3T80Hd3bin5ja9ccI'
+      apiKey: 'AIzaSyBv75Y2c54tz4EpNUovz1B2xE4QzoiBWNo'
     })
   ],
   providers: [],
