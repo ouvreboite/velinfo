@@ -1,0 +1,42 @@
+<mat-card *ngIf="!isLoading" style="justify-content: center;">
+    <h1>{{station.name}}</h1>
+    <app-station-availability-bar [station]="station"></app-station-availability-bar>
+    <br />
+    <agm-map [latitude]='station.latitude' [longitude]='station.longitude' [zoom]="16">
+        <agm-marker [latitude]="station.latitude" [longitude]="station.longitude"></agm-marker>
+    </agm-map>
+    <br />
+    <table class="table">
+        <tbody>
+            <tr>
+                <th scope="row">🚴🔋 Vélo(s) électrique(s)</th>
+                <td>{{station.electrical}}</td>
+            </tr>
+            <tr>
+                <th scope="row">🚴🦵 Vélo(s) mécanique(s)</th>
+                <td>{{station.mechanical}}</td>
+            </tr>
+            <tr>
+                <th scope="row">▼ Borne(s) libre(s)</th>
+                <td>{{station.empty}}</td>
+            </tr>
+            <tr>
+                <th scope="row">🔒 Borne(s) bloquée(s)</th>
+                <td>{{station.capacity-(station.empty+station.electrical+station.mechanical)}}</td>
+            </tr>
+            <tr>
+                <th scope="row">Borne(s) totale(s)</th>
+                <td>{{station.capacity}}</td>
+            </tr>
+            <tr>
+                <th scope="row">Coordonnées</th>
+                <td><a [href]="'http://www.google.com/maps/place/'+station.latitude+','+station.longitude">🗺️</a>
+            </tr>
+        </tbody>
+    </table>
+</mat-card>
+
+<mat-card *ngIf="isLoading" style="display: flex; justify-content: center; align-items: center">
+    <mat-progress-spinner color="primary" mode="indeterminate">
+    </mat-progress-spinner>
+</mat-card>

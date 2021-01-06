@@ -1,0 +1,18 @@
+table {
+  width: 100%;
+  max-width: 100%;
+}
+
+th.mat-sort-header-sorted {
+  color: black;
+}
+
+button {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+mat-slide-toggle {
+  margin-left: 5px;
+  margin-right: 5px;
+}

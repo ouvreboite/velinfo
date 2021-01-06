@@ -1,0 +1,10 @@
+<container-element [ngSwitch]="station.officialStatus">
+    <p *ngSwitchCase="'NotInstalled'">⛔Non installé</p>
+    <p *ngSwitchCase="'NotRenting'">⚠️Pas de location</p>
+    <p *ngSwitchCase="'NotReturning'">⚠️Pas de retour</p>
+    <p *ngSwitchCase="'NotRentingNotReturning'">⛔Ni retour ni location</p>
+    <span *ngSwitchDefault>
+        <p *ngIf="station.state == 'Locked'">⛔Aucune activité récente</p>
+        <p *ngIf="station.state != 'Locked'">✔️En fonctionnement</p>
+    </span>
+</container-element>
