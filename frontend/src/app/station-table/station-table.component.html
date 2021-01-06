@@ -1,0 +1,41 @@
+<br/>
+<mat-card align="end">
+  <button disabled="{{isLoading}}" mat-raised-button color="primary" (click)="reload()">Recharger</button>
+  <mat-slide-toggle color="primary" [checked]="onlyBlocked" (change)="filterOnlyBlocked()">Uniquement les station bloquées</mat-slide-toggle>
+</mat-card>
+  
+<table mat-table [dataSource]="dataSource" matSortActive="name" matSortDirection="asc" matSort class="mat-elevation-z8">
+  <ng-container matColumnDef="name">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>Station</th>
+    <td mat-cell *matCellDef="let station"> {{station.name}} <a [href]="'http://www.google.com/maps/place/'+station.latitude+','+station.longitude">🗺️</a> </td>
+  </ng-container>
+
+  <ng-container matColumnDef="occupation">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>Occupation</th>
+    <td mat-cell *matCellDef="let station"> 
+      <nav><a routerLink="/station/{{station.code}}">
+          <app-station-availability-bar [station]="station"></app-station-availability-bar>
+      </a></nav> 
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="status">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+    <td mat-cell *matCellDef="let station"> <app-station-status [station]="station"></app-station-status></td>
+  </ng-container>
+
+  <ng-container matColumnDef="lastActivityAgo">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>Dernière activité</th>
+    <td mat-cell *matCellDef="let station"> {{station.lastActivityAgo}} </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table>
+
+<mat-card *ngIf="isLoading" style="display: flex; justify-content: center; align-items: center">
+  <mat-progress-spinner 
+    color="primary" 
+    mode="indeterminate">
+  </mat-progress-spinner>
+</mat-card>
