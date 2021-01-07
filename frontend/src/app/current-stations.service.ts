@@ -28,7 +28,7 @@ export class CurrentStationsService {
     let now = moment();
     currentStations.stations.forEach(station => {
       station.lastActivity = station.coldSince?moment(station.coldSince):now;
-      station.lastActivityAgo = station.lastActivity.fromNow();
+      station.lastActivityAgo = station.lastActivity.fromNow(true);
     });
     return currentStations;
   }
