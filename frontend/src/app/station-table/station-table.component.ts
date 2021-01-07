@@ -11,8 +11,9 @@ import { CurrentStations, CurrentStationsService, Station } from '../current-sta
 export class StationTableComponent implements OnInit {
   isLoading = true;
   onlyBlocked = false;
+  numberOfStations = 0;
   dataSource = new MatTableDataSource<Station>();
-  displayedColumns: string[] = ['name', 'occupation', 'status', 'lastActivityAgo'];
+  displayedColumns: string[] = ['name', 'status', 'occupation', 'lastActivityAgo'];
 
   @ViewChild(MatSort) sort: MatSort;
 
@@ -30,25 +31,29 @@ export class StationTableComponent implements OnInit {
     this.service.getStations()
     .subscribe((data: CurrentStations) => {
         this.stations = data.stations;
-        this.dataSource = this.tableDataSource(this.stations, this.onlyBlocked);
-        this.isLoading = false;
-        this.setupSort();
+        this.setupTable();
       }
     )
   }
 
   filterOnlyBlocked(): void{
     this.onlyBlocked = !this.onlyBlocked;
-    this.dataSource = this.tableDataSource(this.stations, this.onlyBlocked);
+    this.setupTable();
+  }
+
+  setupTable(): void{
+    var stationsToDisplay = this.stationsToDisplay(this.stations, this.onlyBlocked);
+    this.dataSource = new MatTableDataSource(stationsToDisplay);
+    this.numberOfStations = stationsToDisplay.length;
+    this.isLoading = false;
     this.setupSort();
   }
 
-  tableDataSource(stations : Station[], onlyBlocked: boolean): MatTableDataSource<Station>{
+  stationsToDisplay(stations : Station[], onlyBlocked: boolean): Station[]{
     if(!onlyBlocked)
-      return new MatTableDataSource(stations);
+      return stations;
     
-    let lockedStations = stations.filter(station => station.officialStatus != "Ok" || station.state == "Locked");
-    return new MatTableDataSource(lockedStations);
+    return stations.filter(station => station.officialStatus != "Ok" || station.state == "Locked");
   }
 
   setupSort(): void {

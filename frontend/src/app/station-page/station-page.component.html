@@ -1,36 +1,40 @@
 <mat-card *ngIf="!isLoading" style="justify-content: center;">
-    <h1>{{station.name}}</h1>
-    <app-station-availability-bar [station]="station"></app-station-availability-bar>
-    <br />
+    <mat-card-title>{{station.name}}</mat-card-title>
+    <mat-card-subtitle><a [href]="'http://www.google.com/maps/place/'+station.latitude+','+station.longitude">Ouvrir sur Google Maps 🗺️</a></mat-card-subtitle>
     <agm-map [latitude]='station.latitude' [longitude]='station.longitude' [zoom]="16">
         <agm-marker [latitude]="station.latitude" [longitude]="station.longitude"></agm-marker>
     </agm-map>
     <br />
+    <app-station-availability-bar [station]="station"></app-station-availability-bar>
     <table class="table">
         <tbody>
             <tr>
-                <th scope="row">🚴🔋 Vélo(s) électrique(s)</th>
+                <th scope="row">Status</th>
+                <td><app-station-status [station]="station" [forceDetails]=true></app-station-status></td>
+            </tr>
+            <tr>
+                <th scope="row">⏱️ Dernière activité</th>
+                <td>{{station.lastActivityAgo}}</td>
+            </tr>
+            <tr>
+                <th scope="row">🚴🔋 Vélos électriques</th>
                 <td>{{station.electrical}}</td>
             </tr>
             <tr>
-                <th scope="row">🚴🦵 Vélo(s) mécanique(s)</th>
+                <th scope="row">🚴🦵 Vélos mécaniques</th>
                 <td>{{station.mechanical}}</td>
             </tr>
             <tr>
-                <th scope="row">▼ Borne(s) libre(s)</th>
+                <th scope="row">👌 Bornes libres</th>
                 <td>{{station.empty}}</td>
             </tr>
             <tr>
-                <th scope="row">🔒 Borne(s) bloquée(s)</th>
+                <th scope="row">🔒 Bornes bloquées</th>
                 <td>{{station.capacity-(station.empty+station.electrical+station.mechanical)}}</td>
             </tr>
             <tr>
-                <th scope="row">Borne(s) totale(s)</th>
+                <th scope="row">Capacité totale</th>
                 <td>{{station.capacity}}</td>
-            </tr>
-            <tr>
-                <th scope="row">Coordonnées</th>
-                <td><a [href]="'http://www.google.com/maps/place/'+station.latitude+','+station.longitude">🗺️</a>
             </tr>
         </tbody>
     </table>

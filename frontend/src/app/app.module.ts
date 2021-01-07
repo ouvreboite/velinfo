@@ -10,6 +10,7 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import {MatChipsModule} from '@angular/material/chips';
 import { AgmCoreModule } from '@agm/core';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -42,6 +43,7 @@ import { StationPageComponent } from './station-page/station-page.component';
     MatMenuModule,
     MatToolbarModule,
     MatSlideToggleModule,
+    MatChipsModule,
     AgmCoreModule.forRoot({
       apiKey: 'AIzaSyBv75Y2c54tz4EpNUovz1B2xE4QzoiBWNo'
     })

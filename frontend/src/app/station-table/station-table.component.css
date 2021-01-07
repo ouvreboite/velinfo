@@ -16,3 +16,27 @@ mat-slide-toggle {
   margin-left: 5px;
   margin-right: 5px;
 }
+
+@media screen and (max-width: 800px) {
+  .hiddable-smallscreen {
+      display: none;
+  }
+
+  .mat-cell{
+    font-size: 12px;
+  }
+
+  th.mat-header-cell:first-of-type, td.mat-cell:first-of-type, td.mat-footer-cell:first-of-type {
+    padding-left: 6px;
+  }
+}
+
+@media screen and (max-width: 330px) {
+  .mat-cell{
+    font-size: 11px;
+  }
+}
+
+.row-hover:hover {
+  cursor: pointer;
+}
