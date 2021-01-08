@@ -2,7 +2,7 @@ agm-map {
     height: 50vh;
 }
 
-@media screen and (max-width: 800px) {
+@media screen and (max-width: 768px) {
     table {
         font-size: 12px;
     }

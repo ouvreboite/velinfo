@@ -1,6 +1,10 @@
 <mat-card>
   <mat-card-title>Liste des stations Velib</mat-card-title>
   <mat-card-subtitle class="hiddable-smallscreen">{{numberOfStations}} stations</mat-card-subtitle>
+  <mat-form-field class="station-filter">
+    <mat-label>Filtre</mat-label>
+    <input matInput placeholder="Les Halles - Saint-Eustache" (keyup)="applyFilter($event)" #input>
+  </mat-form-field>
   <button disabled="{{isLoading}}" mat-raised-button color="primary" (click)="reload()">↻</button>
   <mat-slide-toggle color="primary" [checked]="onlyBlocked" (change)="filterOnlyBlocked()">Stations bloquées</mat-slide-toggle>
 </mat-card>

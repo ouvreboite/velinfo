@@ -17,7 +17,11 @@ mat-slide-toggle {
   margin-right: 5px;
 }
 
-@media screen and (max-width: 800px) {
+.station-filter{
+  width:300px;
+}
+
+@media screen and (max-width: 768px) {
   .hiddable-smallscreen {
       display: none;
   }
@@ -28,6 +32,10 @@ mat-slide-toggle {
 
   th.mat-header-cell:first-of-type, td.mat-cell:first-of-type, td.mat-footer-cell:first-of-type {
     padding-left: 6px;
+  }
+
+  .station-filter{
+    width:90vw;
   }
 }
 
