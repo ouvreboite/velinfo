@@ -12,6 +12,7 @@ export class StationsListPageComponent implements OnInit {
   isLoading = true;
   onlyBlocked = false;
   numberOfStations = 0;
+  currentFilterValue = "";
   dataSource = new MatTableDataSource<Station>();
   displayedColumns: string[] = ['name', 'status', 'occupation', 'lastActivityAgo'];
 
@@ -47,6 +48,7 @@ export class StationsListPageComponent implements OnInit {
     this.numberOfStations = stationsToDisplay.length;
     this.isLoading = false;
     this.setupSort();
+    this.filter();
   }
 
   stationsToDisplay(stations : Station[], onlyBlocked: boolean): Station[]{
@@ -68,9 +70,13 @@ export class StationsListPageComponent implements OnInit {
   }
 
   applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    if(filterValue.length>1 && filterValue.length<=2)
+    this.currentFilterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
+    this.filter();
+  }
+
+  filter(){
+    if(this.currentFilterValue.length>1 && this.currentFilterValue.length<=2)
       return;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
+    this.dataSource.filter = this.currentFilterValue;
   }
 }
