@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import * as moment from 'moment';
-import { Moment } from 'moment';
+import formatDistanceToNow from 'date-fns/formatDistanceToNow';
+import { fr } from 'date-fns/locale'
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +11,6 @@ import { Moment } from 'moment';
 export class CurrentStationsService {
 
   constructor(private http: HttpClient) {
-    moment.locale('fr');
   }
 
   configUrl = 'https://api.velinfo.fr/stations';
@@ -19,16 +18,25 @@ export class CurrentStationsService {
   getStations(): Observable<CurrentStations> {
     return this.http.get<CurrentStations>(this.configUrl)
       .pipe(
+        map(stations => this.mapDateAttributes(stations)),
         map(stations => this.addLastActivityAgo(stations)),
         map(stations => this.addOccupation(stations))
       )
   }
 
-  addLastActivityAgo(currentStations: CurrentStations): CurrentStations{
-    let now = moment();
+  mapDateAttributes(currentStations : CurrentStations): CurrentStations {
     currentStations.stations.forEach(station => {
-      station.lastActivity = station.coldSince?moment(station.coldSince):now;
-      station.lastActivityAgo = station.lastActivity.fromNow(true);
+      station.lastActivity = station.lastActivity?new Date(station.lastActivity): null;
+    });
+
+    return currentStations;
+  }
+
+  addLastActivityAgo(currentStations: CurrentStations): CurrentStations{
+    let now = new Date();
+    currentStations.stations.forEach(station => {
+      station.lastActivity = station.coldSince?new Date(station.coldSince):now;
+      station.lastActivityAgo = formatDistanceToNow(station.lastActivity, {locale: fr});
     });
     return currentStations;
   }
@@ -37,7 +45,6 @@ export class CurrentStationsService {
     currentStations.stations.forEach(station => {
       station.occupation = (station.electrical+station.mechanical)/station.capacity;
     });
-    console.log(currentStations);
     return currentStations;
   }
 }
@@ -55,7 +62,7 @@ export class Station{
   occupation: number;
   officialStatus: OfficialStatus;
   coldSince: Date;
-  lastActivity : Moment;
+  lastActivity : Date;
   lastActivityAgo : string;
   expectedActivity?: number;
 }
