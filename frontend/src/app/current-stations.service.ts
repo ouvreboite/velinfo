@@ -19,8 +19,9 @@ export class CurrentStationsService {
     return this.http.get<CurrentStations>(this.configUrl)
       .pipe(
         map(stations => this.mapDateAttributes(stations)),
+        map(stations => this.roundExpectedActivity(stations)),
         map(stations => this.addLastActivityAgo(stations)),
-        map(stations => this.addOccupation(stations))
+        map(stations => this.addOccupation(stations)),
       )
   }
 
@@ -44,6 +45,13 @@ export class CurrentStationsService {
   addOccupation(currentStations: CurrentStations): CurrentStations{
     currentStations.stations.forEach(station => {
       station.occupation = (station.electrical+station.mechanical)/station.capacity;
+    });
+    return currentStations;
+  }
+
+  roundExpectedActivity(currentStations: CurrentStations): CurrentStations{
+    currentStations.stations.forEach(station => {
+      station.expectedActivity = Math.round(station.expectedActivity);
     });
     return currentStations;
   }

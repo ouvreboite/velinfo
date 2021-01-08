@@ -1,8 +1,8 @@
 <div *ngIf="station.capacity > 0" class="progress">
-    <div class="progress-bar" role="progressbar" style="min-width: 4em;" [style.width]="electricalPct" [attr.aria-valuenow]="station.electrical" aria-valuemin="0" [attr.aria-valuemax]="station.capacity">🚴🔋{{station.electrical}}</div>
-    <div class="progress-bar bg-success" role="progressbar" style="min-width: 4em;" [style.width]="mechanicalPct" [attr.aria-valuenow]="station.mechanical" aria-valuemin="0" [attr.aria-valuemax]="station.capacity">🚴🦵{{station.mechanical}}</div>
-    <div *ngIf="station.empty" class="progress-bar bg-secondary" role="progressbar" style="min-width: 3em;" [style.width]="emptyPct" [attr.aria-valuenow]="station.empty" aria-valuemin="0" [attr.aria-valuemax]="station.capacity">👌{{station.empty}}</div>
-    <div *ngIf="locked>0" class="progress-bar bg-dark" role="progressbar" style="min-width: 3em;" [style.width]="lockedPct" [attr.aria-valuenow]="locked" aria-valuemin="0" [attr.aria-valuemax]="station.capacity">🔒{{locked}}</div>
+    <div class="progress-bar" role="progressbar" style="min-width: 4em;" [style.width]="electricalPct" [attr.aria-valuenow]="station.electrical" aria-valuemin="0" [attr.aria-valuemax]="station.capacity" title="{{station.electrical}} vélo(s) électrique(s)">🚴🔋{{station.electrical}}</div>
+    <div class="progress-bar bg-success" role="progressbar" style="min-width: 4em;" [style.width]="mechanicalPct" [attr.aria-valuenow]="station.mechanical" aria-valuemin="0" [attr.aria-valuemax]="station.capacity" title="{{station.mechanical}} vélo(s) mécanique(s)">🚴🦵{{station.mechanical}}</div>
+    <div *ngIf="station.empty" class="progress-bar bg-secondary" role="progressbar" style="min-width: 3em;" [style.width]="emptyPct" [attr.aria-valuenow]="station.empty" aria-valuemin="0" [attr.aria-valuemax]="station.capacity" title="{{station.empty}} emplacement(s) libre(s)">👌{{station.empty}}</div>
+    <div *ngIf="locked>0" class="progress-bar bg-dark" role="progressbar" style="min-width: 3em;" [style.width]="lockedPct" [attr.aria-valuenow]="locked" aria-valuemin="0" [attr.aria-valuemax]="station.capacity" title="{{locked}} emplacement(s) indisponible(s)">🔒{{locked}}</div>
 </div>
 <div *ngIf="station.capacity == 0"class="progress">
     <div class="progress-bar bg-dark" role="progressbar" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">💀</div>
