@@ -1,12 +1,14 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { StationPageComponent } from './station-page/station-page.component';
-import { StationTableComponent } from './station-table/station-table.component';
+import { StationsListPageComponent } from './stations-list-page/stations-list-page.component';
+import { StationsMapPageComponent } from './stations-map-page/stations-map-page.component';
 
 const routes: Routes = [
-  { path: 'table', component: StationTableComponent },
+  { path: 'map', component: StationsMapPageComponent },
+  { path: 'list', component: StationsListPageComponent },
   { path: 'station/:code', component: StationPageComponent },
-  { path: '**', redirectTo: '/table' },
+  { path: '**', redirectTo: '/list' },
 ];
 
 @NgModule({
