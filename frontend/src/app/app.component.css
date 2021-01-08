@@ -1,6 +1,12 @@
-@media screen and (max-width: 800px) {
+@media screen and (max-width: 540px) {
   .container{
     padding-right: 0px;
     padding-left: 0px;
+    margin-right: 0px;
+    margin-left: 0px;
   }
+}
+
+.toolbar-spacer {
+  flex: 1 1 auto;
 }
