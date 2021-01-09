@@ -7,3 +7,19 @@
     margin-left: 5px;
     margin-right: 5px;
 }
+
+@media screen and (max-width: 595px) {
+    .onBigScreen{
+        display: none;
+    }
+}
+
+@media screen and (min-width: 596px) {
+    .onSmallScreen{
+        display: none;
+    }
+}
+
+.hide{
+    display: none;
+}

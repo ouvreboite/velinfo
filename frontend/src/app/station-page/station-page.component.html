@@ -4,8 +4,8 @@
     <agm-map [latitude]='station.latitude' [longitude]='station.longitude' [zoom]="16">
         <agm-marker [latitude]="station.latitude" [longitude]="station.longitude"></agm-marker>
     </agm-map>
-    <br />
-    <app-station-availability-bar [station]="station"></app-station-availability-bar>
+    <br/>
+    <app-station-availability-bar [station]="station" [displayMode]="'progress'"></app-station-availability-bar>
     <table class="table">
         <tbody>
             <tr>

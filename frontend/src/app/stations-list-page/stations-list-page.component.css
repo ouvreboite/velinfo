@@ -33,7 +33,9 @@ mat-slide-toggle {
   th.mat-header-cell:first-of-type, td.mat-cell:first-of-type, td.mat-footer-cell:first-of-type {
     padding-left: 6px;
   }
+}
 
+@media screen and (max-width: 596px) {
   .station-filter{
     width:90vw;
   }

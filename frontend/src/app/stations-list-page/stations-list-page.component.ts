@@ -14,7 +14,7 @@ export class StationsListPageComponent implements OnInit {
   numberOfStations = 0;
   currentFilterValue = "";
   dataSource = new MatTableDataSource<Station>();
-  displayedColumns: string[] = ['name', 'status', 'occupation', 'lastActivityAgo'];
+  displayedColumns: string[] = ['name', 'status', 'availability', 'lastActivityAgo'];
 
   @ViewChild(MatSort) sort: MatSort;
 
