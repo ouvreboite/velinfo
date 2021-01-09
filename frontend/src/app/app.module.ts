@@ -22,6 +22,12 @@ import { StationAvailabilityBarComponent } from './station-availability-bar/stat
 import { StationStatusComponent } from './station-status/station-status.component';
 import { StationPageComponent } from './station-page/station-page.component';
 import { StationsMapPageComponent } from './stations-map-page/stations-map-page.component';
+import { UserFavoritesService } from './user-favorites.service';
+import { StationStatusService } from './station-status.service';
+import { CurrentStationsService } from './current-stations.service';
+import { FavoriteIconComponent } from './favorite-icon/favorite-icon.component';
+import { FavoritesPageComponent } from './favorites-page/favorites-page.component';
+import { StationsTableComponent } from './stations-table/stations-table.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +36,10 @@ import { StationsMapPageComponent } from './stations-map-page/stations-map-page.
     StationsMapPageComponent,
     StationAvailabilityBarComponent,
     StationStatusComponent,
-    StationPageComponent
+    StationPageComponent,
+    FavoriteIconComponent,
+    FavoritesPageComponent,
+    StationsTableComponent
   ],
   imports: [
     BrowserModule,
@@ -52,7 +61,7 @@ import { StationsMapPageComponent } from './stations-map-page/stations-map-page.
       apiKey: 'AIzaSyBv75Y2c54tz4EpNUovz1B2xE4QzoiBWNo'
     })
   ],
-  providers: [],
+  providers: [UserFavoritesService, StationStatusService, CurrentStationsService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
