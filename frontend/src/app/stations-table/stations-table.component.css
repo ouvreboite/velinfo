@@ -1,0 +1,45 @@
+@media screen and (max-width: 768px) {
+    .mat-cell{
+      font-size: 12px;
+    }
+  
+    th.mat-header-cell:first-of-type, td.mat-cell:first-of-type, td.mat-footer-cell:first-of-type {
+      padding-left: 6px;
+    }
+  
+    table {
+      margin-top: 10px;
+    }
+
+    .station-table-controls{
+      margin-left: 10px;
+    }
+  }
+@media screen and (max-width: 596px) {
+    .station-filter{
+        width:90vw;
+    }
+}
+
+table {
+    width: 100%;
+    max-width: 100%;
+}
+  
+th.mat-sort-header-sorted {
+    color: black;
+}  
+
+.row-hover:hover {
+    cursor: pointer;
+}
+
+mat-slide-toggle {
+    margin-left: 5px;
+    margin-right: 5px;
+}
+  
+.station-filter{
+    width:300px;
+}
+  
