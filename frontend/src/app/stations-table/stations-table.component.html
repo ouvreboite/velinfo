@@ -1,0 +1,40 @@
+<div *ngIf="displayControls" class="station-table-controls">
+    <mat-form-field class="station-filter">
+        <mat-label>Filtre</mat-label>
+        <input matInput placeholder="Les Halles - Saint-Eustache" (keyup)="applyFilter($event)" #input>
+    </mat-form-field>
+    <mat-slide-toggle class="station-toggle" color="primary" [checked]="onlyBlocked"
+        (change)="toggleFilterOnlyBlocked()">Uniquement les stations bloquées</mat-slide-toggle>
+</div>
+
+<table mat-table [dataSource]="dataSource" matSortActive="name" matSortDirection="asc" matSort class="mat-elevation-z8">
+    <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Station</th>
+        <td mat-cell *matCellDef="let station">{{station.name}}<app-favorite-icon [station]="station"
+                [passive]=true></app-favorite-icon>
+        </td>
+    </ng-container>
+
+    <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+        <td mat-cell *matCellDef="let station">
+            <app-station-status [station]="station"></app-station-status>
+        </td>
+    </ng-container>
+
+    <ng-container matColumnDef="availability">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Disponibilité</th>
+        <td mat-cell *matCellDef="let station">
+            <app-station-availability-bar [station]="station"></app-station-availability-bar>
+        </td>
+    </ng-container>
+
+    <ng-container matColumnDef="lastActivityAgo">
+        <th class="hiddable-smallscreen" mat-header-cell *matHeaderCellDef mat-sort-header>⏱️ Dernière activité</th>
+        <td class="hiddable-smallscreen" mat-cell *matCellDef="let station"> {{station.lastActivityAgo}} </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+    <tr mat-row *matRowDef="let station; columns: displayedColumns;" [routerLink]="'/station/'+station.code"
+        class="row-hover"></tr>
+</table>
