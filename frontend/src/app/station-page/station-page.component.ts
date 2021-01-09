@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute, ParamMap } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { CurrentStations, CurrentStationsService, Station } from '../current-stations.service';
+import { StationStatusService } from '../station-status.service';
 
 @Component({
   selector: 'app-station-page',
@@ -11,20 +12,37 @@ export class StationPageComponent implements OnInit {
   isLoading = true;
   code: string;
   station : Station;
+  displayUserPin = false;
+  userLatitude: number;
+  userLongitude: number;
+  stationIcon;
 
   constructor(
-    private service: CurrentStationsService,
+    private currentStationsService: CurrentStationsService,
+    public stationStatusService: StationStatusService,
     private activatedRoute: ActivatedRoute) {
   }
 
   ngOnInit() {   
     this.code = this.activatedRoute.snapshot.paramMap.get('code');
-    this.service.getStations()
+    this.getUserLocation();
+    this.currentStationsService.getStations()
     .subscribe((data: CurrentStations) => {
         this.station = data.stations.find(station => station.code == this.code);
-        console.log(this.station);
+        this.stationIcon = this.stationStatusService.getStatusMapIcon(this.station);
+        console.log(this.stationIcon);
         this.isLoading = false;
       }
     )
+  }
+
+  getUserLocation() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(position => {
+        this.userLatitude = position.coords.latitude;
+        this.userLongitude = position.coords.longitude;
+        this.displayUserPin = true;
+      });
+    }
   }
 }

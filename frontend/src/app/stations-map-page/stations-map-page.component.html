@@ -1,5 +1,28 @@
-<agm-map [latitude]=48.8534 [longitude]=2.3488 [zoom]="16">
-    <agm-marker *ngFor="let station of stations" [latitude]="station.latitude" [longitude]="station.longitude" 
-    [iconUrl]="svgIcon"></agm-marker>
-    <agm-marker *ngIf="displayUserPin" [latitude]="userLatitude" [longitude]="userLongitude" ></agm-marker>
+<agm-map *ngIf="!isLoading" [latitude]="userLatitude" [longitude]="userLongitude" [zoom]="16" [usePanning]="true"
+    (zoomChange)="zoomChange($event)">
+    <agm-marker *ngFor="let station of stations" [visible]="showStations" [latitude]="station.latitude"
+            [longitude]="station.longitude" [iconUrl]="$any(getStationIcon(station))"
+            (markerClick)="markerClick(station, iw)">
+    </agm-marker>
+    <agm-marker *ngIf="displayUserPin" [latitude]="userLatitude" [longitude]="userLongitude"></agm-marker>
+
+    <agm-info-window #iw [latitude]="iwLatitude" [longitude]="iwLongitude" #infoWindow>
+        <ng-container *ngIf="selectedStation">
+             <div [routerLink]="'/station/'+selectedStation.code" style="cursor: pointer;">
+                <h4 >{{selectedStation.name}}</h4>
+                Status: <app-station-status [station]="selectedStation" [forceDetails]=true></app-station-status>
+                <br/>
+                Disponibilité: <app-station-availability-bar [station]="selectedStation" [displayMode]="'mini'"></app-station-availability-bar>
+            </div>
+            <br />
+            <a [href]="'https://www.google.com/maps/dir/?api=1&travelmode=walking&destination='+selectedStation.latitude+','+selectedStation.longitude">Itinéraire 🗺️</a>
+        </ng-container>
+    </agm-info-window> 
 </agm-map>
+
+<mat-card *ngIf="isLoading" style="display: flex; justify-content: center; align-items: center">
+    <mat-progress-spinner 
+      color="primary" 
+      mode="indeterminate">
+    </mat-progress-spinner>
+</mat-card>
