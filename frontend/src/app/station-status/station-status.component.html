@@ -1,10 +1,2 @@
-<ng-container [ngSwitch]="station.officialStatus">
-    <ng-container *ngSwitchCase="'NotInstalled'">⛔<span [class]="detailCSSClass">Non installé</span></ng-container>
-    <ng-container *ngSwitchCase="'NotRenting'">⚠️<span [class]="detailCSSClass">Pas de location</span></ng-container>
-    <ng-container *ngSwitchCase="'NotReturning'">⚠️<span [class]="detailCSSClass">Pas de retour</span></ng-container>
-    <ng-container *ngSwitchCase="'NotRentingNotReturning'" >⛔<span [class]="detailCSSClass">Ni retour ni location</span></ng-container>
-    <ng-container *ngSwitchDefault>
-        <ng-container *ngIf="station.state == 'Locked'">⚠️<span [class]="detailCSSClass" title="La station n'est plus active depuis {{station.lastActivityAgo}}, environ {{station.expectedActivity}} ajouts/retraits auraient du être effectués depuis cette date par rapport à l'activité habituelle de la station">Aucune activité récente</span></ng-container>
-        <ng-container *ngIf="station.state != 'Locked'">✅<span [class]="detailCSSClass">Ok</span></ng-container>
-    </ng-container>
-</ng-container>
+{{statusEmoji}}<span *ngIf="station.state == 'Locked' && station.officialStatus == 'Ok'" [class]="detailCSSClass" title="La station n'est plus active depuis {{station.lastActivityAgo}}, environ {{station.expectedActivity}} ajouts/retraits auraient du être effectués depuis cette date par rapport à l'activité habituelle de la station">⏱️</span>
+<span [class]="detailCSSClass">{{statusText}}</span>
