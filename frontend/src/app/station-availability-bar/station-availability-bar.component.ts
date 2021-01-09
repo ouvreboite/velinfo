@@ -8,14 +8,28 @@ import { Station } from '../current-stations.service';
 })
 export class StationAvailabilityBarComponent implements OnInit {
   @Input() station: Station;
+  @Input() displayMode = "auto";
+
   electricalPct = "0%";
   mechanicalPct = "0%";
   emptyPct = "100%";
   lockedPct = "0%";
   locked=0;
+
+  progressCSS = "onBigScreen";
+  miniCSS = "onSmallScreen";
+
   constructor() { }
 
   ngOnInit(): void {
+    if(this.displayMode == "progress"){
+      this.progressCSS="";
+      this.miniCSS="hide";
+    }else if(this.displayMode == "mini"){
+      this.progressCSS="hide";
+      this.miniCSS="";
+    }
+
     if(this.station.capacity != 0){
       this.electricalPct = 100*this.station.electrical/this.station.capacity+"%";
       this.mechanicalPct = 100*this.station.mechanical/this.station.capacity+"%";
