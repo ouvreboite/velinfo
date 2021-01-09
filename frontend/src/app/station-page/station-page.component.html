@@ -1,5 +1,8 @@
 <mat-card *ngIf="!isLoading" style="justify-content: center;">
-    <mat-card-title>{{station.name}}</mat-card-title>
+    <mat-card-title fxLayout="row" fxLayoutAlign="space-between center">
+        {{station.name}}
+        <app-favorite-icon [station]="station"></app-favorite-icon>
+    </mat-card-title>
     <mat-card-subtitle><a [href]="'https://www.google.com/maps/dir/?api=1&travelmode=walking&destination='+station.latitude+','+station.longitude">Itinéraire 🗺️</a></mat-card-subtitle>
     <agm-map [latitude]='station.latitude' [longitude]='station.longitude' [zoom]="16">
         <agm-marker [latitude]="station.latitude" [longitude]="station.longitude" [iconUrl]="stationIcon"></agm-marker>
