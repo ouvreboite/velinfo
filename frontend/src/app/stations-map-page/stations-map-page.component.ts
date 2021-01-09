@@ -38,7 +38,7 @@ export class StationsMapPageComponent implements OnInit {
     return this.stationStatusService.getStatusMapIcon(station);
   }
 
-  getUserLocation() {
+  private getUserLocation() {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(position => {
         this.userLatitude = +position.coords.latitude;
