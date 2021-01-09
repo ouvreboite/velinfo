@@ -1,0 +1,34 @@
+<mat-card>
+    <mat-card-title>Stations favorites</mat-card-title>
+    <mat-card-subtitle >Retrouvez ici vos stations favorites</mat-card-subtitle>
+    <p class="no-favorite-text" *ngIf="!hasFavorites">
+        Il semble que vous n'avez actuellement aucune station favorite. Vous pouvez les ajouter via leur fiche en cliquant sur le bouton : 
+        <br/>
+        <mat-icon>favorite_border</mat-icon>
+        <br/>
+        Vos favoris sont stockés directement dans votre navigateur web. Velinfo ne dispose pas de gestion de compte et ne récupère pas d'information sur ses utilisateurs.
+    </p>
+    <app-stations-table *ngIf="hasFavorites && !isLoading" [stations]="favoriteStations" [displayControls]=false></app-stations-table>
+</mat-card>
+<mat-card *ngIf="isLoading" style="display: flex; justify-content: center; align-items: center">
+    <mat-progress-spinner 
+      color="primary" 
+      mode="indeterminate">
+    </mat-progress-spinner>
+</mat-card>
+
+<!--
+    <mat-card>
+    <mat-card-title>Liste des stations Velib</mat-card-title>
+    <mat-card-subtitle *ngIf="isLoading" class="hiddable-smallscreen">{{numberOfStations}} stations</mat-card-subtitle>
+    <app-stations-table *ngIf="!isLoading" [stations]="stations"></app-stations-table>
+  </mat-card> 
+  
+  <mat-card *ngIf="isLoading" style="display: flex; justify-content: center; align-items: center">
+    <mat-progress-spinner 
+      color="primary" 
+      mode="indeterminate">
+    </mat-progress-spinner>
+  </mat-card>
+-->
+  

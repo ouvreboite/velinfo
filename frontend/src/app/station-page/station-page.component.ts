@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CurrentStations, CurrentStationsService, Station } from '../current-stations.service';
 import { StationStatusService } from '../station-status.service';
-import { UserFavoritesService } from '../user-favorites.service';
 
 @Component({
   selector: 'app-station-page',
@@ -12,7 +11,6 @@ import { UserFavoritesService } from '../user-favorites.service';
 export class StationPageComponent implements OnInit {
   isLoading = true;
   code: string;
-  favorite = false;
   station : Station;
   displayUserPin = false;
   userLatitude: number;
@@ -22,7 +20,6 @@ export class StationPageComponent implements OnInit {
   constructor(
     private currentStationsService: CurrentStationsService,
     private stationStatusService: StationStatusService,
-    private userFavoriteService: UserFavoritesService,
     private activatedRoute: ActivatedRoute) {
   }
 
@@ -33,7 +30,6 @@ export class StationPageComponent implements OnInit {
     .subscribe((data: CurrentStations) => {
         this.station = data.stations.find(station => station.code == this.code);
         this.stationIcon = this.stationStatusService.getStatusMapIcon(this.station);
-        this.favorite = this.userFavoriteService.isFavorite(this.station.code);
         this.isLoading = false;
       }
     )
@@ -47,10 +43,5 @@ export class StationPageComponent implements OnInit {
         this.displayUserPin = true;
       });
     }
-  }
-
-  toggleFavorite(){
-    this.userFavoriteService.toggleFavorite(this.station.code);
-    this.favorite = this.userFavoriteService.isFavorite(this.station.code);
   }
 }
