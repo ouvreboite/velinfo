@@ -48,7 +48,7 @@ function buildExpectedActivity(availability: StationAvailability, prevExpectedAc
         return new ExpectedActivity();
     }
 
-    let expectedActivityOnDelta = (expectedActivitiesForHour.get(availability.stationCode) || 10) * deltaTimeInSeconds / 3600;
+    let expectedActivityOnDelta = (expectedActivitiesForHour.get(availability.stationCode) || 0) * deltaTimeInSeconds / 3600;
 
     let expectedActivity = new ExpectedActivity();
     expectedActivity.coldSince = availability.coldSince;
