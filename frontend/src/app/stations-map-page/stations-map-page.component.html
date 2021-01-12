@@ -10,7 +10,7 @@
         <ng-container *ngIf="selectedStation">
              <div [routerLink]="'/station/'+selectedStation.code" style="cursor: pointer;">
                 <h4 >{{selectedStation.name}}</h4>
-                Status: <app-station-status [station]="selectedStation" [forceDetails]=true></app-station-status>
+                Statut: <app-station-status [station]="selectedStation" [forceDetails]=true></app-station-status>
                 <br/>
                 Disponibilité: <app-station-availability-bar [station]="selectedStation" [displayMode]="'mini'"></app-station-availability-bar>
             </div>
