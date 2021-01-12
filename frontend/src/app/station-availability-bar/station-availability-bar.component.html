@@ -1,7 +1,7 @@
 <div *ngIf="station.capacity > 0" class="progress {{progressCSS}}">
     <div *ngIf="station.electrical"class="progress-bar" role="progressbar" style="min-width: 4em;" [style.width]="electricalPct" [attr.aria-valuenow]="station.electrical" aria-valuemin="0" [attr.aria-valuemax]="station.capacity" title="{{station.electrical}} vélo(s) électrique(s)">🚴🔋{{station.electrical}}</div>
     <div *ngIf="station.mechanical" class="progress-bar bg-success" role="progressbar" style="min-width: 4em;" [style.width]="mechanicalPct" [attr.aria-valuenow]="station.mechanical" aria-valuemin="0" [attr.aria-valuemax]="station.capacity" title="{{station.mechanical}} vélo(s) mécanique(s)">🚴🦵{{station.mechanical}}</div>
-    <div *ngIf="station.empty" class="progress-bar bg-secondary" role="progressbar" style="min-width: 3em;" [style.width]="emptyPct" [attr.aria-valuenow]="station.empty" aria-valuemin="0" [attr.aria-valuemax]="station.capacity" title="{{station.empty}} emplacement(s) libre(s)">👌{{station.empty}}</div>
+    <div *ngIf="station.empty" class="progress-bar bg-secondary" role="progressbar" style="min-width: 3em;" [style.width]="emptyPct" [attr.aria-valuenow]="station.empty" aria-valuemin="0" [attr.aria-valuemax]="station.capacity" title="{{station.empty}} emplacement(s) libre(s)">🅿️{{station.empty}}</div>
     <div *ngIf="locked>0" class="progress-bar bg-dark" role="progressbar" style="min-width: 3em;" [style.width]="lockedPct" [attr.aria-valuenow]="locked" aria-valuemin="0" [attr.aria-valuemax]="station.capacity" title="{{locked}} emplacement(s) indisponible(s)">🔒{{locked}}</div>
 </div>
 <div *ngIf="station.capacity == 0"class="progress {{progressCSS}}">
@@ -11,6 +11,6 @@
 <span *ngIf="station.capacity > 0" class="{{miniCSS}}">
     <span *ngIf="station.electrical>0" title="{{station.electrical}} vélo(s) électrique(s)">🔋{{station.electrical}}</span>
     <span *ngIf="station.mechanical>0" title="{{station.mechanical}} vélo(s) mécanique(s)">🦵{{station.mechanical}}</span>
-    <span *ngIf="station.empty>0" title="{{station.empty}} emplacement(s) libre(s)">👌{{station.empty}}</span>
+    <span *ngIf="station.empty>0" title="{{station.empty}} emplacement(s) libre(s)">🅿️{{station.empty}}</span>
 </span>
 <span *ngIf="station.capacity == 0" class="{{miniCSS}}">💀</span>
