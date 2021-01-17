@@ -1,7 +1,7 @@
 import "reflect-metadata";
 import {DynamoDBStreamEvent} from "aws-lambda";
 import {getHourlyStats, updateHourlyStats} from "../../common/repository/hourlyStatsDynamoRepository";
-import {StationsFetchedAvailabilities, StationsHourlyStatistics, Statistic} from "../../common/domain";
+import {StationsFetchedAvailabilities, StationsHourlyStatistics, StationStatistic} from "../../common/domain";
 import {extractStationsFetchedAvailabilities} from "../../common/dynamoEventExtractor";
 import {stripToHour} from "../../common/dateUtil";
 
@@ -12,27 +12,26 @@ export const lambdaHandler = async (event: DynamoDBStreamEvent) => {
         return;
     }
 
-    var statsHour = stripToHour(currentStationsAvailabilities.fetchDateTime)
     var prevStats = await getHourlyStats(currentStationsAvailabilities.fetchDateTime);
     var statisticsMap = buildStatisticMap(currentStationsAvailabilities, prevStats);
-    var hourlyStats = buildHourlyStatistics(statisticsMap, statsHour, currentStationsAvailabilities.fetchDateTime);
+    var hourlyStats = buildHourlyStatistics(statisticsMap, currentStationsAvailabilities.fetchDateTime);
     await updateHourlyStats(hourlyStats);
 }
 
-function buildHourlyStatistics(statisticsMap: Map<string, Statistic>, statsHour: Date, fetchDateTime: Date): StationsHourlyStatistics{
+function buildHourlyStatistics(statisticsMap: Map<string, StationStatistic>, fetchDateTime: Date): StationsHourlyStatistics{
+    var statsHour = stripToHour(fetchDateTime)
     var totalActivity = computeTotalActivity(statisticsMap);
 
     var hourlyStats = new StationsHourlyStatistics();
     hourlyStats.byStationCode = statisticsMap;
     hourlyStats.statsDateTime = statsHour;
-    hourlyStats.statsDay = statsHour.toISOString().substring(0,10);
     hourlyStats.lastFetchDateTime = fetchDateTime;
     hourlyStats.totalActivity = totalActivity;
     return hourlyStats;
 }
 
-function buildStatisticMap(fetchedAvailabilities: StationsFetchedAvailabilities, prevStats: StationsHourlyStatistics): Map<string, Statistic> {
-    var statisticsMap: Map<string, Statistic> = new Map();
+function buildStatisticMap(fetchedAvailabilities: StationsFetchedAvailabilities, prevStats: StationsHourlyStatistics): Map<string, StationStatistic> {
+    var statisticsMap: Map<string, StationStatistic> = new Map();
     
     for (const stationCode of fetchedAvailabilities.byStationCode.keys()) {
         var availability = fetchedAvailabilities.byStationCode.get(stationCode);
@@ -42,12 +41,12 @@ function buildStatisticMap(fetchedAvailabilities: StationsFetchedAvailabilities,
                 activity: availability.activity,
                 minElectrical: availability.electrical,
                 minMechanical: availability.mechanical,
-                minEmpty: availability.empty ?? 100
+                minEmpty: availability.empty
             });
         }
         else {
             var prevStat = prevStats.byStationCode.get(availability.stationCode);
-            var emptySlots = availability.empty ?? 100;
+            var emptySlots = availability.empty;
             var activity = availability.activity + prevStat.activity;
             statisticsMap.set(availability.stationCode, {
                 activity: activity,
@@ -61,7 +60,7 @@ function buildStatisticMap(fetchedAvailabilities: StationsFetchedAvailabilities,
     return statisticsMap;
 }
 
-function computeTotalActivity(statisticsMap:  Map<string, Statistic>) : number{
+function computeTotalActivity(statisticsMap:  Map<string, StationStatistic>) : number{
     return Array.from(statisticsMap.values())
     .map(s => s.activity)
     .reduce(function(a, b){
