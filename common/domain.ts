@@ -76,6 +76,7 @@ export class GlobalDailyStatistics {
     constructor() {
         this.byHour = new Map();
     }
+    stats_day: string;
     @TransformDate()
     firstFetchDateTime: Date;
     @Type(() => Statistic)

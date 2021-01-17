@@ -18,3 +18,14 @@ export class CurrentStations{
     mostRecentOfficialDueDateTime: Date;
     stations: Station[];
 }
+
+export class GlobalStatistic{
+    day: string;
+    hour: number;
+    activity: number;
+}
+
+export class GlobalStatistics{
+    statistics: GlobalStatistic[] = [];
+    todaysActivity: number;
+}
