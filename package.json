@@ -24,11 +24,13 @@
     "webpack": "^5.6.0",
     "webpack-cli": "^4.2.0",
     "class-transformer": "^0.3.1",
-    "reflect-metadata": "^0.1.13"
+    "reflect-metadata": "^0.1.13",
+    "date-fns": "^2.16.1"
   },
   "dependencies": {
     "aws-sdk": "^2.797.0",
     "aws-xray-sdk": "^3.2.0",
-    "axios": "^0.21.1"
+    "axios": "^0.21.1",
+    "date-fns-tz": "^1.0.12"
   }
 }

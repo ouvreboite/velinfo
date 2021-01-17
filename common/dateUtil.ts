@@ -1,3 +1,5 @@
+import utcToZonedTime from "date-fns-tz/utcToZonedTime";
+
 export function stripToHour(date: Date): Date {
     let hour = new Date(date.getTime())
     hour.setMilliseconds(0);
@@ -15,3 +17,14 @@ export function deltaSeconds(date1: Date, date2: Date): number{
 export function deltaMinutes(date1: Date, date2: Date): number{
     return deltaSeconds(date1, date2)/60;
 }
+
+export function toParisDay(date: Date): string{
+    var parisDate = utcToZonedTime(date, "Europe/Paris");
+    return parisDate.toISOString().substring(0,10)
+}
+
+export function toParisHour(date: Date): number{
+    var parisDate = utcToZonedTime(date, "Europe/Paris");
+    return parisDate.getHours();
+}
+

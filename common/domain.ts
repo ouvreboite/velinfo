@@ -46,8 +46,12 @@ export class StationsFetchedCharacteristics {
     officialDateTime: Date;
 }
 
+
 export class Statistic {
-    activity: number;
+    activity: number = 0;
+}
+
+export class StationStatistic extends Statistic {
     minElectrical: number;
     minMechanical: number;
     minEmpty: number;
@@ -57,15 +61,25 @@ export class StationsHourlyStatistics {
     constructor() {
         this.byStationCode = new Map();
     }
-    statsDay: string;
     @TransformDate()
     statsDateTime: Date;
-    @Type(() => Statistic)
-    byStationCode: Map<string, Statistic>;
+    @Type(() => StationStatistic)
+    byStationCode: Map<string, StationStatistic>;
     @TransformDate()
     lastUpdateDateTime?: Date;
     @TransformDate()
     lastFetchDateTime: Date;
+    totalActivity: number;
+}
+
+export class GlobalDailyStatistics {
+    constructor() {
+        this.byHour = new Map();
+    }
+    @TransformDate()
+    firstFetchDateTime: Date;
+    @Type(() => Statistic)
+    byHour: Map<string, Statistic>;
     totalActivity: number;
 }
 

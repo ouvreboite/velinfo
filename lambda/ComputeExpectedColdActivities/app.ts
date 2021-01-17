@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import { DynamoDBStreamEvent } from "aws-lambda";
-import { StationsExpectedActivities, StationAvailability, Statistic, ExpectedActivity, StationsFetchedAvailabilities } from "../../common/domain";
+import { StationsExpectedActivities, StationAvailability, StationStatistic, ExpectedActivity, StationsFetchedAvailabilities } from "../../common/domain";
 import { extractStationsFetchedAvailabilities } from "../../common/dynamoEventExtractor";
 import { getHourlyStats } from "../../common/repository/hourlyStatsDynamoRepository";
 import { getExpectedColdActivities, updateExpectedColdActivities } from "../../common/repository/expectedColdActivitiesRepository";
@@ -93,7 +93,7 @@ async function getMedianPastActivitiesForSameHourAndDay(date: Date): Promise<Map
     return median(pastActivities);
 }
 
-function appendActivities(statistics: Map<string, Statistic>, activities: Map<string, number[]>) {
+function appendActivities(statistics: Map<string, StationStatistic>, activities: Map<string, number[]>) {
     statistics.forEach((statistic, stationCode) => {
         if (activities.has(stationCode))
             activities.get(stationCode).push(statistic.activity);

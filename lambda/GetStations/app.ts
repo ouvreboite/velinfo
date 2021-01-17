@@ -5,7 +5,15 @@ import { getAvailabilities } from "../../common/repository/availabilitiesDynamoR
 import { getCharacteristics } from "../../common/repository/characteristicsDynamoRepository";
 import { getStationsStates } from "../../common/repository/stationsStatesRepository";
 
+const cacheTTLseconds = 30;
+var cachedTimestamp : Date;
+var cachedCurrentStations : CurrentStations;
+
 export const lambdaHandler = async () => {
+    if(cacheHot()){
+        return cachedCurrentStations;
+    }
+
     let [availabilities, stationCharacteristics, stationStates] = await Promise
         .all([getAvailabilities(), getCharacteristics(), getStationsStates()])
 
@@ -36,10 +44,30 @@ export const lambdaHandler = async () => {
         
         stations.push(station);
     }
-    
-    return {
+
+
+    var currentStations = {
         fetchDateTime: availabilities.fetchDateTime,
         mostRecentOfficialDueDateTime: availabilities.mostRecentOfficialDueDateTime,
         stations: stations
     } as CurrentStations;
+
+    updateCache(currentStations)
+    
+    return cachedCurrentStations;
+}
+
+function cacheHot(){
+    if(!cachedTimestamp)
+        return false;
+    
+    var difSeconds = (new Date().getTime() - cachedTimestamp.getTime())/ 1000;
+    return difSeconds < cacheTTLseconds;
+}
+
+function updateCache(currentStations : CurrentStations){
+    cachedTimestamp = new Date();
+
+    cachedCurrentStations = currentStations;
+    cachedCurrentStations["cachedTimestamp"] = cachedTimestamp;
 }

@@ -77,7 +77,7 @@ Resources:
       Runtime: nodejs12.x
       Environment: 
         Variables:
-          STATISTICS_TABLE_NAME: !Ref HourlyStatisticsTable
+          STATION_HOURLY_STATISTICS_TABLE_NAME: !Ref HourlyStatisticsTable
       Events:
         StreamAvailability:
           Type: DynamoDB
@@ -89,6 +89,33 @@ Resources:
       Policies:
       - DynamoDBCrudPolicy:
           TableName: !Ref HourlyStatisticsTable
+
+  ComputeGlobalDailyStatistics:
+    Type: AWS::Serverless::Function
+    DependsOn:
+      - CurrentAvailabilityTable
+      - GlobalDailyStatisticsTable
+    Properties:
+      FunctionName: ComputeGlobalDailyStatistics
+      Description: Process every update of the current availability table to compute global daily usage stats
+      CodeUri: lambda/ComputeGlobalDailyStatistics
+      Handler: app.lambdaHandler
+      Runtime: nodejs12.x
+      Environment: 
+        Variables:
+          GLOBAL_DAILY_STATISTICS_TABLE_NAME: !Ref GlobalDailyStatisticsTable
+      Events:
+        StreamAvailability:
+          Type: DynamoDB
+          Properties:
+            Stream: 
+              !GetAtt CurrentAvailabilityTable.StreamArn
+            StartingPosition: LATEST
+            BatchSize: 1
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: !Ref GlobalDailyStatisticsTable
+
 
   ComputeExpectedColdActivities:
     Type: AWS::Serverless::Function
@@ -104,7 +131,7 @@ Resources:
       Runtime: nodejs12.x
       Environment: 
         Variables:
-          STATISTICS_TABLE_NAME: !Ref HourlyStatisticsTable
+          STATION_HOURLY_STATISTICS_TABLE_NAME: !Ref HourlyStatisticsTable
           EXPECTED_COLD_ACTIVITY_TABLE_NAME: !Ref ExpectedColdActivityTable
       Events:
         StreamAvailability:
@@ -235,6 +262,23 @@ Resources:
         AttributeName : timetolive
         Enabled : true
 
+  GlobalDailyStatisticsTable: 
+    Type: AWS::DynamoDB::Table
+    Properties: 
+      TableName: GlobalDailyStatistics
+      KeySchema: 
+        - AttributeName: stats_day
+          KeyType: HASH
+      AttributeDefinitions:
+      - AttributeName: stats_day
+        AttributeType: S
+      ProvisionedThroughput: 
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+      TimeToLiveSpecification:
+        AttributeName : timetolive
+        Enabled : true
+
   ExpectedColdActivityTable: 
     Type: AWS::DynamoDB::Table
     Properties: 
@@ -287,6 +331,12 @@ Resources:
           /stations:
             get:
               responses: {}
+      CorsConfiguration:
+        AllowOrigins:
+          - !Sub 'https://${DomainName}'
+          - !Sub 'https://www.${DomainName}'
+          - 'http://localhost:4200'
+          - 'http://217.0.0.1:4200'
 
   #Website
   WebsiteS3Bucket:
