@@ -38,7 +38,6 @@ export class CurrentStationsService {
   }
 
   private fetchStations(): Observable<CurrentStations>{
-    console.log("fetchStations");
     this.loadTimestamp = new Date();
     return this.http.get<CurrentStations>(this.configUrl)
     .pipe(

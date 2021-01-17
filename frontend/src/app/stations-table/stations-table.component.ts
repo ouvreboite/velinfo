@@ -51,7 +51,6 @@ export class StationsTableComponent implements AfterViewInit  {
   }
 
   private setupSort(): void {
-    console.log(this.sort);
     this.dataSource.sortingDataAccessor = (station, property) => {
           switch(property) {
             case 'lastActivityAgo': return station.lastActivity;
