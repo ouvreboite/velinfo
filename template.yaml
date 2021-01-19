@@ -158,7 +158,7 @@ Resources:
         Variables:
           STATES_TABLE_NAME: !Ref StationStateTable
           COLD_THRESHOLD_MINUTES_MIN: 5
-          COLD_THRESHOLD_MINUTES_MAX: 1080 #18 hours
+          COLD_THRESHOLD_MINUTES_MAX: 2160 #36 hours
           LOCKED_ACTIVITY_THRESHOLD: 50
       Events:
         StreamExpectedActivity:
