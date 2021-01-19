@@ -1,5 +1,5 @@
 <mat-card *ngIf="!isLoading">
-    <mat-card-subtitle>Activité par heure</mat-card-subtitle>
+    <mat-card-title>Activité par heure</mat-card-title>
    
     <div style="width: 100%;height: 300px">
         <ngx-charts-line-chart *ngIf="!isLoading" 
@@ -9,10 +9,14 @@
         xAxis=true 
         [curve]="chartCurve" 
         [showGridLines]=true>
-        <ng-template #tooltipTemplate let-model="model">
-            <h3>{{model.value}}</h3>
-            {{model.formatedDateTime}}
-        </ng-template>
+            <ng-template #tooltipTemplate let-model="model">
+                <h3>{{model.value}}</h3>
+                {{model.formatedDateTime}}
+            </ng-template>
+            <ng-template #seriesTooltipTemplate let-model="model">
+                <h3>{{model[0].value}}</h3>
+                {{model[0].formatedDateTime}}
+            </ng-template>
         </ngx-charts-line-chart>
     </div>
 </mat-card>

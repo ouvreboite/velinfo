@@ -1,11 +1,15 @@
-<mat-card>
+<mat-card style="min-height: 200px;">
   <mat-card-title>Velinfo'</mat-card-title>
+  <img id="logo" height="150px" src="/assets/logo.png">
   <p style="text-align:justify">Velinfo' est une application non officielle tentant d'identifier les stations Velib' bloquées au plus tôt. Vous pouvez l'utiliser pour :</p>
+ 
   <ul>
-    <li>Trouver des stations autour de vous via la <a routerLink="/map">Carte</a></li>
-    <li>Chercher directement une station par son nom via la liste des <a routerLink="/stations">stations</a></li>
-    <li>Accéder directement à vos stations <a routerLink="/favorites">favorites</a></li>
+    <li>Trouver des stations autour de vous via la <a routerLink="/map">carte</a>.</li>
+    <li>Chercher directement dans la liste des <a routerLink="/stations">stations</a>.</li>
+    <li>Accéder directement à vos stations <a routerLink="/favorites">favorites</a>.</li>
   </ul>
+
+  Cette application est open-source. Les sources sont disponible sur <a href="https://github.com/ouvreboite/velinfo"><img style="height:1em;" src="/assets/github.png">Github</a>.
 </mat-card>
 <app-global-activity-counter></app-global-activity-counter>
 <app-global-activity-chart></app-global-activity-chart>

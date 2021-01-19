@@ -1,0 +1,33 @@
+#logo  {
+    float: right;
+}
+
+app-global-activity-counter{
+    width: 30%; 
+    float: left;
+}
+
+app-global-activity-chart{
+    width: 70%; 
+    float: right;
+}
+
+@media screen and (max-width: 768px) {
+    #logo  {
+        display: none;
+    }
+
+    ul{
+        padding-left: 15px;
+    }
+
+    app-global-activity-counter{
+        width: 100%; 
+        float: none;
+    }
+    
+    app-global-activity-chart{
+        width: 100%; 
+        float: none;
+    }
+}
