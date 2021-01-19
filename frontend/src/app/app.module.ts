@@ -28,6 +28,7 @@ import { CurrentStationsService } from './current-stations.service';
 import { FavoriteIconComponent } from './favorite-icon/favorite-icon.component';
 import { FavoritesPageComponent } from './favorites-page/favorites-page.component';
 import { StationsTableComponent } from './stations-table/stations-table.component';
+import { HomePageComponent } from './home-page/home-page.component';
 
 @NgModule({
   declarations: [
@@ -40,6 +41,8 @@ import { StationsTableComponent } from './stations-table/stations-table.componen
     FavoriteIconComponent,
     FavoritesPageComponent,
     StationsTableComponent
+    StationsTableComponent,
+    HomePageComponent,
   ],
   imports: [
     BrowserModule,
