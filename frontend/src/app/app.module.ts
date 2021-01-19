@@ -6,13 +6,14 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import {MatIconModule} from '@angular/material/icon';
-import {MatMenuModule} from '@angular/material/menu';
-import {MatToolbarModule} from '@angular/material/toolbar';
-import {MatSlideToggleModule} from '@angular/material/slide-toggle';
-import {MatChipsModule} from '@angular/material/chips';
-import {MatInputModule} from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatInputModule } from '@angular/material/input';
 import { AgmCoreModule } from '@agm/core';
+import { NgxChartsModule } from '@swimlane/ngx-charts';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -29,6 +30,9 @@ import { FavoriteIconComponent } from './favorite-icon/favorite-icon.component';
 import { FavoritesPageComponent } from './favorites-page/favorites-page.component';
 import { StationsTableComponent } from './stations-table/stations-table.component';
 import { HomePageComponent } from './home-page/home-page.component';
+import { GlobalActivityChartComponent } from './global-activity-chart/global-activity-chart.component';
+import { GlobalActivityCounterComponent } from './global-activity-counter/global-activity-counter.component';
+import { GlobalStatisticsService } from './global-statistics-service.service';
 
 @NgModule({
   declarations: [
@@ -40,9 +44,10 @@ import { HomePageComponent } from './home-page/home-page.component';
     StationPageComponent,
     FavoriteIconComponent,
     FavoritesPageComponent,
-    StationsTableComponent
     StationsTableComponent,
     HomePageComponent,
+    GlobalActivityChartComponent,
+    GlobalActivityCounterComponent
   ],
   imports: [
     BrowserModule,
@@ -62,9 +67,10 @@ import { HomePageComponent } from './home-page/home-page.component';
     MatInputModule,
     AgmCoreModule.forRoot({
       apiKey: 'AIzaSyBv75Y2c54tz4EpNUovz1B2xE4QzoiBWNo'
-    })
+    }),
+    NgxChartsModule
   ],
-  providers: [UserFavoritesService, StationStatusService, CurrentStationsService],
+  providers: [UserFavoritesService, StationStatusService, CurrentStationsService, GlobalStatisticsService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

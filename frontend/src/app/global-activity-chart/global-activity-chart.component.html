@@ -1,0 +1,24 @@
+<mat-card *ngIf="!isLoading">
+    <mat-card-subtitle>Activité par heure</mat-card-subtitle>
+   
+    <div style="width: 100%;height: 300px">
+        <ngx-charts-line-chart *ngIf="!isLoading" 
+        [results]="chartData"
+        [xAxisTickFormatting]='formatDateTime' 
+        [scheme]="chartColorScheme"
+        xAxis=true 
+        [curve]="chartCurve" 
+        [showGridLines]=true>
+        <ng-template #tooltipTemplate let-model="model">
+            <h3>{{model.value}}</h3>
+            {{model.formatedDateTime}}
+        </ng-template>
+        </ngx-charts-line-chart>
+    </div>
+</mat-card>
+<mat-card *ngIf="isLoading" style="display: flex; justify-content: center; align-items: center">
+    <mat-progress-spinner 
+      color="primary" 
+      mode="indeterminate">
+    </mat-progress-spinner>
+</mat-card>
