@@ -36,7 +36,8 @@ export class GlobalActivityChartComponent implements OnInit {
       return {
         "name": new Date(new Date(stat.day).setHours(stat.hour)), 
         "formatedDateTime": this.formatDateTime(datetime),
-        "value": stat.activity
+        "value": stat.activity,
+        "formatedValue": stat.activity.toLocaleString('fr')
       };
     })
 
@@ -49,7 +50,7 @@ export class GlobalActivityChartComponent implements OnInit {
   }
 
   formatDateTime(date: Date): string{
-    return format(date, "eee HH",{
+    return format(date, "eeee HH",{
       locale: frLocale
     })+"h";
   }

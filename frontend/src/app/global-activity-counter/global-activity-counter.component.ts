@@ -9,9 +9,9 @@ import { GlobalStatistics, GlobalStatisticsService } from '../global-statistics-
 export class GlobalActivityCounterComponent implements OnInit {
   view: [number, number] = [700, 400];
   chartData: any[]; 
-  cardColor: string = '#59b0e3';
+  cardColor: string = '#a2b43a';
   textColor: string = '#ffffff';
-  bandColor: string = '#59b0e3';
+  bandColor: string = '#a2b43a';
 
   isLoading = true;
 

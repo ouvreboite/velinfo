@@ -2,6 +2,12 @@ agm-map {
     height: calc(90vh - 64px);
 }
 
+.container{
+    margin-right: 0;
+    margin-left: 0;
+}
+
+
 @media screen and (max-width: 595px) {
     agm-map {
         height: calc(90vh - 56px);

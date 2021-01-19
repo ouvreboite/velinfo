@@ -2,6 +2,10 @@ agm-map {
     height: 50vh;
 }
 
+a{
+    color: #59b0e3;
+}
+
 @media screen and (max-width: 768px) {
     table {
         font-size: 12px;

@@ -1,5 +1,6 @@
 # velinfo
-A serveless application to detect locked Velib stations (Paris' bicycle sharing system)
+A serveless application to detect locked Velib stations (Paris' bicycle sharing system).
+Hosted on AWS Serveless and visible at www.velinfo.fr
 
 ## Build and deploy 
 Backend
