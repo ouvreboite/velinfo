@@ -1,15 +1,23 @@
-#logo  {
-    float: right;
+a{
+    color: #59b0e3;
+}
+
+mat-card{
+    margin-top: 5px;
+    margin-bottom: 5px;
 }
 
 app-global-activity-counter{
     width: 30%; 
     float: left;
+    margin-bottom: 5px;
+    padding-right: 5px;
 }
 
 app-global-activity-chart{
     width: 70%; 
     float: right;
+    margin-bottom: 5px;
 }
 
 @media screen and (max-width: 768px) {
@@ -23,11 +31,10 @@ app-global-activity-chart{
 
     app-global-activity-counter{
         width: 100%; 
-        float: none;
+        padding-right: 0px;
     }
     
     app-global-activity-chart{
         width: 100%; 
-        float: none;
     }
 }

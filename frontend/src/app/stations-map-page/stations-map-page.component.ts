@@ -5,7 +5,7 @@ import { StationStatusService } from '../station-status.service';
 @Component({
   selector: 'app-stations-map-page',
   templateUrl: './stations-map-page.component.html',
-  styleUrls: ['./stations-map-page.component.css']
+  styleUrls: ['./stations-map-page.component.css'],
 })
 export class StationsMapPageComponent implements OnInit {
 
