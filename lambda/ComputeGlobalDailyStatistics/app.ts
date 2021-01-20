@@ -1,9 +1,9 @@
 import "reflect-metadata";
 import {DynamoDBStreamEvent} from "aws-lambda";
-import {GlobalDailyStatistics, StationsFetchedAvailabilities, StationsHourlyStatistics, StationStatistic, Statistic} from "../../common/domain";
+import {GlobalDailyStatistics, StationsFetchedAvailabilities, Statistic} from "../../common/domain";
 import {extractStationsFetchedAvailabilities} from "../../common/dynamoEventExtractor";
 import { getGlobalDailyStats, updateGlobalDailyStats } from "../../common/repository/globalDailyStatsDynamoRepository";
-import { toParisHour } from "../../common/dateUtil";
+import { toParisTZ } from "../../common/dateUtil";
 
 export const lambdaHandler = async (event: DynamoDBStreamEvent) => {
     var currentStationsAvailabilities = extractStationsFetchedAvailabilities(event);
@@ -32,7 +32,7 @@ function buildStatistics(fetchedAvailabilities: StationsFetchedAvailabilities, p
 
     prevStats.totalActivity+=newActivityForHour;
 
-    var statsHour = toParisHour(fetchedAvailabilities.fetchDateTime)+""; //map keys need to be string to be properly ser/deser when stored in dynamo
+    var statsHour = toParisTZ(fetchedAvailabilities.fetchDateTime).getHours()+""; //map keys need to be string to be properly ser/deser when stored in dynamo
     var hourStat = prevStats.byHour.get(statsHour)??new Statistic();
     hourStat.activity+=newActivityForHour;
     prevStats.byHour.set(statsHour, hourStat);

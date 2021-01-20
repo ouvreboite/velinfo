@@ -112,6 +112,31 @@ Resources:
       - DynamoDBCrudPolicy:
           TableName: !Ref GlobalDailyStatisticsTable
 
+  ComputeExpectedActivities:
+    Type: AWS::Serverless::Function
+    DependsOn: 
+      - HourlyStatisticsTable
+      - ExpectedActivityTable
+    Properties:
+      FunctionName: ComputeExpectedActivities
+      Description: Compute the expected station activity per week day and hour
+      CodeUri: lambda/ComputeExpectedActivities
+      Handler: app.lambdaHandler
+      Runtime: nodejs12.x
+      Environment: 
+        Variables:
+          STATION_HOURLY_STATISTICS_TABLE_NAME: !Ref HourlyStatisticsTable
+          EXPECTED_ACTIVITY_TABLE_NAME: !Ref ExpectedActivityTable
+      Events:
+          EveryHour:
+            Type: Schedule
+            Properties:
+              Schedule: rate(1 hour)
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: !Ref HourlyStatisticsTable
+      - DynamoDBCrudPolicy:
+          TableName: !Ref ExpectedActivityTable
 
   ComputeExpectedColdActivities:
     Type: AWS::Serverless::Function
@@ -301,6 +326,24 @@ Resources:
       TimeToLiveSpecification:
         AttributeName : timetolive
         Enabled : true
+
+  ExpectedActivityTable:
+    Type: AWS::DynamoDB::Table
+    Properties: 
+      TableName: ExpectedActivity
+      KeySchema: 
+        - AttributeName: weekday
+          KeyType: HASH
+        - AttributeName: hour
+          KeyType: RANGE
+      AttributeDefinitions:
+      - AttributeName: weekday
+        AttributeType: N
+      - AttributeName: hour
+        AttributeType: N
+      ProvisionedThroughput: 
+        ReadCapacityUnits: 2
+        WriteCapacityUnits: 3
 
   ExpectedColdActivityTable: 
     Type: AWS::DynamoDB::Table

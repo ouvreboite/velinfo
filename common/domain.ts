@@ -100,6 +100,21 @@ export class ExpectedActivity {
     coldSince?: Date;
 }
 
+export class StationsExpectedActivities2 {
+    constructor() {
+        this.byStationCode = new Map();
+    }
+    weekday:number;
+    hour:number;
+    @Type(() => ExpectedActivity2)
+    byStationCode: Map<string, ExpectedActivity2>;
+}
+
+export class ExpectedActivity2 {
+    expectedActivity: number;
+}
+
+
 export class StationsStates {
     constructor() {
         this.byStationCode = new Map();

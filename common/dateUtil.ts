@@ -19,12 +19,10 @@ export function deltaMinutes(date1: Date, date2: Date): number{
 }
 
 export function toParisDay(date: Date): string{
-    var parisDate = utcToZonedTime(date, "Europe/Paris");
-    return parisDate.toISOString().substring(0,10)
+    return toParisTZ(date).toISOString().substring(0,10)
 }
 
-export function toParisHour(date: Date): number{
-    var parisDate = utcToZonedTime(date, "Europe/Paris");
-    return parisDate.getHours();
+export function toParisTZ(date: Date): Date{
+    return utcToZonedTime(date, "Europe/Paris");
 }
 
