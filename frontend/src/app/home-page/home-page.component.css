@@ -25,10 +25,6 @@ app-global-activity-chart{
         display: none;
     }
 
-    ul{
-        padding-left: 15px;
-    }
-
     app-global-activity-counter{
         width: 100%; 
         padding-right: 0px;
