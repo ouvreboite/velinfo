@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { GlobalStatistics, GlobalStatisticsService } from '../global-statistics-service.service';
-import { format } from 'date-fns';
-import frLocale from 'date-fns/locale/fr'
-import { curveCardinal } from 'd3-shape';
+import { curveNatural } from 'd3-shape';
 
 @Component({
   selector: 'app-global-activity-chart',
@@ -11,7 +9,7 @@ import { curveCardinal } from 'd3-shape';
 })
 export class GlobalActivityChartComponent implements OnInit {
 
-  chartCurve: any = curveCardinal;
+  chartCurve: any = curveNatural;
   chartData: any[]; 
   chartColorScheme = {
     domain: ['#59b0e3']
@@ -32,27 +30,20 @@ export class GlobalActivityChartComponent implements OnInit {
 
   buildChartData(globalStatistics: GlobalStatistics): any[] {
     let data = globalStatistics.statistics.map(stat => {
-      let datetime = new Date(new Date(stat.day).setHours(stat.hour));
       return {
-        "name": new Date(new Date(stat.day).setHours(stat.hour)), 
-        "formatedDateTime": this.formatDateTime(datetime),
-        "value": stat.activity,
-        "formatedValue": stat.activity.toLocaleString('fr')
+        "name": stat.hour+"h", 
+        "value":stat.activity
       };
-    })
+    });
 
-    return [
-      {
-        "name": "Activité horaire",
-        "series": data
-      }
-    ];
-  }
+    for(let i=data.length; i<24;i++){
+      data.push({
+        "name": i+"h", 
+        "value":0
+      });
+    }
 
-  formatDateTime(date: Date): string{
-    return format(date, "eeee HH",{
-      locale: frLocale
-    })+"h";
+    return data;
   }
 
 }

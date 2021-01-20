@@ -13,18 +13,11 @@ export const lambdaHandler = async () => {
     }
 
     let today = new Date();
-    let yesterday = new Date();
-    yesterday.setDate(yesterday.getDate()-1);
 
-
-    let [todayStatistics, yesterdayStatistics] = await Promise
-        .all([getGlobalDailyStats(today), getGlobalDailyStats(yesterday)])
-
-    let todayArray = mapToStatArray(todayStatistics);
-    let yesterdayArray = mapToStatArray(yesterdayStatistics);
+    let todayStatistics = await getGlobalDailyStats(today);
 
     let globalStatistics = new GlobalStatistics();
-    globalStatistics.statistics = yesterdayArray.concat(todayArray);
+    globalStatistics.statistics = mapToStatArray(todayStatistics);
     globalStatistics.todaysActivity = todayStatistics.totalActivity;
 
     updateCache(globalStatistics)
