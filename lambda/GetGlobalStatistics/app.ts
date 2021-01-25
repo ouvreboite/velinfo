@@ -1,7 +1,6 @@
 import "reflect-metadata";
-import { GlobalStatistic, GlobalStatistics, Station } from "../common/api";
-import { GlobalDailyStatistics } from "../common/domain";
-import { getGlobalDailyStats } from "../common/repository/globalDailyStatsDynamoRepository";
+import { GlobalStatistics } from "../common/api";
+import { getGlobalStatistics } from "../common/repository/prefilledApiRepository";
 
 const cacheTTLseconds = 30;
 var cachedTimestamp : Date;
@@ -12,33 +11,12 @@ export const lambdaHandler = async () => {
         return cachedGlobalStatistics;
     }
 
-    let today = new Date();
-
-    let todayStatistics = await getGlobalDailyStats(today);
-
-    let globalStatistics = new GlobalStatistics();
-    globalStatistics.statistics = mapToStatArray(todayStatistics);
-    globalStatistics.todaysActivity = todayStatistics.totalActivity;
+    let globalStatistics = await getGlobalStatistics();
 
     updateCache(globalStatistics)
     
     return globalStatistics;
 }
-
-function mapToStatArray(globalDailyStatistics: GlobalDailyStatistics): GlobalStatistic[]{
-    let statArray : GlobalStatistic[] = [];
-    if(globalDailyStatistics){
-        globalDailyStatistics.byHour.forEach((stat, hour)=>{
-            let globalStat = new GlobalStatistic();
-            globalStat.day=globalDailyStatistics.stats_day;
-            globalStat.hour=parseInt(hour);
-            globalStat.activity=stat.activity;
-            statArray.push(globalStat);
-        });
-    }
-    return statArray;
-}
-
 function cacheHot(){
     if(!cachedTimestamp)
         return false;

@@ -29,7 +29,7 @@ async function updateGlobalDailyStats(globalDailyStatistics: GlobalDailyStatisti
     };
 
     await client.update(request).promise();
-    console.log("Update ok");
+    console.log("updateGlobalDailyStats");
 }
 
 async function getGlobalDailyStats(statsTime: Date): Promise<GlobalDailyStatistics> {

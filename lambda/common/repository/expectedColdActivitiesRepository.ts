@@ -23,7 +23,7 @@ async function updateExpectedColdActivities(expectedActivities: StationsExpected
     };
 
     await client.update(request).promise();
-    console.log("Update ok");
+    console.log("updateExpectedColdActivities");
 }
 
 async function getExpectedColdActivities(): Promise<StationsExpectedActivities> {

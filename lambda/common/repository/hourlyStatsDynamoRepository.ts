@@ -30,7 +30,8 @@ async function updateStationHourlyStats(hourlyStats: StationsHourlyStatistics) {
     };
 
     await client.update(request).promise();
-    console.log("Update ok");
+    
+    console.log("updateStationHourlyStats");
 }
 
 async function getStationHourlyStats(statsTime: Date): Promise<StationsHourlyStatistics> {

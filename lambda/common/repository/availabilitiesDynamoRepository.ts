@@ -25,7 +25,7 @@ async function updateAvailabilities(fetchedAvailabilities: StationsFetchedAvaila
     };
 
     await client.update(request).promise();
-    console.log("Update ok");
+    console.log("updateAvailabilities");
 }
 
 async function getAvailabilities(): Promise<StationsFetchedAvailabilities> {

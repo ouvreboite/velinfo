@@ -196,12 +196,77 @@ Resources:
       Policies:
       - DynamoDBCrudPolicy:
           TableName: !Ref StationStateTable
+
+  PrefillGlobalDailyStatsForApi:
+    Type: AWS::Serverless::Function
+    DependsOn:
+      - GlobalDailyStatisticsTable
+      - PrefilledApiTable
+    Properties:
+      FunctionName: PrefillGlobalDailyStatsForApi
+      Description: Compute and prefill the global statistics for today
+      CodeUri: lambda/PrefillGlobalDailyStatsForApi
+      Handler: app.lambdaHandler
+      Runtime: nodejs12.x
+      Environment: 
+        Variables:
+          GLOBAL_DAILY_STATISTICS_TABLE_NAME: !Ref GlobalDailyStatisticsTable
+          PREFILLED_API_TABLE_NAME: !Ref PrefilledApiTable
+      Events:
+        StreamExpectedActivity:
+          Type: DynamoDB
+          Properties:
+            Stream: 
+              !GetAtt GlobalDailyStatisticsTable.StreamArn
+            StartingPosition: LATEST
+            BatchSize: 1
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: !Ref PrefilledApiTable
+      - DynamoDBCrudPolicy:
+          TableName: !Ref GlobalDailyStatisticsTable
+
+  PrefillCurrentStationsForApi:
+    Type: AWS::Serverless::Function
+    DependsOn:
+      - GlobalDailyStatisticsTable
+      - CurrentAvailabilityTable
+      - CurrentCharacteristicsTable
+      - PrefilledApiTable
+    Properties:
+      FunctionName: PrefillCurrentStationsForApi
+      Description: Compute and prefill the current stations availability for the API
+      CodeUri: lambda/PrefillCurrentStationsForApi
+      Handler: app.lambdaHandler
+      Runtime: nodejs12.x
+      Environment: 
+        Variables:
+          STATES_TABLE_NAME: !Ref StationStateTable
+          AVAILABILITY_TABLE_NAME: !Ref CurrentAvailabilityTable
+          CHARACTERISTICS_TABLE_NAME: !Ref CurrentCharacteristicsTable
+          PREFILLED_API_TABLE_NAME: !Ref PrefilledApiTable
+      Events:
+        StreamExpectedActivity:
+          Type: DynamoDB
+          Properties:
+            Stream: 
+              !GetAtt StationStateTable.StreamArn
+            StartingPosition: LATEST
+            BatchSize: 1
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: !Ref StationStateTable
+      - DynamoDBCrudPolicy:
+          TableName: !Ref CurrentAvailabilityTable
+      - DynamoDBCrudPolicy:
+          TableName: !Ref CurrentCharacteristicsTable
+      - DynamoDBCrudPolicy:
+          TableName: !Ref PrefilledApiTable
   
   GetStations:
     Type: AWS::Serverless::Function
     DependsOn:
-      - StationStateTable
-      - CurrentAvailabilityTable
+      - PrefilledApiTable
     Properties:
       FunctionName: GetStations
       Description: Get the current stations states
@@ -211,9 +276,7 @@ Resources:
       MemorySize: 1769 #minimal memory to have a full vCPU
       Environment: 
         Variables:
-          STATES_TABLE_NAME: !Ref StationStateTable
-          AVAILABILITY_TABLE_NAME: !Ref CurrentAvailabilityTable
-          CHARACTERISTICS_TABLE_NAME: !Ref CurrentCharacteristicsTable
+          PREFILLED_API_TABLE_NAME: !Ref PrefilledApiTable
       Tracing: Active
       Events:
         GetApi:
@@ -225,11 +288,7 @@ Resources:
             TimeoutInMillis: 15000
       Policies:
       - DynamoDBCrudPolicy:
-          TableName: !Ref StationStateTable
-      - DynamoDBCrudPolicy:
-          TableName: !Ref CurrentAvailabilityTable
-      - DynamoDBCrudPolicy:
-          TableName: !Ref CurrentCharacteristicsTable
+          TableName: !Ref PrefilledApiTable
 
   GetGlobalStatistics:
     Type: AWS::Serverless::Function
@@ -244,7 +303,7 @@ Resources:
       MemorySize: 1769 #minimal memory to have a full vCPU
       Environment: 
         Variables:
-          GLOBAL_DAILY_STATISTICS_TABLE_NAME: !Ref GlobalDailyStatisticsTable
+          PREFILLED_API_TABLE_NAME: !Ref PrefilledApiTable
       Tracing: Active
       Events:
         GetApi:
@@ -256,7 +315,7 @@ Resources:
             TimeoutInMillis: 15000
       Policies:
       - DynamoDBCrudPolicy:
-          TableName: !Ref GlobalDailyStatisticsTable
+          TableName: !Ref PrefilledApiTable
      
   # Dynamo tables
   CurrentAvailabilityTable: 
@@ -326,6 +385,8 @@ Resources:
       TimeToLiveSpecification:
         AttributeName : timetolive
         Enabled : true
+      StreamSpecification:
+        StreamViewType: NEW_IMAGE
 
   ExpectedActivityTable:
     Type: AWS::DynamoDB::Table
@@ -374,6 +435,22 @@ Resources:
       ProvisionedThroughput: 
         ReadCapacityUnits: 6
         WriteCapacityUnits: 2
+      StreamSpecification:
+        StreamViewType: NEW_IMAGE
+
+  PrefilledApiTable: 
+    Type: AWS::DynamoDB::Table
+    Properties: 
+      TableName: PrefilledApiTable
+      KeySchema: 
+        - AttributeName: id
+          KeyType: HASH
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S 
+      ProvisionedThroughput: 
+        ReadCapacityUnits: 6
+        WriteCapacityUnits: 6
 
   #Http API
   HttpApi:
