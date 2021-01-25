@@ -33,7 +33,7 @@ import { StationsTableComponent } from './stations-table/stations-table.componen
 import { HomePageComponent } from './home-page/home-page.component';
 import { GlobalActivityChartComponent } from './global-activity-chart/global-activity-chart.component';
 import { GlobalActivityCounterComponent } from './global-activity-counter/global-activity-counter.component';
-import { GlobalStatisticsService } from './global-statistics-service.service';
+import { GlobalStatisticsService } from './global-statistics.service';
 
 @NgModule({
   declarations: [
