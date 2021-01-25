@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { OfficialStatus, StationAvailability, StationCharacteristics, StationsFetchedAvailabilities, StationsFetchedCharacteristics } from "../../common/domain";
+import { OfficialStatus, StationAvailability, StationCharacteristics, StationsFetchedAvailabilities, StationsFetchedCharacteristics } from "../common/domain";
 export { fetchAvailabilities };
 
 const stationsStatusUrl: string = 'https://velib-metropole-opendata.smoove.pro/opendata/Velib_Metropole/station_status.json';

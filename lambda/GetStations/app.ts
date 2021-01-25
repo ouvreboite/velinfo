@@ -1,9 +1,9 @@
 import "reflect-metadata";
-import { CurrentStations, Station } from "../../common/api";
-import { Status } from "../../common/domain";
-import { getAvailabilities } from "../../common/repository/availabilitiesDynamoRepository";
-import { getCharacteristics } from "../../common/repository/characteristicsDynamoRepository";
-import { getStationsStates } from "../../common/repository/stationsStatesRepository";
+import { CurrentStations, Station } from "../common/api";
+import { Status } from "../common/domain";
+import { getAvailabilities } from "../common/repository/availabilitiesDynamoRepository";
+import { getCharacteristics } from "../common/repository/characteristicsDynamoRepository";
+import { getStationsStates } from "../common/repository/stationsStatesRepository";
 
 const cacheTTLseconds = 30;
 var cachedTimestamp : Date;

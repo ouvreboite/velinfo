@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { StationCharacteristics, StationsFetchedCharacteristics } from "../../common/domain";
+import { StationCharacteristics, StationsFetchedCharacteristics } from "../common/domain";
 export { fetchCharacteristics };
 
 const stationsCharacteristicsUrl: string = 'https://velib-metropole-opendata.smoove.pro/opendata/Velib_Metropole/station_information.json';

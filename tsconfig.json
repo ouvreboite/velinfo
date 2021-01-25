@@ -8,5 +8,5 @@
       "preserveConstEnums": true,
       "esModuleInterop": true
     },
-    "include": ["lambda/**/*.ts", "common/**/*.ts"]
+    "include": ["lambda/**/*.ts"]
   }
