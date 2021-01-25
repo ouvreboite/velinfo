@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { GlobalStatistics, GlobalStatisticsService } from '../global-statistics-service.service';
+import { GlobalStatistics, GlobalStatisticsService } from '../global-statistics.service';
 import { curveNatural } from 'd3-shape';
 
 @Component({

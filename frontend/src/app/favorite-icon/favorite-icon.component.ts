@@ -9,7 +9,6 @@ import { UserFavoritesService } from '../user-favorites.service';
 })
 export class FavoriteIconComponent implements OnInit {
   @Input() station: Station;
-  @Input() passive = false;
   
   favorite = false;
   constructor(
@@ -20,8 +19,6 @@ export class FavoriteIconComponent implements OnInit {
   }  
 
   toggleFavorite(){
-    if(this.passive)
-      return;
     this.userFavoriteService.toggleFavorite(this.station.code);
     this.favorite = this.userFavoriteService.isFavorite(this.station.code);
   }
