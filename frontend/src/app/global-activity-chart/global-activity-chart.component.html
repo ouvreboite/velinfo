@@ -4,8 +4,8 @@
     <div style="width: 100%;height: 300px">
         <ngx-charts-bar-vertical *ngIf="!isLoading" 
         [results]="chartData"
-        [scheme]="chartColorScheme"
-        [xAxis]=true >
+        [xAxis]=true 
+        [customColors]="chartColors">
         
         </ngx-charts-bar-vertical>
     </div>
