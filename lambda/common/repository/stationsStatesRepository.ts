@@ -23,7 +23,7 @@ async function updateStationsStates(stationsStates: StationsStates) {
     };
 
     await client.update(request).promise();
-    console.log("Update ok");
+    console.log("updateStationsStates");
 }
 
 async function getStationsStates(): Promise<StationsStates> {

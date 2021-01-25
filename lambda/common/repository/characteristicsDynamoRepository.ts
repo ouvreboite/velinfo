@@ -25,7 +25,7 @@ async function updateCharacteristics(fetchedCharacteristics: StationsFetchedChar
     };
 
     await client.update(request).promise();
-    console.log("Update ok");
+    console.log("updateCharacteristics");
 }
 
 async function getCharacteristics(): Promise<StationsFetchedCharacteristics> {

@@ -1,3 +1,5 @@
+import { TransformDate } from "./classTranformerUtil";
+
 export class Station{
     code: string;
     name: string;
@@ -9,13 +11,12 @@ export class Station{
     mechanical: number;
     empty: number;
     officialStatus: string;
+    @TransformDate()
     coldSince: Date;
     expectedActivity?: number;
 }
 
 export class CurrentStations{
-    fetchDateTime: Date;
-    mostRecentOfficialDueDateTime: Date;
     stations: Station[];
 }
 

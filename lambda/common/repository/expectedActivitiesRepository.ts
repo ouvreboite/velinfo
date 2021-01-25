@@ -24,7 +24,7 @@ async function updateExpectedActivities(expectedActivities: StationsExpectedActi
     };
 
     await client.update(request).promise();
-    console.log("Update ok");
+    console.log("updateExpectedActivities");
 }
 
 async function getExpectedActivities(date: Date): Promise<StationsExpectedActivities2> {

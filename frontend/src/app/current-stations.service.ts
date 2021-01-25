@@ -107,8 +107,6 @@ export class Station{
 }
 
 export class CurrentStations{
-  fetchDateTime: Date;
-  mostRecentOfficialDueDateTime: Date;
   stations: Station[];
 }
 
