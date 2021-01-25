@@ -1,4 +1,5 @@
 import { Component, Input, ViewChild, AfterViewInit } from '@angular/core';
+import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Station } from '../current-stations.service';
@@ -13,6 +14,7 @@ export class StationsTableComponent implements AfterViewInit  {
   @Input() displayControls = true;
   
   @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
 
   onlyBlocked = false;
   currentFilterValue = "";
@@ -41,6 +43,7 @@ export class StationsTableComponent implements AfterViewInit  {
     this.dataSource = new MatTableDataSource(stationsToDisplay);
     this.setupSort();
     this.filter();
+    this.dataSource.paginator = this.paginator;
   }
 
   private filterOnlyBlockedStations(stations : Station[], onlyBlocked: boolean): Station[]{

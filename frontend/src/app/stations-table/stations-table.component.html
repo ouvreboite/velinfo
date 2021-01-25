@@ -10,8 +10,7 @@
 <table mat-table [dataSource]="dataSource" matSortActive="name" matSortDirection="asc" matSort class="mat-elevation-z8">
     <ng-container matColumnDef="name">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Station</th>
-        <td mat-cell *matCellDef="let station">{{station.name}}<app-favorite-icon [station]="station"
-                [passive]=true></app-favorite-icon>
+        <td mat-cell *matCellDef="let station">{{station.name}}
         </td>
     </ng-container>
 
@@ -38,3 +37,4 @@
     <tr mat-row *matRowDef="let station; columns: displayedColumns;" [routerLink]="'/station/'+station.code"
         class="row-hover"></tr>
 </table>
+<mat-paginator [pageSizeOptions]="[50]" showFirstLastButtons></mat-paginator>

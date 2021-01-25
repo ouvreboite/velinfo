@@ -11,9 +11,7 @@ export class GlobalActivityChartComponent implements OnInit {
 
   chartCurve: any = curveNatural;
   chartData: any[]; 
-  chartColorScheme = {
-    domain: ['#59b0e3']
-  };
+  chartColors = [];
   isLoading = true;
 
   constructor(
@@ -24,6 +22,7 @@ export class GlobalActivityChartComponent implements OnInit {
     this.service.getGlobalStatistics()
       .subscribe((data: GlobalStatistics) => {
         this.chartData = this.buildChartData(data);
+        this.chartColors = this.buildChartColors(data);
         this.isLoading = false;
       });
   }
@@ -45,5 +44,28 @@ export class GlobalActivityChartComponent implements OnInit {
 
     return data;
   }
+
+  buildChartColors(globalStatistics: GlobalStatistics): any[] {
+    let colors = globalStatistics.statistics.map(stat => {
+      return {
+        "name": stat.hour+"h", 
+        "value":"#59b0e3"
+      };
+    });
+
+    let lastHour = colors.pop();
+    lastHour.value = "#a2b43a";
+    colors.push(lastHour);
+
+    for(let i=colors.length; i<24;i++){
+      colors.push({
+        "name": i+"h", 
+        "value":"#59b0e3"
+      });
+    }
+
+    return colors;
+  }
+  
 
 }
