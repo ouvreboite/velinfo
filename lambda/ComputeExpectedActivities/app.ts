@@ -1,8 +1,8 @@
 import "reflect-metadata";
-import { StationStatistic, StationsExpectedActivities2 } from "../../common/domain";
-import { getHourlyStats } from "../../common/repository/hourlyStatsDynamoRepository";
-import { toParisTZ } from "../../common/dateUtil";
-import { updateExpectedActivities } from "../../common/repository/expectedActivitiesRepository";
+import { StationStatistic, StationsExpectedActivities2 } from "../common/domain";
+import { getHourlyStats } from "../common/repository/hourlyStatsDynamoRepository";
+import { toParisTZ } from "../common/dateUtil";
+import { updateExpectedActivities } from "../common/repository/expectedActivitiesRepository";
 
 export const lambdaHandler = async (event: any) => {
 

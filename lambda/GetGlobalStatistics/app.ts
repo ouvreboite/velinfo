@@ -1,7 +1,7 @@
 import "reflect-metadata";
-import { GlobalStatistic, GlobalStatistics, Station } from "../../common/api";
-import { GlobalDailyStatistics } from "../../common/domain";
-import { getGlobalDailyStats } from "../../common/repository/globalDailyStatsDynamoRepository";
+import { GlobalStatistic, GlobalStatistics, Station } from "../common/api";
+import { GlobalDailyStatistics } from "../common/domain";
+import { getGlobalDailyStats } from "../common/repository/globalDailyStatsDynamoRepository";
 
 const cacheTTLseconds = 30;
 var cachedTimestamp : Date;

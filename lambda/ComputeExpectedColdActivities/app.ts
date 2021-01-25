@@ -1,10 +1,10 @@
 import "reflect-metadata";
 import { DynamoDBStreamEvent } from "aws-lambda";
-import { StationsExpectedActivities, StationAvailability, StationStatistic, ExpectedActivity, StationsFetchedAvailabilities } from "../../common/domain";
-import { extractStationsFetchedAvailabilities } from "../../common/dynamoEventExtractor";
-import { getHourlyStats } from "../../common/repository/hourlyStatsDynamoRepository";
-import { getExpectedColdActivities, updateExpectedColdActivities } from "../../common/repository/expectedColdActivitiesRepository";
-import { deltaSeconds } from "../../common/dateUtil";
+import { StationsExpectedActivities, StationAvailability, StationStatistic, ExpectedActivity, StationsFetchedAvailabilities } from "../common/domain";
+import { extractStationsFetchedAvailabilities } from "../common/dynamoEventExtractor";
+import { getHourlyStats } from "../common/repository/hourlyStatsDynamoRepository";
+import { getExpectedColdActivities, updateExpectedColdActivities } from "../common/repository/expectedColdActivitiesRepository";
+import { deltaSeconds } from "../common/dateUtil";
 
 export const lambdaHandler = async (event: DynamoDBStreamEvent) => {
     let availabilities = extractStationsFetchedAvailabilities(event);

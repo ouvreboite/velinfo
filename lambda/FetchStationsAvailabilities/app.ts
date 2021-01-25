@@ -1,7 +1,7 @@
 import "reflect-metadata";
 import {fetchAvailabilities} from "./velibStationsStatusClient";
-import {updateAvailabilities, getAvailabilities} from "../../common/repository/availabilitiesDynamoRepository";
-import {StationAvailability, StationsFetchedAvailabilities} from "../../common/domain";
+import {updateAvailabilities, getAvailabilities} from "../common/repository/availabilitiesDynamoRepository";
+import {StationAvailability, StationsFetchedAvailabilities} from "../common/domain";
 
 export const lambdaHandler = async (event: any) => {
     let [newAvailabilities, previousAvailabilities] = await Promise.all([fetchAvailabilities(), getAvailabilities()]);

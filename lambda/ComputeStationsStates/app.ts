@@ -1,9 +1,9 @@
 import "reflect-metadata";
 import { DynamoDBStreamEvent } from "aws-lambda";
-import { Status, StationsStates, StationState, ExpectedActivity } from "../../common/domain";
-import { extractStationsExpectedActivities } from "../../common/dynamoEventExtractor";
-import { updateStationsStates } from "../../common/repository/stationsStatesRepository";
-import { deltaMinutes } from "../../common/dateUtil";
+import { Status, StationsStates, StationState, ExpectedActivity } from "../common/domain";
+import { extractStationsExpectedActivities } from "../common/dynamoEventExtractor";
+import { updateStationsStates } from "../common/repository/stationsStatesRepository";
+import { deltaMinutes } from "../common/dateUtil";
 
 const coldThresholdMinutesMin: number = +process.env.COLD_THRESHOLD_MINUTES_MIN;
 const coldThresholdMinutesMax: number = +process.env.COLD_THRESHOLD_MINUTES_MAX;
