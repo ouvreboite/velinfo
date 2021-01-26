@@ -138,22 +138,24 @@ Resources:
       - DynamoDBCrudPolicy:
           TableName: !Ref ExpectedActivityTable
 
-  ComputeExpectedColdActivities:
+  ComputeStationsStates:
     Type: AWS::Serverless::Function
     DependsOn:
+      - StationStateTable
       - CurrentAvailabilityTable
-      - HourlyStatisticsTable
-      - ExpectedColdActivityTable
     Properties:
-      FunctionName: ComputeExpectedColdActivities
-      Description: Compute the expected activity that every station should have seen since it became cold
-      CodeUri: lambda/ComputeExpectedColdActivities
+      FunctionName: ComputeStationsStates
+      Description: Compute the state of each station
+      CodeUri: lambda/ComputeStationsStates
       Handler: app.lambdaHandler
       Runtime: nodejs12.x
       Environment: 
         Variables:
-          STATION_HOURLY_STATISTICS_TABLE_NAME: !Ref HourlyStatisticsTable
-          EXPECTED_COLD_ACTIVITY_TABLE_NAME: !Ref ExpectedColdActivityTable
+          STATES_TABLE_NAME: !Ref StationStateTable
+          EXPECTED_ACTIVITY_TABLE_NAME: !Ref ExpectedActivityTable
+          COLD_THRESHOLD_MINUTES_MIN: 5
+          COLD_THRESHOLD_MINUTES_MAX: 2160 #36 hours
+          LOCKED_ACTIVITY_THRESHOLD: 50
       Events:
         StreamAvailability:
           Type: DynamoDB
@@ -164,38 +166,9 @@ Resources:
             BatchSize: 1
       Policies:
       - DynamoDBCrudPolicy:
-          TableName: !Ref HourlyStatisticsTable
-      - DynamoDBCrudPolicy:
-          TableName: !Ref ExpectedColdActivityTable
-
-  ComputeStationsStates:
-    Type: AWS::Serverless::Function
-    DependsOn:
-      - StationStateTable
-      - ExpectedColdActivityTable
-    Properties:
-      FunctionName: ComputeStationsStates
-      Description: Compute the state of each station
-      CodeUri: lambda/ComputeStationsStates
-      Handler: app.lambdaHandler
-      Runtime: nodejs12.x
-      Environment: 
-        Variables:
-          STATES_TABLE_NAME: !Ref StationStateTable
-          COLD_THRESHOLD_MINUTES_MIN: 5
-          COLD_THRESHOLD_MINUTES_MAX: 2160 #36 hours
-          LOCKED_ACTIVITY_THRESHOLD: 50
-      Events:
-        StreamExpectedActivity:
-          Type: DynamoDB
-          Properties:
-            Stream: 
-              !GetAtt ExpectedColdActivityTable.StreamArn
-            StartingPosition: LATEST
-            BatchSize: 1
-      Policies:
-      - DynamoDBCrudPolicy:
           TableName: !Ref StationStateTable
+      - DynamoDBCrudPolicy:
+          TableName: !Ref ExpectedActivityTable
 
   PrefillGlobalDailyStatsForApi:
     Type: AWS::Serverless::Function
@@ -405,22 +378,6 @@ Resources:
       ProvisionedThroughput: 
         ReadCapacityUnits: 1
         WriteCapacityUnits: 1
-
-  ExpectedColdActivityTable: 
-    Type: AWS::DynamoDB::Table
-    Properties: 
-      TableName: ExpectedColdActivity
-      KeySchema: 
-        - AttributeName: id
-          KeyType: HASH
-      AttributeDefinitions:
-        - AttributeName: id
-          AttributeType: S 
-      ProvisionedThroughput: 
-        ReadCapacityUnits: 1
-        WriteCapacityUnits: 2
-      StreamSpecification:
-        StreamViewType: NEW_IMAGE
 
   StationStateTable: 
     Type: AWS::DynamoDB::Table

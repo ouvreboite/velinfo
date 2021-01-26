@@ -1,15 +1,15 @@
 import * as uninstrumentedAWS from 'aws-sdk';
 import * as AWSXRay from 'aws-xray-sdk';
 import { toParisTZ } from '../dateUtil';
-import {StationsExpectedActivities2} from "../domain";
+import {StationsExpectedActivities} from "../domain";
 import {classToDynamo, dynamoToClass} from "../dynamoTransformer";
-export {updateExpectedActivities, getExpectedActivities};
+export {updateExpectedHourlyActivities, getExpectedHourlyActivities};
 
 const AWS = AWSXRay.captureAWS(uninstrumentedAWS);
 const client: AWS.DynamoDB.DocumentClient = new AWS.DynamoDB.DocumentClient();
 const expectedActivitiesTableName: string = process.env.EXPECTED_ACTIVITY_TABLE_NAME;
 
-async function updateExpectedActivities(expectedActivities: StationsExpectedActivities2) {
+async function updateExpectedHourlyActivities(expectedActivities: StationsExpectedActivities) {
     let dynamoObject = classToDynamo(expectedActivities);
     let request: AWS.DynamoDB.DocumentClient.UpdateItemInput = {
         TableName: expectedActivitiesTableName,
@@ -27,7 +27,7 @@ async function updateExpectedActivities(expectedActivities: StationsExpectedActi
     console.log("updateExpectedActivities");
 }
 
-async function getExpectedActivities(date: Date): Promise<StationsExpectedActivities2> {
+async function getExpectedHourlyActivities(date: Date): Promise<StationsExpectedActivities> {
     let weekday = toParisTZ(date).getDay();
     let hour = toParisTZ(date).getHours();
     let request: AWS.DynamoDB.DocumentClient.GetItemInput = {
@@ -39,5 +39,5 @@ async function getExpectedActivities(date: Date): Promise<StationsExpectedActivi
     };
 
     let data = await client.get(request).promise();
-    return dynamoToClass(StationsExpectedActivities2, data.Item);
+    return dynamoToClass(StationsExpectedActivities, data.Item);
 }

@@ -42,7 +42,7 @@ export class CurrentStationsService {
     return this.http.get<CurrentStations>(this.configUrl)
     .pipe(
       map(stations => this.mapDateAttributes(stations)),
-      map(stations => this.roundExpectedActivity(stations)),
+      map(stations => this.roundMissingActivity(stations)),
       map(stations => this.addLastActivityAgo(stations)),
       map(stations => this.addOccupation(stations)),
     )
@@ -80,9 +80,9 @@ export class CurrentStationsService {
     return currentStations;
   }
 
-  private roundExpectedActivity(currentStations: CurrentStations): CurrentStations{
+  private roundMissingActivity(currentStations: CurrentStations): CurrentStations{
     currentStations.stations.forEach(station => {
-      station.expectedActivity = Math.round(station.expectedActivity);
+      station.missingActivity = Math.round(station.missingActivity);
     });
     return currentStations;
   }
@@ -103,7 +103,7 @@ export class Station{
   coldSince: Date;
   lastActivity : Date;
   lastActivityAgo : string;
-  expectedActivity?: number;
+  missingActivity?: number;
 }
 
 export class CurrentStations{

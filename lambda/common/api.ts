@@ -13,7 +13,7 @@ export class Station{
     officialStatus: string;
     @TransformDate()
     coldSince: Date;
-    expectedActivity?: number;
+    missingActivity?: number;
 }
 
 export class CurrentStations{
