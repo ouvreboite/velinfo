@@ -1,2 +1,2 @@
-{{statusEmoji}}<span *ngIf="station.state == 'Locked' && station.officialStatus == 'Ok'" [class]="detailCSSClass" title="La station n'est plus active depuis {{station.lastActivityAgo}}, environ {{station.expectedActivity}} ajouts/retraits auraient du être effectués depuis cette date par rapport à l'activité habituelle de la station">⏱️</span>
+{{statusEmoji}}<span *ngIf="station.state == 'Locked' && station.officialStatus == 'Ok'" [class]="detailCSSClass" title="La station n'est plus active depuis {{station.lastActivityAgo}}, environ {{station.missingActivity}} ajouts/retraits auraient du être effectués depuis cette date par rapport à l'activité habituelle de la station">⏱️</span>
 <span [class]="detailCSSClass">{{statusText}}</span>

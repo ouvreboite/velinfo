@@ -88,29 +88,13 @@ export class StationsExpectedActivities {
     constructor() {
         this.byStationCode = new Map();
     }
+    weekday:number;
+    hour:number;
     @Type(() => ExpectedActivity)
     byStationCode: Map<string, ExpectedActivity>;
-    @TransformDate()
-    fetchDateTime: Date;
 }
 
 export class ExpectedActivity {
-    value: number;
-    @TransformDate()
-    coldSince?: Date;
-}
-
-export class StationsExpectedActivities2 {
-    constructor() {
-        this.byStationCode = new Map();
-    }
-    weekday:number;
-    hour:number;
-    @Type(() => ExpectedActivity2)
-    byStationCode: Map<string, ExpectedActivity2>;
-}
-
-export class ExpectedActivity2 {
     expectedActivity: number;
 }
 
@@ -127,7 +111,7 @@ export class StationsStates {
 
 export class StationState {
     status: Status;
-    expectedActivity: number;
+    missingActivity: number;
     @TransformDate()
     coldSince?: Date;
 }

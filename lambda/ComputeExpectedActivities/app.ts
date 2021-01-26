@@ -1,8 +1,8 @@
 import "reflect-metadata";
-import { StationStatistic, StationsExpectedActivities2 } from "../common/domain";
+import { StationStatistic, StationsExpectedActivities } from "../common/domain";
 import { getHourlyStats } from "../common/repository/hourlyStatsDynamoRepository";
 import { toParisTZ } from "../common/dateUtil";
-import { updateExpectedActivities } from "../common/repository/expectedActivitiesRepository";
+import { updateExpectedHourlyActivities } from "../common/repository/expectedActivitiesRepository";
 
 export const lambdaHandler = async (event: any) => {
 
@@ -12,13 +12,13 @@ export const lambdaHandler = async (event: any) => {
 
     let medianPastActivities = await getMedianPastActivitiesForSameHourAndDay(oneHourAgo);
 
-    let expectedActivities = buildExpectedActivities(oneHourAgo, medianPastActivities);
-    await updateExpectedActivities(expectedActivities)
+    let expectedHourlyActivities = buildExpectedHourlyActivities(oneHourAgo, medianPastActivities);
+    await updateExpectedHourlyActivities(expectedHourlyActivities)
 
 }
 
-function buildExpectedActivities(date: Date, medianPastActivities: Map<string, number>): StationsExpectedActivities2 {
-    let expectedActivities = new StationsExpectedActivities2();
+function buildExpectedHourlyActivities(date: Date, medianPastActivities: Map<string, number>): StationsExpectedActivities {
+    let expectedActivities = new StationsExpectedActivities();
     expectedActivities.weekday = toParisTZ(date).getDay();
     expectedActivities.hour = toParisTZ(date).getHours();
 

@@ -31,7 +31,7 @@ export const lambdaHandler = async () => {
         }
 
         if(stationStates.byStationCode.has(stationCode)){
-            station.expectedActivity = stationStates.byStationCode.get(stationCode).expectedActivity;
+            station.missingActivity = stationStates.byStationCode.get(stationCode).missingActivity;
             station.state = stationStates.byStationCode.get(stationCode).status;
         }else{
             station.state = Status.Ok;
