@@ -3,7 +3,7 @@ import * as AWSXRay from 'aws-xray-sdk';
 import { toParisTZ } from '../dateUtil';
 import {StationsExpectedActivities} from "../domain";
 import {classToDynamo, dynamoToClass} from "../dynamoTransformer";
-export {updateExpectedHourlyActivities, getExpectedHourlyActivities};
+export {updateExpectedHourlyActivities, getExpectedHourlyActivities, getExpectedHourlyActivitiesForDay};
 
 const AWS = AWSXRay.captureAWS(uninstrumentedAWS);
 const client: AWS.DynamoDB.DocumentClient = new AWS.DynamoDB.DocumentClient();
@@ -40,4 +40,18 @@ async function getExpectedHourlyActivities(date: Date): Promise<StationsExpected
 
     let data = await client.get(request).promise();
     return dynamoToClass(StationsExpectedActivities, data.Item);
+}
+
+async function getExpectedHourlyActivitiesForDay(date: Date): Promise<StationsExpectedActivities[]> {
+    let weekday = toParisTZ(date).getDay();
+    let request: AWS.DynamoDB.DocumentClient.QueryInput = {
+        TableName: expectedActivitiesTableName,
+        KeyConditionExpression: 'weekday = :weekday',
+        ExpressionAttributeValues: {
+            ":weekday": weekday
+        }
+    };
+
+    let data = await client.query(request).promise();
+    return data.Items.map(item =>  dynamoToClass(StationsExpectedActivities, item));
 }
