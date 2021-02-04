@@ -7,15 +7,19 @@ var cachedTimestamp : Date;
 var cachedGlobalStatistics : GlobalStatistics;
 
 export const lambdaHandler = async () => {
-    if(cacheHot()){
-        return cachedGlobalStatistics;
+    if(!cacheHot()){
+        let globalStatistics = await getGlobalStatistics();
+        updateCache(globalStatistics);
     }
 
-    let globalStatistics = await getGlobalStatistics();
-
-    updateCache(globalStatistics)
-    
-    return globalStatistics;
+    return {
+        statusCode: 200,
+        headers:{
+            "Access-Control-Allow-Origin": 'https://www.velinfo.fr',
+        },
+        body: JSON.stringify(cachedGlobalStatistics),
+        isBase64Encoded: false
+    };
 }
 function cacheHot(){
     if(!cachedTimestamp)

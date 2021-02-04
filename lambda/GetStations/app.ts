@@ -7,13 +7,19 @@ var cachedTimestamp : Date;
 var cachedCurrentStations : CurrentStations;
 
 export const lambdaHandler = async () => {
-    if(cacheHot()){
-        return cachedCurrentStations;
+    if(!cacheHot()){
+        let currentStations = await getCurrentStations();
+        updateCache(currentStations);
     }
 
-    let currentStations = await getCurrentStations();
-    updateCache(currentStations);
-    return cachedCurrentStations;
+    return {
+        statusCode: 200,
+        headers:{
+            "Access-Control-Allow-Origin": 'https://www.velinfo.fr',
+        },
+        body: JSON.stringify(cachedCurrentStations),
+        isBase64Encoded: false
+    };
 }
 
 function cacheHot(){
