@@ -1,38 +1,60 @@
 import "reflect-metadata";
-import { CurrentStations } from "../common/api";
-import { getCurrentStations } from "../common/repository/prefilledApiRepository";
-
-const cacheTTLseconds = 30;
-var cachedTimestamp : Date;
-var cachedCurrentStations : CurrentStations;
+import { CurrentStations, Station } from "../common/api";
+import { StationsFetchedAvailabilities, StationsFetchedCharacteristics, StationsStates, Status } from "../common/domain";
+import { getAvailabilities } from "../common/repository/availabilitiesDynamoRepository";
+import { getCharacteristics } from "../common/repository/characteristicsDynamoRepository";
+import { getStationsStates } from "../common/repository/stationsStatesRepository";
 
 export const lambdaHandler = async () => {
-    if(!cacheHot()){
-        let currentStations = await getCurrentStations();
-        updateCache(currentStations);
-    }
+    let [availabilities, stationCharacteristics, stationStates] = await Promise
+        .all([getAvailabilities(), getCharacteristics(), getStationsStates()])
+
+    let stations: Station[] = buildStations(stationCharacteristics, availabilities, stationStates);
+    
+    let currentStations = {
+        stations: stations
+    } as CurrentStations;
 
     return {
         statusCode: 200,
         headers:{
             "Access-Control-Allow-Origin": 'https://www.velinfo.fr',
         },
-        body: JSON.stringify(cachedCurrentStations),
+        body: JSON.stringify(currentStations),
         isBase64Encoded: false
     };
+    return {
+        stations: stations
+    } as CurrentStations;
 }
 
-function cacheHot(){
-    if(!cachedTimestamp)
-        return false;
-    
-    var difSeconds = (new Date().getTime() - cachedTimestamp.getTime())/ 1000;
-    return difSeconds < cacheTTLseconds;
-}
+function buildStations(stationCharacteristics: StationsFetchedCharacteristics, availabilities: StationsFetchedAvailabilities, stationStates: StationsStates): Station[] {
+    let stations: Station[] = [];
+    for (const [stationCode, characteristics] of stationCharacteristics.byStationCode) {
+        let station = new Station();
+        station.code = stationCode;
+        station.name = characteristics.name;
+        station.latitude = characteristics.latitude;
+        station.longitude = characteristics.longitude;
+        station.capacity = characteristics.capacity;
 
-function updateCache(currentStations : CurrentStations){
-    cachedTimestamp = new Date();
+        if (availabilities.byStationCode.has(stationCode)) {
+            let availability = availabilities.byStationCode.get(stationCode);
+            station.electrical = availability.electrical;
+            station.mechanical = availability.mechanical;
+            station.empty = availability.empty;
+            station.coldSince = availability.coldSince;
+            station.officialStatus = availability.officialStatus;
+        }
 
-    cachedCurrentStations = currentStations;
-    cachedCurrentStations["cachedTimestamp"] = cachedTimestamp;
+        if (stationStates.byStationCode.has(stationCode)) {
+            station.missingActivity = stationStates.byStationCode.get(stationCode).missingActivity;
+            station.state = stationStates.byStationCode.get(stationCode).status;
+        } else {
+            station.state = Status.Ok;
+        }
+
+        stations.push(station);
+    }
+    return stations;
 }
