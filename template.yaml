@@ -254,7 +254,7 @@ Resources:
             Method: GET
       Policies:
       - DynamoDBCrudPolicy:
-          TableName: !Ref GlobalDailyStatisticsTable
+          TableName: !Ref ExpectedActivityTable
      
   # Dynamo tables
   CurrentAvailabilityTable: 
@@ -367,6 +367,8 @@ Resources:
     Properties:
       Name: Velinfo REST Api
       StageName: Production
+      CacheClusterEnabled: true
+      CacheClusterSize: '0.5'
       Domain:
         DomainName: api.velinfo.fr
         CertificateArn: 
@@ -374,6 +376,11 @@ Resources:
         Route53:
           HostedZoneId: 
             Ref: HostedZoneId
+      MethodSettings:
+        - ResourcePath: '/*'
+          HttpMethod: '*'
+          CachingEnabled: true
+          CacheTtlInSeconds: 60
 
   #Website
   WebsiteS3Bucket:

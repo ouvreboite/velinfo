@@ -3,7 +3,6 @@
         "target": "https://api.velinfo.fr",
         "secure": false,
         "changeOrigin": true,
-        "logLevel": "debug",
         "pathRewrite": {
           "^/api": ""
         }
