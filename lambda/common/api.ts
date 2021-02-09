@@ -1,4 +1,3 @@
-import { Type } from "class-transformer";
 import { TransformDate } from "./classTranformerUtil";
 
 export class Station{
@@ -33,9 +32,10 @@ export class GlobalStatistics{
 }
 
 export class ExpectedActivities{
-    constructor() {
-        this.byStationCode = new Map();
-    }
-    @Type(() => Array)
-    byStationCode: Map<string, number[]>;
+    hourlyExpectedActivities: HourlyExpectedActivity[] = [];
+}
+
+export class HourlyExpectedActivity{
+    stationCode: string;
+    hourlyExpectedActivity: number[];
 }

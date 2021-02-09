@@ -1,10 +1,11 @@
+import { classToPlain } from "class-transformer";
 import "reflect-metadata";
-import { ExpectedActivities } from "../common/api";
+import { ExpectedActivities, HourlyExpectedActivity } from "../common/api";
 import { StationsExpectedActivities } from "../common/domain";
 import { getExpectedHourlyActivitiesForDay } from "../common/repository/expectedActivitiesRepository";
 
 export const lambdaHandler = async () => {
-    let hourlyExpectedActivities = await getExpectedHourlyActivitiesForDay(new Date());
+    let hourlyExpectedActivities = await getExpectedHourlyActivitiesForDay(new Date());  
 
     let todaysExpectedActivities = mapToExpectedActivities(hourlyExpectedActivities);
 
@@ -13,20 +14,29 @@ export const lambdaHandler = async () => {
         headers:{
             "Access-Control-Allow-Origin": 'https://www.velinfo.fr',
         },
-        body: JSON.stringify(todaysExpectedActivities),
+        body: JSON.stringify(classToPlain(todaysExpectedActivities)),
         isBase64Encoded: false
     };
 }
 
 function mapToExpectedActivities(hourlyExpectedActivities: StationsExpectedActivities[]): ExpectedActivities{
-    let todaysExpectedActivities = new ExpectedActivities();
+    let byStationCode = new Map<string, number[]>();
     hourlyExpectedActivities.forEach(activities => {
         activities.byStationCode.forEach((expected, stationCode)=>{
-            if(!todaysExpectedActivities.byStationCode.get(stationCode)){
-                todaysExpectedActivities.byStationCode.set(stationCode, Array(6).fill(0));
+            if(!byStationCode.get(stationCode)){
+                byStationCode.set(stationCode, Array(24).fill(0));
             }
-            todaysExpectedActivities.byStationCode.get(stationCode)[activities.hour]=expected.expectedActivity;
+            byStationCode.get(stationCode)[activities.hour]=expected.expectedActivity;
         });
     });
-    return todaysExpectedActivities;
+
+    let expectedActivities = new ExpectedActivities();
+    byStationCode.forEach((hourlyExpectedActivities, stationCode)=>{
+        let hourlyExpectedActivity = {
+            stationCode: stationCode,
+            hourlyExpectedActivity: hourlyExpectedActivities
+        } as HourlyExpectedActivity;
+        expectedActivities.hourlyExpectedActivities.push(hourlyExpectedActivity);
+    });
+    return expectedActivities;
 }

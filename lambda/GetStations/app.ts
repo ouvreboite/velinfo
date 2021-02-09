@@ -23,9 +23,6 @@ export const lambdaHandler = async () => {
         body: JSON.stringify(currentStations),
         isBase64Encoded: false
     };
-    return {
-        stations: stations
-    } as CurrentStations;
 }
 
 function buildStations(stationCharacteristics: StationsFetchedCharacteristics, availabilities: StationsFetchedAvailabilities, stationStates: StationsStates): Station[] {
