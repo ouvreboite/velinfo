@@ -1,23 +1,26 @@
 import "reflect-metadata";
-import { ExpectedActivities} from "../common/api";
+import { ExpectedActivities } from "../common/api";
 import { StationsExpectedActivities } from "../common/domain";
 import { getExpectedHourlyActivitiesForDay } from "../common/repository/expectedActivitiesRepository";
-import { updateExpectedActivities } from "../common/repository/prefilledApiRepository";
 
 export const lambdaHandler = async () => {
-    let yesterday = new Date();
-    yesterday.setDate(new Date().getDate()-1);
-    let hourlyExpectedActivities = await getExpectedHourlyActivitiesForDay(yesterday);
+    let hourlyExpectedActivities = await getExpectedHourlyActivitiesForDay(new Date());
 
     let todaysExpectedActivities = mapToExpectedActivities(hourlyExpectedActivities);
 
-    await updateExpectedActivities(todaysExpectedActivities);
+    return {
+        statusCode: 200,
+        headers:{
+            "Access-Control-Allow-Origin": 'https://www.velinfo.fr',
+        },
+        body: JSON.stringify(todaysExpectedActivities),
+        isBase64Encoded: false
+    };
 }
 
 function mapToExpectedActivities(hourlyExpectedActivities: StationsExpectedActivities[]): ExpectedActivities{
     let todaysExpectedActivities = new ExpectedActivities();
     hourlyExpectedActivities.forEach(activities => {
-        console.log(activities.hour);
         activities.byStationCode.forEach((expected, stationCode)=>{
             if(!todaysExpectedActivities.byStationCode.get(stationCode)){
                 todaysExpectedActivities.byStationCode.set(stationCode, Array(6).fill(0));

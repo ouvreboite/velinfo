@@ -1,37 +1,35 @@
 import "reflect-metadata";
-import { GlobalStatistics } from "../common/api";
-import { getGlobalStatistics } from "../common/repository/prefilledApiRepository";
-
-const cacheTTLseconds = 30;
-var cachedTimestamp : Date;
-var cachedGlobalStatistics : GlobalStatistics;
+import { GlobalStatistic, GlobalStatistics } from "../common/api";
+import { GlobalDailyStatistics } from "../common/domain";
+import { getGlobalDailyStats } from "../common/repository/globalDailyStatsDynamoRepository";
 
 export const lambdaHandler = async () => {
-    if(!cacheHot()){
-        let globalStatistics = await getGlobalStatistics();
-        updateCache(globalStatistics);
-    }
+    let todayStatistics = await getGlobalDailyStats(new Date());
+    
+    let globalStatistics = new GlobalStatistics();
+    globalStatistics.statistics = mapToStatArray(todayStatistics);
+    globalStatistics.todaysActivity = todayStatistics.totalActivity;
 
     return {
         statusCode: 200,
         headers:{
             "Access-Control-Allow-Origin": 'https://www.velinfo.fr',
         },
-        body: JSON.stringify(cachedGlobalStatistics),
+        body: JSON.stringify(globalStatistics),
         isBase64Encoded: false
     };
 }
-function cacheHot(){
-    if(!cachedTimestamp)
-        return false;
-    
-    var difSeconds = (new Date().getTime() - cachedTimestamp.getTime())/ 1000;
-    return difSeconds < cacheTTLseconds;
-}
 
-function updateCache(globalStatistics : GlobalStatistics){
-    cachedTimestamp = new Date();
-
-    cachedGlobalStatistics = globalStatistics;
-    globalStatistics["cachedTimestamp"] = cachedTimestamp;
+function mapToStatArray(globalDailyStatistics: GlobalDailyStatistics): GlobalStatistic[]{
+    let statArray : GlobalStatistic[] = [];
+    if(globalDailyStatistics){
+        globalDailyStatistics.byHour.forEach((stat, hour)=>{
+            let globalStat = new GlobalStatistic();
+            globalStat.day=globalDailyStatistics.stats_day;
+            globalStat.hour=parseInt(hour);
+            globalStat.activity=stat.activity;
+            statArray.push(globalStat);
+        });
+    }
+    return statArray;
 }
