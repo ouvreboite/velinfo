@@ -3,12 +3,14 @@ import { Injectable } from '@angular/core';
 import { differenceInSeconds } from 'date-fns';
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { environment } from './../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GlobalStatisticsService {
-  private configUrl = 'https://api.velinfo.fr/global-statistics';
+  
+  private configUrl = environment.apiUrl+'/global-statistics';
   private loadTimestamp: Date;
   private globalStatistics: GlobalStatistics;
   private observable: Observable<GlobalStatistics>; 
