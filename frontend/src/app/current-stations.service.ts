@@ -5,12 +5,13 @@ import { map } from 'rxjs/operators';
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 import differenceInSeconds from 'date-fns/differenceInSeconds';
 import { fr } from 'date-fns/locale';
+import { environment } from './../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CurrentStationsService {
-  private configUrl = 'https://api.velinfo.fr/stations';
+  private configUrl = environment.apiUrl+'/stations';
   private loadTimestamp: Date;
   private currentStations: CurrentStations;
   private observable: Observable<CurrentStations>; 
