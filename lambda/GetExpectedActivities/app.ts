@@ -1,13 +1,13 @@
 import { classToPlain } from "class-transformer";
 import "reflect-metadata";
-import { ExpectedActivities, HourlyExpectedActivity } from "../common/api";
+import { Activities, HourlyActivity } from "../common/api";
 import { StationsExpectedActivities } from "../common/domain";
 import { getExpectedHourlyActivitiesForDay } from "../common/repository/expectedActivitiesRepository";
 
 export const lambdaHandler = async () => {
     let hourlyExpectedActivities = await getExpectedHourlyActivitiesForDay(new Date());  
 
-    let todaysExpectedActivities = mapToExpectedActivities(hourlyExpectedActivities);
+    let todaysExpectedActivities = map(hourlyExpectedActivities);
 
     return {
         statusCode: 200,
@@ -19,7 +19,7 @@ export const lambdaHandler = async () => {
     };
 }
 
-function mapToExpectedActivities(hourlyExpectedActivities: StationsExpectedActivities[]): ExpectedActivities{
+function map(hourlyExpectedActivities: StationsExpectedActivities[]): Activities{
     let byStationCode = new Map<string, number[]>();
     hourlyExpectedActivities.forEach(activities => {
         activities.byStationCode.forEach((expected, stationCode)=>{
@@ -30,13 +30,13 @@ function mapToExpectedActivities(hourlyExpectedActivities: StationsExpectedActiv
         });
     });
 
-    let expectedActivities = new ExpectedActivities();
+    let expectedActivities = new Activities();
     byStationCode.forEach((hourlyExpectedActivities, stationCode)=>{
         let hourlyExpectedActivity = {
             stationCode: stationCode,
             hourlyExpectedActivity: hourlyExpectedActivities
-        } as HourlyExpectedActivity;
-        expectedActivities.hourlyExpectedActivities.push(hourlyExpectedActivity);
+        } as HourlyActivity;
+        expectedActivities.hourlyActivities.push(hourlyExpectedActivity);
     });
     return expectedActivities;
 }
