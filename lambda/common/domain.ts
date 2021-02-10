@@ -51,20 +51,15 @@ export class Statistic {
     activity: number = 0;
 }
 
-export class StationStatistic extends Statistic {
-    minElectrical: number;
-    minMechanical: number;
-    minEmpty: number;
-}
-
 export class StationsHourlyStatistics {
     constructor() {
         this.byStationCode = new Map();
     }
     @TransformDate()
     statsDateTime: Date;
-    @Type(() => StationStatistic)
-    byStationCode: Map<string, StationStatistic>;
+    hour:number;
+    @Type(() => Statistic)
+    byStationCode: Map<string, Statistic>;
     @TransformDate()
     lastUpdateDateTime?: Date;
     @TransformDate()

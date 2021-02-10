@@ -31,11 +31,11 @@ export class GlobalStatistics{
     todaysActivity: number;
 }
 
-export class ExpectedActivities{
-    hourlyExpectedActivities: HourlyExpectedActivity[] = [];
+export class Activities{
+    hourlyActivities: HourlyActivity[] = [];
 }
 
-export class HourlyExpectedActivity{
+export class HourlyActivity{
     stationCode: string;
     hourlyExpectedActivity: number[];
 }

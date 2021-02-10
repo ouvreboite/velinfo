@@ -1,6 +1,6 @@
 import "reflect-metadata";
-import { StationStatistic, StationsExpectedActivities } from "../common/domain";
-import { getHourlyStats } from "../common/repository/hourlyStatsDynamoRepository";
+import { Statistic, StationsExpectedActivities } from "../common/domain";
+import { getStationHourlyStats } from "../common/repository/hourlyStatsDynamoRepository";
 import { toParisTZ } from "../common/dateUtil";
 import { updateExpectedHourlyActivities } from "../common/repository/expectedActivitiesRepository";
 
@@ -35,16 +35,16 @@ async function getMedianPastActivitiesForSameHourAndDay(date: Date): Promise<Map
     var date = new Date(date.getTime());
 
     date.setDate(date.getDate());
-    let todayPromise = getHourlyStats(date)
+    let todayPromise = getStationHourlyStats(date)
 
     date.setDate(date.getDate() - 7);
-    let oneWeekAgoPromise = getHourlyStats(date)
+    let oneWeekAgoPromise = getStationHourlyStats(date)
 
     date.setDate(date.getDate() - 7);
-    let twoWeekAgoPromise = getHourlyStats(date)
+    let twoWeekAgoPromise = getStationHourlyStats(date)
 
     date.setDate(date.getDate() - 7);
-    let threeWeekAgoPromise = getHourlyStats(date)
+    let threeWeekAgoPromise = getStationHourlyStats(date)
 
     let [today, oneWeekAgo, twoWeekAgo, threeWeekAgo] = await Promise
         .all([todayPromise, oneWeekAgoPromise, twoWeekAgoPromise, threeWeekAgoPromise])
@@ -63,7 +63,7 @@ async function getMedianPastActivitiesForSameHourAndDay(date: Date): Promise<Map
     return median(pastActivities);
 }
 
-function appendActivities(statistics: Map<string, StationStatistic>, activities: Map<string, number[]>) {
+function appendActivities(statistics: Map<string, Statistic>, activities: Map<string, number[]>) {
     statistics.forEach((statistic, stationCode) => {
         if (activities.has(stationCode))
             activities.get(stationCode).push(statistic.activity);
