@@ -34,7 +34,7 @@ function map(hourlyExpectedActivities: StationsExpectedActivities[]): Activities
     byStationCode.forEach((hourlyExpectedActivities, stationCode)=>{
         let hourlyExpectedActivity = {
             stationCode: stationCode,
-            hourlyExpectedActivity: hourlyExpectedActivities
+            hourlyActivity: hourlyExpectedActivities
         } as HourlyActivity;
         expectedActivities.hourlyActivities.push(hourlyExpectedActivity);
     });

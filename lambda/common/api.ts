@@ -37,5 +37,5 @@ export class Activities{
 
 export class HourlyActivity{
     stationCode: string;
-    hourlyExpectedActivity: number[];
+    hourlyActivity: number[];
 }
