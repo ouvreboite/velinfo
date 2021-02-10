@@ -1,6 +1,6 @@
 import * as uninstrumentedAWS from 'aws-sdk';
 import * as AWSXRay from 'aws-xray-sdk';
-import {stripToHour, toParisDay, toParisTZ} from "../dateUtil";
+import {stripToHour, toParisDay} from "../dateUtil";
 import {StationsHourlyStatistics} from "../domain";
 import {classToDynamo, dynamoToClass} from "../dynamoTransformer";
 export {updateStationHourlyStats, getStationHourlyStats, getStationHourlyStatsForDay};
@@ -53,7 +53,7 @@ async function getStationHourlyStats(statsTime: Date): Promise<StationsHourlySta
 }
 
 async function getStationHourlyStatsForDay(date: Date): Promise<StationsHourlyStatistics[]> {
-    let day = toParisTZ(date).toISOString();
+    let day = toParisDay(date);
     let request: AWS.DynamoDB.DocumentClient.QueryInput = {
         TableName: stationHourlyStatisticsTableName,
         KeyConditionExpression: 'stats_day = :stats_day',
@@ -63,5 +63,5 @@ async function getStationHourlyStatsForDay(date: Date): Promise<StationsHourlySt
     };
 
     let data = await client.query(request).promise();
-    return data.Items.map(item =>  dynamoToClass(StationsHourlyStatistics, item));
+    return data.Items.map(item => dynamoToClass(StationsHourlyStatistics, item));
 }
