@@ -30,8 +30,8 @@ export class GlobalActivityCounterComponent implements OnInit {
   buildChartData(globalStatistics: GlobalStatistics): any[] {
     globalStatistics.statistics
     return [ {
-      "name": "Vélos retirés ou remis",
-      "value": globalStatistics.todaysActivity
+      "name": "Trajets",
+      "value": Math.trunc(globalStatistics.todaysActivity/2)
     }];
   }
 

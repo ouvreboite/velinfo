@@ -31,7 +31,7 @@ export class GlobalActivityChartComponent implements OnInit {
     let data = globalStatistics.statistics.map(stat => {
       return {
         "name": stat.hour+"h", 
-        "value":stat.activity
+        "value":Math.trunc(stat.activity/2)
       };
     });
 
