@@ -34,6 +34,8 @@ import { HomePageComponent } from './home-page/home-page.component';
 import { GlobalActivityChartComponent } from './global-activity-chart/global-activity-chart.component';
 import { GlobalActivityCounterComponent } from './global-activity-counter/global-activity-counter.component';
 import { GlobalStatisticsService } from './global-statistics.service';
+import { ActivitiesService } from './activities.service';
+import { ActivityChartComponent } from './activity-chart/activity-chart.component';
 
 @NgModule({
   declarations: [
@@ -48,7 +50,8 @@ import { GlobalStatisticsService } from './global-statistics.service';
     StationsTableComponent,
     HomePageComponent,
     GlobalActivityChartComponent,
-    GlobalActivityCounterComponent
+    GlobalActivityCounterComponent,
+    ActivityChartComponent
   ],
   imports: [
     BrowserModule,
@@ -72,7 +75,12 @@ import { GlobalStatisticsService } from './global-statistics.service';
     }),
     NgxChartsModule
   ],
-  providers: [UserFavoritesService, StationStatusService, CurrentStationsService, GlobalStatisticsService],
+  providers: [
+    UserFavoritesService, 
+    StationStatusService, 
+    CurrentStationsService, 
+    GlobalStatisticsService,
+    ActivitiesService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
