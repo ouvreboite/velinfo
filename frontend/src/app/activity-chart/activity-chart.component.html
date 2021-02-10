@@ -1,0 +1,14 @@
+<mat-card-title fxLayout="row" fxLayoutAlign="space-between center">
+Activité aujourd'hui
+</mat-card-title>
+<mat-card-subtitle>Nombre d'ajouts/retraits par heure réels et habituels</mat-card-subtitle>
+<div style="width: 100%;height: 300px">
+    <ngx-charts-line-chart *ngIf="!isLoading" 
+    [results]="chartData"
+    [scheme]="chartColorScheme"
+    [curve]="curve"
+    [yAxis]=true 
+    [xAxis]=true >
+    
+    </ngx-charts-line-chart>
+</div>
