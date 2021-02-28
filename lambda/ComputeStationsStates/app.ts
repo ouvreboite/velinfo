@@ -16,47 +16,58 @@ export const lambdaHandler = async (event: DynamoDBStreamEvent) => {
         console.error("No fetchDateTime in event, pass");
         return;
     }
-    let [expectedHourlyActivities, states] = await Promise
+    let [expectedHourlyActivities, oldStates] = await Promise
         .all([getExpectedHourlyActivities(availabilities.fetchDateTime), getStationsStates()])
 
-    if (states === undefined) { //special case for first run
-        states = new StationsStates();
-        states.fetchDateTime = availabilities.fetchDateTime;
+    if (oldStates === undefined) { //special case for first run
+        oldStates = new StationsStates();
+        oldStates.fetchDateTime = availabilities.fetchDateTime;
     }
 
     if(expectedHourlyActivities === undefined){
         console.log("No expected hourly activities");
         expectedHourlyActivities = new StationsExpectedActivities();
     }
-    updateMissingActivities(availabilities, states, expectedHourlyActivities);
-    states.fetchDateTime = availabilities.fetchDateTime;
-    computeStatus(states);
 
-    await updateStationsStates(states);
+    let newStates = initStatesFromAvailabilities(availabilities);
+    computeMissingActivities(newStates, oldStates, expectedHourlyActivities);
+    computeStatus(newStates);
+
+    await updateStationsStates(newStates);
 }
 
-function updateMissingActivities(availabilities: StationsFetchedAvailabilities, states: StationsStates, expectedHourlyActivities: StationsExpectedActivities){
-    let deltaTimeInSeconds = deltaSeconds(availabilities.fetchDateTime, states.fetchDateTime);
-    
+function initStatesFromAvailabilities(availabilities: StationsFetchedAvailabilities): StationsStates{
+    let newStates = new StationsStates();
+    newStates.fetchDateTime = availabilities.fetchDateTime;
     availabilities.byStationCode.forEach((availability, stationCode) => {
-        let state = states.byStationCode.get(stationCode);
-        if(!state){
-            state = new StationState();
-            states.byStationCode.set(stationCode, state);
+        let newState = new StationState();
+        newStates.byStationCode.set(stationCode, newState);
+        newState.coldSince = availability.coldSince;
+        newState.officialStatus = availability.officialStatus;
+    });
+    return newStates;
+}
+
+function computeMissingActivities(newStates: StationsStates, oldStates: StationsStates, expectedHourlyActivities: StationsExpectedActivities){
+    let deltaTimeInSeconds = deltaSeconds(newStates.fetchDateTime, oldStates.fetchDateTime);
+    
+    newStates.byStationCode.forEach((newState, stationCode) => {
+        let oldState = oldStates.byStationCode.get(stationCode);
+        if(!oldState){
+            oldState = new StationState();
         }
-            
-        state.coldSince = availability.coldSince;
         let expectedHourlyActivity = expectedHourlyActivities.byStationCode.get(stationCode);
-        updateMissingActivity(state, deltaTimeInSeconds, expectedHourlyActivity);
+        let newMissingActivity = getNewMissingActivity(oldState, deltaTimeInSeconds, expectedHourlyActivity);
+        newState.missingActivity = newMissingActivity;
     });
 }
 
-function updateMissingActivity(state: StationState, deltaTimeInSeconds: number, expectedHourlyActivity : ExpectedActivity){
+function getNewMissingActivity(state: StationState, deltaTimeInSeconds: number, expectedHourlyActivity : ExpectedActivity) : number{
     if (!state.coldSince) {
-        state.missingActivity = null;
+        return null;
     }
     let expectedActivityOnDelta = (expectedHourlyActivity?.expectedActivity || 0) * deltaTimeInSeconds / 3600;
-    state.missingActivity = (state.missingActivity??0)+expectedActivityOnDelta;
+    return (state.missingActivity??0)+expectedActivityOnDelta;
 }
 
 function computeStatus(states: StationsStates){
