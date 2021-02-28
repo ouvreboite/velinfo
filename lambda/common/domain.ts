@@ -61,8 +61,6 @@ export class StationsHourlyStatistics {
     @Type(() => Statistic)
     byStationCode: Map<string, Statistic>;
     @TransformDate()
-    lastUpdateDateTime?: Date;
-    @TransformDate()
     lastFetchDateTime: Date;
     totalActivity: number;
 }
@@ -106,6 +104,7 @@ export class StationsStates {
 
 export class StationState {
     status: Status;
+    officialStatus: OfficialStatus;
     missingActivity: number;
     @TransformDate()
     coldSince?: Date;
