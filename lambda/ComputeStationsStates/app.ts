@@ -1,10 +1,11 @@
 import "reflect-metadata";
 import { DynamoDBStreamEvent } from "aws-lambda";
-import { StationsFetchedAvailabilities, StationsStates, StationsExpectedActivities, StationState, ExpectedActivity, Status } from "../common/domain";
+import { StationsFetchedAvailabilities, StationsStates, StationsExpectedActivities, StationState, ExpectedActivity, StationStateChange, ActivityStatus } from "../common/domain";
 import { extractStationsFetchedAvailabilities } from "../common/dynamoEventExtractor";
-import { deltaMinutes, deltaSeconds } from "../common/dateUtil";
+import { deltaMinutes, deltaSeconds, toParisDay, toParisTZ } from "../common/dateUtil";
 import { getExpectedHourlyActivities } from "../common/repository/expectedActivitiesRepository";
 import { getStationsStates, updateStationsStates } from "../common/repository/stationsStatesRepository";
+import { saveStationStateChange } from "../common/repository/stationsStatesChangesRepository";
 
 const coldThresholdMinutesMin: number = +process.env.COLD_THRESHOLD_MINUTES_MIN;
 const coldThresholdMinutesMax: number = +process.env.COLD_THRESHOLD_MINUTES_MAX;
@@ -31,9 +32,41 @@ export const lambdaHandler = async (event: DynamoDBStreamEvent) => {
 
     let newStates = initStatesFromAvailabilities(availabilities);
     computeMissingActivities(newStates, oldStates, expectedHourlyActivities);
-    computeStatus(newStates);
+    computeActivityStatus(newStates);
 
     await updateStationsStates(newStates);
+
+    let stateChanges = getChangedStates(newStates, oldStates);
+    try {
+        await Promise.all(stateChanges.map(async (change) => {
+            await saveStationStateChange(change);
+        }));
+      } catch (error) {
+        console.log(error);
+      }   
+}
+
+function getChangedStates(newStates: StationsStates, oldStates: StationsStates): StationStateChange[]{
+    let changes : StationStateChange[] = [];
+
+    newStates.byStationCode.forEach((newState, stationCode)=>{
+        let oldState = oldStates.byStationCode.get(stationCode);
+        if(!oldState || !oldState.activityStatus)
+            return;
+        
+        if(newState.activityStatus != oldState.activityStatus || newState.officialStatus != oldState.officialStatus){
+            let datetime = new Date();
+            changes.push({
+                day: toParisDay(datetime),
+                datetime: toParisTZ(datetime),
+                stationCode: stationCode,
+                newState: newState,
+                oldState: oldState
+            });
+        }
+    })
+
+    return changes;
 }
 
 function initStatesFromAvailabilities(availabilities: StationsFetchedAvailabilities): StationsStates{
@@ -70,18 +103,18 @@ function getNewMissingActivity(state: StationState, deltaTimeInSeconds: number, 
     return (state.missingActivity??0)+expectedActivityOnDelta;
 }
 
-function computeStatus(states: StationsStates){
+function computeActivityStatus(states: StationsStates){
     states.byStationCode.forEach((state, stationCode) => {
         if (!state.coldSince) {
-            state.status = Status.Ok;
+            state.activityStatus = ActivityStatus.Ok;
         } else if (deltaMinutes(state.coldSince, states.fetchDateTime) <= coldThresholdMinutesMin) {
-            state.status = Status.Ok;
+            state.activityStatus = ActivityStatus.Ok;
         } else if (deltaMinutes(state.coldSince, states.fetchDateTime) >= coldThresholdMinutesMax) {
-            state.status = Status.Locked;
+            state.activityStatus = ActivityStatus.Locked;
         } else if (state.missingActivity >= lockedActivityThreshold) {
-            state.status = Status.Locked;
+            state.activityStatus = ActivityStatus.Locked;
         } else {
-            state.status = Status.Cold;
+            state.activityStatus = ActivityStatus.Ok;
         }
     });
 

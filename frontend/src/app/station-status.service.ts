@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { OfficialStatus, State, Station } from './current-stations.service';
+import { OfficialStatus, ActivityStatus, Station } from './current-stations.service';
 
 @Injectable({
   providedIn: 'root'
@@ -27,7 +27,7 @@ export class StationStatusService {
       case OfficialStatus.NotReturning: return '⚠️';
     }
 
-    if (station.state == State.Locked)
+    if (station.activityStatus == ActivityStatus.Locked)
       return '⚠️';
 
     return '✅';
@@ -41,7 +41,7 @@ export class StationStatusService {
       case OfficialStatus.NotReturning: return 'Pas de retour';
     }
 
-    if (station.state == State.Locked)
+    if (station.activityStatus == ActivityStatus.Locked)
       return 'Aucune activité récente';
 
     return 'Ok';

@@ -103,16 +103,26 @@ export class StationsStates {
 }
 
 export class StationState {
-    status: Status;
+    activityStatus: ActivityStatus;
     officialStatus: OfficialStatus;
     missingActivity: number;
     @TransformDate()
     coldSince?: Date;
 }
 
-export enum Status {
+export class StationStateChange {
+    day: string;
+    @TransformDate()
+    datetime: Date;
+    stationCode: string;
+    @Type(() => StationState)
+    oldState: StationState;
+    @Type(() => StationState)
+    newState: StationState;
+}
+
+export enum ActivityStatus {
     Ok = "Ok",
-    Cold = "Cold",
     Locked = "Locked"
 }
 

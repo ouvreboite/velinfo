@@ -50,7 +50,7 @@ export class StationsTableComponent implements AfterViewInit  {
     if(!onlyBlocked)
       return stations;
     
-    return stations.filter(station => station.officialStatus != "Ok" || station.state == "Locked");
+    return stations.filter(station => station.officialStatus != "Ok" || station.activityStatus == "Locked");
   }
 
   private setupSort(): void {

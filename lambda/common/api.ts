@@ -5,7 +5,7 @@ export class Station{
     name: string;
     latitude: number;
     longitude: number;
-    state: string;
+    activityStatus: string;
     capacity: number;
     electrical: number;
     mechanical: number;
