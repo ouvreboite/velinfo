@@ -94,7 +94,7 @@ export class Station{
   name: string;
   latitude: number;
   longitude: number;
-  state: State;
+  activityStatus: ActivityStatus;
   capacity: number;
   electrical: number;
   mechanical: number;
@@ -111,9 +111,8 @@ export class CurrentStations{
   stations: Station[];
 }
 
-export enum State {
+export enum ActivityStatus {
     Ok = "Ok",
-    Cold = "Cold",
     Locked = "Locked"
 }
 

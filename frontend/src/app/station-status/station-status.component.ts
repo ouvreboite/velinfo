@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
-import { Station, OfficialStatus, State } from '../current-stations.service';
+import { Station } from '../current-stations.service';
 import { StationStatusService } from '../station-status.service';
 
 @Component({

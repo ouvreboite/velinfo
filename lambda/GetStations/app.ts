@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import { CurrentStations, Station } from "../common/api";
-import { StationsFetchedAvailabilities, StationsFetchedCharacteristics, StationsStates, Status } from "../common/domain";
+import { ActivityStatus, StationsFetchedAvailabilities, StationsFetchedCharacteristics, StationsStates } from "../common/domain";
 import { getAvailabilities } from "../common/repository/availabilitiesDynamoRepository";
 import { getCharacteristics } from "../common/repository/characteristicsDynamoRepository";
 import { getStationsStates } from "../common/repository/stationsStatesRepository";
@@ -46,9 +46,9 @@ function buildStations(stationCharacteristics: StationsFetchedCharacteristics, a
 
         if (stationStates.byStationCode.has(stationCode)) {
             station.missingActivity = stationStates.byStationCode.get(stationCode).missingActivity;
-            station.state = stationStates.byStationCode.get(stationCode).status;
+            station.activityStatus = stationStates.byStationCode.get(stationCode).activityStatus;
         } else {
-            station.state = Status.Ok;
+            station.activityStatus = ActivityStatus.Ok;
         }
 
         stations.push(station);
