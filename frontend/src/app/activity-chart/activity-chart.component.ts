@@ -3,6 +3,8 @@ import { forkJoin } from 'rxjs';
 import { ActivitiesService, HourlyActivity, ActivityType } from '../activities.service';
 import { Station } from '../current-stations.service';
 import * as shape from 'd3-shape';
+import format from 'date-fns/format';
+import { fr } from 'date-fns/locale';
 
 @Component({
   selector: 'app-activity-chart',
@@ -55,11 +57,11 @@ export class ActivityChartComponent implements OnInit {
 
     return [
       {
-        name: "Activité habituelle",
+        name: "Habituellement le "+format(new Date(), 'eeee', {locale: fr}),
         series: expectedValues
       },
       {
-        name: "Activité réelle",
+        name: "Aujourd'hui",
         series: actualValues
       }
     ];
