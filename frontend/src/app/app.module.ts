@@ -13,6 +13,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatInputModule } from '@angular/material/input';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { AgmCoreModule } from '@agm/core';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 
@@ -36,6 +37,7 @@ import { GlobalActivityCounterComponent } from './global-activity-counter/global
 import { GlobalStatisticsService } from './global-statistics.service';
 import { ActivitiesService } from './activities.service';
 import { ActivityChartComponent } from './activity-chart/activity-chart.component';
+import { StateChangeListComponent } from './state-change-list/state-change-list.component';
 
 @NgModule({
   declarations: [
@@ -51,7 +53,8 @@ import { ActivityChartComponent } from './activity-chart/activity-chart.componen
     HomePageComponent,
     GlobalActivityChartComponent,
     GlobalActivityCounterComponent,
-    ActivityChartComponent
+    ActivityChartComponent,
+    StateChangeListComponent
   ],
   imports: [
     BrowserModule,
@@ -70,6 +73,7 @@ import { ActivityChartComponent } from './activity-chart/activity-chart.componen
     MatSlideToggleModule,
     MatChipsModule,
     MatInputModule,
+    MatSnackBarModule,
     AgmCoreModule.forRoot({
       apiKey: 'AIzaSyBv75Y2c54tz4EpNUovz1B2xE4QzoiBWNo'
     }),
