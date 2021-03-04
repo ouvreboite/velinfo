@@ -14,6 +14,7 @@ import { fr } from 'date-fns/locale';
 export class ActivityChartComponent implements OnInit {
   @Input() station: Station;
   chartData: any[]; 
+  todaysActivity: number;
   isLoading = true;
   chartColorScheme = {
     domain: ['#C0C0C0', '#59b0e3']
@@ -34,6 +35,7 @@ export class ActivityChartComponent implements OnInit {
     ).subscribe((activity)=>{
         this.chartData = this.buildChartData(activity.expected, activity.actual);
         this.isLoading = false;
+        this.todaysActivity = activity.actual.hourlyActivity.reduce((a,b)=> a+b, 0);
     });
   }
 
