@@ -2,35 +2,45 @@ a{
     color: #59b0e3;
 }
 
-mat-card{
-    margin-top: 5px;
-    margin-bottom: 5px;
+.wrapper {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5px;
+    grid-auto-rows: minmax(50px, auto);
 }
 
-app-global-activity-counter{
-    width: 30%; 
-    float: left;
-    margin-bottom: 5px;
-    padding-right: 5px;
+.introduction {
+    grid-column: 1 / -1;
+    grid-row: 1;
 }
-
-app-global-activity-chart{
-    width: 70%; 
-    float: right;
-    margin-bottom: 5px;
+.counter {
+    grid-column: 1 / 2;
+    grid-row: 2;
+}
+.chart {
+    grid-column: 2 / -1;
+    grid-row: 2;
+}
+.about {
+    grid-column: 1 / -1;
+    grid-row: 3;
 }
 
 @media screen and (max-width: 768px) {
-    #logo  {
-        display: none;
+    .introduction {
+        grid-column: 1 / -1;
+        grid-row: 1;
     }
-
-    app-global-activity-counter{
-        width: 100%; 
-        padding-right: 0px;
+    .counter {
+        grid-column: 1 / -1;
+        grid-row: 2;
     }
-    
-    app-global-activity-chart{
-        width: 100%; 
+    .chart {
+        grid-column: 1 / -1;
+        grid-row: 3;
+    }
+    .about {
+        grid-column: 1 / -1;
+        grid-row: 4;
     }
 }
