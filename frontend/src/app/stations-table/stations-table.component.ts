@@ -19,10 +19,7 @@ export class StationsTableComponent implements AfterViewInit  {
   onlyBlocked = false;
   currentFilterValue = "";
   dataSource = new MatTableDataSource<Station>();
-  displayedColumns: string[] = ['name', 'status', 'availability', 'lastActivityAgo'];
-  
-  constructor() { }
-
+  displayedColumns: string[] = ['name', 'status', 'availability', 'lastActivityAgo', 'todaysActivity'];
 
   ngAfterViewInit() {
     this.setupTable();

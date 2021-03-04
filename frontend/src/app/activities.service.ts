@@ -30,6 +30,19 @@ export class ActivitiesService {
       );
   }
 
+  getTotalActivitiesByStation(type: ActivityType): Observable<Map<string, number>>{
+    return this.getActivities(type)
+    .pipe(
+      map(activities => activities.hourlyActivities.reduce(function(map, activity) 
+        {
+        map.set(activity.stationCode,activity.hourlyActivity.reduce((a, b) => a + b, 0));
+        return map;
+        }, 
+        new Map<string,number>())
+      )
+    );
+  }
+
   private getActivities(type: ActivityType): Observable<Activities> {
     this.invalidCacheIfNecessary(type)
 

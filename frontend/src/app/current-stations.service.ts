@@ -105,6 +105,7 @@ export class Station{
   lastActivity : Date;
   lastActivityAgo : string;
   missingActivity?: number;
+  todaysActivity?: number;
 }
 
 export class CurrentStations{
