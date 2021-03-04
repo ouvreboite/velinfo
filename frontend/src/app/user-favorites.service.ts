@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Injectable({
   providedIn: 'root'
@@ -6,7 +7,7 @@ import { Injectable } from '@angular/core';
 export class UserFavoritesService {
   private localStorageKey = 'velinfo_favorite_stations';
   private favorites: string[];
-  constructor() { 
+  constructor(private _snackBar: MatSnackBar) { 
     this.favorites = this.getFromLocalStorage();
   }
 
@@ -21,9 +22,15 @@ export class UserFavoritesService {
     var index = this.favorites.indexOf(stationCode);
     if (index !== -1) {
       this.favorites.splice(index, 1);
+      this._snackBar.open("La station a été retirée des favoris", "D'accord", {
+        duration: 2000,
+      });
     }else{
       this.favorites.push(stationCode);
-    }   
+      this._snackBar.open("La station a été ajouté aux favoris", "D'accord", {
+        duration: 2000,
+      });
+    }
     this.setToLocalStorage(this.favorites);
   }
   
