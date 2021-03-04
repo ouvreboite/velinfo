@@ -39,3 +39,22 @@ export class HourlyActivity{
     stationCode: string;
     hourlyActivity: number[];
 }
+
+export class StateChanges{
+    stationStateChanges: StationStateChange[];
+}
+
+export class StationStateChange {
+    datetime: Date;
+    stationCode: string;
+    oldState: StationState;
+    newState: StationState;
+}
+
+export class StationState {
+    activityStatus: string;
+    officialStatus: string;
+    missingActivity: number;
+    coldSince?: Date;
+}
+

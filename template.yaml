@@ -284,6 +284,32 @@ Resources:
       Policies:
       - DynamoDBCrudPolicy:
           TableName: !Ref HourlyStatisticsTable
+
+  GetStateChanges:
+    Type: AWS::Serverless::Function
+    DependsOn:
+      - StationStateChangesTable
+    Properties:
+      FunctionName: GetStateChanges
+      Description: Get last station state changes
+      CodeUri: lambda/GetStateChanges
+      Handler: app.lambdaHandler
+      Runtime: nodejs12.x
+      MemorySize: 1769 #minimal memory to have a full vCPU
+      Environment: 
+        Variables:
+          STATE_CHANGES_TABLE_NAME: !Ref StationStateChangesTable
+      Tracing: Active
+      Events:
+        GetApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref RestApi
+            Path: /state-changes
+            Method: GET
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: !Ref StationStateChangesTable
      
   # Dynamo tables
   CurrentAvailabilityTable: 

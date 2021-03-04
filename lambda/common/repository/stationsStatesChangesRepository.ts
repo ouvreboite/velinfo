@@ -1,8 +1,9 @@
 import * as uninstrumentedAWS from 'aws-sdk';
 import * as AWSXRay from 'aws-xray-sdk';
+import { toParisDay } from '../dateUtil';
 import {StationStateChange} from "../domain";
-import {classToDynamo,} from "../dynamoTransformer";
-export {saveStationStateChange};
+import {classToDynamo, dynamoToClass,} from "../dynamoTransformer";
+export {saveStationStateChange, getStationStateChangesForDay};
 
 const AWS = AWSXRay.captureAWS(uninstrumentedAWS);
 const client: AWS.DynamoDB.DocumentClient = new AWS.DynamoDB.DocumentClient();
@@ -29,4 +30,19 @@ async function saveStationStateChange(change: StationStateChange) {
 
     await client.update(request).promise();
     console.log("saveStationStateChange");
+}
+
+async function getStationStateChangesForDay(date: Date): Promise<StationStateChange[]> {
+    let day = toParisDay(date);
+    let request: AWS.DynamoDB.DocumentClient.QueryInput = {
+        TableName: stationStateChangesTableTableName,
+        KeyConditionExpression: '#day = :day',
+        ExpressionAttributeNames: { "#day": "day" },
+        ExpressionAttributeValues: {
+            ":day": day
+        }
+    };
+
+    let data = await client.query(request).promise();
+    return data.Items.map(item => dynamoToClass(StationStateChange, item));
 }
