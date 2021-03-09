@@ -1,0 +1,16 @@
+<mat-card *ngIf="!isLoading">
+    <mat-card-title>Derniers évènements</mat-card-title>
+    <div class="station-change" *ngFor="let change of changes" [routerLink]="'/station/'+change.stationCode">
+      <div class="change-datetime">{{change.datetime | parisDate}}</div>
+      <div>{{getChangeText(change)}} à la station <span class="station-name">{{getStationName(change.stationCode)}}</span></div>
+    </div>
+    <br/>
+</mat-card>
+<mat-card *ngIf="isLoading" style="display: flex; justify-content: center; align-items: center">
+    <mat-progress-spinner 
+      color="primary" 
+      mode="indeterminate">
+    </mat-progress-spinner>
+</mat-card>
+
+

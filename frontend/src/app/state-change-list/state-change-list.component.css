@@ -1,0 +1,24 @@
+.station-name{
+    color: #2e87d0;
+    cursor: pointer;
+}
+
+.station-change{
+    margin-bottom: 5px;
+}
+
+.change-datetime{
+    color: grey;
+    font-size: small;
+}
+
+@media screen and (max-width: 768px) {
+    mat-card{
+        padding-bottom: 0px;
+    }
+
+    mat-card-title{
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+}
