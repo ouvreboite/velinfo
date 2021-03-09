@@ -155,7 +155,7 @@ Resources:
           EXPECTED_ACTIVITY_TABLE_NAME: !Ref ExpectedActivityTable
           STATE_CHANGES_TABLE_NAME: !Ref StationStateChangesTable
           COLD_THRESHOLD_MINUTES_MIN: 5
-          COLD_THRESHOLD_MINUTES_MAX: 2160 #36 hours
+          COLD_THRESHOLD_MINUTES_MAX: 10080 #one week
           LOCKED_ACTIVITY_THRESHOLD: 50
       Events:
         StreamAvailability:
