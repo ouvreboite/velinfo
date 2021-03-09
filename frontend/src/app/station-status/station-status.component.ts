@@ -18,7 +18,7 @@ export class StationStatusComponent implements OnInit, OnChanges  {
   constructor( private stationStatusService: StationStatusService) { }
 
   ngOnInit() {
-    this.statusEmoji = this.stationStatusService.getStatusEmoji(this.station);
+    this.statusEmoji = this.stationStatusService.getStatusEmoji(this.station.officialStatus, this.station.activityStatus);
     this.statusText = this.stationStatusService.getStatusText(this.station);
     this.detailCSSClass = this.forceDetails?'force-details':'hiddable-details';
   }
