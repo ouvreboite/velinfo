@@ -38,6 +38,7 @@ import { GlobalStatisticsService } from './global-statistics.service';
 import { ActivitiesService } from './activities.service';
 import { ActivityChartComponent } from './activity-chart/activity-chart.component';
 import { StateChangeListComponent } from './state-change-list/state-change-list.component';
+import { ParisDatePipe } from './paris-date.pipe';
 
 @NgModule({
   declarations: [
@@ -54,7 +55,8 @@ import { StateChangeListComponent } from './state-change-list/state-change-list.
     GlobalActivityChartComponent,
     GlobalActivityCounterComponent,
     ActivityChartComponent,
-    StateChangeListComponent
+    StateChangeListComponent,
+    ParisDatePipe
   ],
   imports: [
     BrowserModule,
