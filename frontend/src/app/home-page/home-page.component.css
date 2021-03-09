@@ -1,5 +1,5 @@
 a{
-    color: #59b0e3;
+    color: #2e87d0;
 }
 
 .wrapper {
@@ -21,9 +21,13 @@ a{
     grid-column: 2 / -1;
     grid-row: 2;
 }
-.about {
+.changes {
     grid-column: 1 / -1;
     grid-row: 3;
+}
+.about {
+    grid-column: 1 / -1;
+    grid-row: 4;
 }
 
 @media screen and (max-width: 768px) {
@@ -39,8 +43,12 @@ a{
         grid-column: 1 / -1;
         grid-row: 3;
     }
-    .about {
+    .changes {
         grid-column: 1 / -1;
         grid-row: 4;
+    }
+    .about {
+        grid-column: 1 / -1;
+        grid-row: 5;
     }
 }
