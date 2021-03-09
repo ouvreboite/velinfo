@@ -2,18 +2,24 @@
   <mat-card class="introduction" style="min-height: 150px;">
     <mat-card-title>Velinfo'</mat-card-title>
     <p style="text-align:justify">
-      Velinfo' est une application non officielle tentant d'identifier les stations Velib' bloquées au plus tôt. Vous pouvez l'utiliser pour :<br/>
+      Velinfo' est une application non officielle tentant d'identifier les stations bloquées avant le système interne de Velib'. Vous pouvez l'utiliser pour :<br/>
       <br/>
       🗺️ Trouver des stations autour de vous via la <a routerLink="/map">carte</a>.<br/>
-      🔎 Chercher directement dans la liste des <a routerLink="/stations">stations</a>.<br/>
       ❤️ Accéder directement à vos stations <a routerLink="/favorites">favorites</a>.<br/>
+      🔎 Parcourir la liste des <a routerLink="/stations">stations</a>.<br/>
     </p>
   </mat-card>
   <app-global-activity-counter class="counter"></app-global-activity-counter>
   <app-global-activity-chart class="chart"></app-global-activity-chart>
+  <app-state-change-list class="changes"></app-state-change-list>
   <mat-card class="about">
+    <mat-card-title>A propos</mat-card-title>
     <p style="text-align:justify">
-      Cette application est open-source. Les sources sont disponible sur <a href="https://github.com/ouvreboite/velinfo"><img style="height:1em;" src="/assets/github.png">Github</a>.
+      Cette application est développée de manière amateur en se basant sur l'<a href="https://www.velib-metropole.fr/donnees-open-data-gbfs-du-service-velib-metropole">API Velib'</a>.
+      La détection des stations bloquées se base sur l'activité de chaque station sur le mois passé pour détecter les périodes d'inactivité anormales.
+      <br/>
+      <br/>
+      Les sources sont disponibles sur <a href="https://github.com/ouvreboite/velinfo"><img style="height:1em;" src="/assets/github.png">Github</a>.
     </p>
   </mat-card>
 </div>
