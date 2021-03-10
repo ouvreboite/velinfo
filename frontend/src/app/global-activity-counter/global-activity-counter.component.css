@@ -1,0 +1,10 @@
+.counter{
+    width: 100%;
+    height: 300px;
+}
+
+@media screen and (max-width: 768px) {
+    .counter{
+        height: 200px;
+    }
+}
