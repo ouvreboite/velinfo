@@ -7,12 +7,11 @@ export {updateCharacteristics, getCharacteristics};
 
 const AWS = AWSXRay.captureAWS(uninstrumentedAWS);
 const client: AWS.DynamoDB.DocumentClient = new AWS.DynamoDB.DocumentClient();
-const characteristicsTableName: string = process.env.CHARACTERISTICS_TABLE_NAME;
 
 async function updateCharacteristics(fetchedCharacteristics: StationsFetchedCharacteristics) {
     let dynamoObject = classToDynamo(fetchedCharacteristics);
     let request: AWS.DynamoDB.DocumentClient.UpdateItemInput = {
-        TableName: characteristicsTableName,
+        TableName: 'CurrentCharacteristics',
         Key: {
             "id": 'currentCharacteristics'
         },
@@ -30,7 +29,7 @@ async function updateCharacteristics(fetchedCharacteristics: StationsFetchedChar
 
 async function getCharacteristics(): Promise<StationsFetchedCharacteristics> {
     let request: AWS.DynamoDB.DocumentClient.GetItemInput = {
-        TableName: characteristicsTableName,
+        TableName: 'CurrentCharacteristics',
         Key: {
             id: 'currentCharacteristics'
         }

@@ -7,14 +7,13 @@ export {saveStationStateChange, getStationStateChangesForDay};
 
 const AWS = AWSXRay.captureAWS(uninstrumentedAWS);
 const client: AWS.DynamoDB.DocumentClient = new AWS.DynamoDB.DocumentClient();
-const stationStateChangesTableTableName: string = process.env.STATE_CHANGES_TABLE_NAME;
 const ttlDays = 60;
 
 async function saveStationStateChange(change: StationStateChange) {
     let dynamoObject = classToDynamo(change);
     let timetolive = new Date(change.datetime.getTime() + ttlDays * 24 * 60 * 60 * 1000);
     let request: AWS.DynamoDB.DocumentClient.UpdateItemInput = {
-        TableName: stationStateChangesTableTableName,
+        TableName: 'StationStateChanges',
         Key: {
             "day": change.day,
             "datetime": change.datetime.toISOString(),
@@ -35,7 +34,7 @@ async function saveStationStateChange(change: StationStateChange) {
 async function getStationStateChangesForDay(date: Date): Promise<StationStateChange[]> {
     let day = toParisDay(date);
     let request: AWS.DynamoDB.DocumentClient.QueryInput = {
-        TableName: stationStateChangesTableTableName,
+        TableName: 'StationStateChanges',
         KeyConditionExpression: '#day = :day',
         ExpressionAttributeNames: { "#day": "day" },
         ExpressionAttributeValues: {

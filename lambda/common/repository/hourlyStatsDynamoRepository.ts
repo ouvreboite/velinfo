@@ -7,7 +7,6 @@ export {updateStationHourlyStats, getStationHourlyStats, getStationHourlyStatsFo
 
 const AWS = AWSXRay.captureAWS(uninstrumentedAWS);
 const client: AWS.DynamoDB.DocumentClient = new AWS.DynamoDB.DocumentClient();
-const stationHourlyStatisticsTableName = process.env.STATION_HOURLY_STATISTICS_TABLE_NAME;
 const ttlDays = 60;
 
 async function updateStationHourlyStats(hourlyStats: StationsHourlyStatistics) {
@@ -15,7 +14,7 @@ async function updateStationHourlyStats(hourlyStats: StationsHourlyStatistics) {
     let statsDay = toParisDay(hourlyStats.statsDateTime);
     let dynamoObject = classToDynamo(hourlyStats);
     let request: AWS.DynamoDB.DocumentClient.UpdateItemInput = {
-        TableName: stationHourlyStatisticsTableName,
+        TableName: 'HourlyStatistics',
         Key: {
             stats_day: statsDay,
             stats_datetime: dynamoObject.statsDateTime
@@ -41,7 +40,7 @@ async function getStationHourlyStats(statsTime: Date): Promise<StationsHourlySta
     let statsDatetime = statsTime.toISOString();
 
     let request: AWS.DynamoDB.DocumentClient.GetItemInput ={
-        TableName: stationHourlyStatisticsTableName,
+        TableName: 'HourlyStatistics',
         Key: {
             stats_day: statsDay,
             stats_datetime: statsDatetime
@@ -55,7 +54,7 @@ async function getStationHourlyStats(statsTime: Date): Promise<StationsHourlySta
 async function getStationHourlyStatsForDay(date: Date): Promise<StationsHourlyStatistics[]> {
     let day = toParisDay(date);
     let request: AWS.DynamoDB.DocumentClient.QueryInput = {
-        TableName: stationHourlyStatisticsTableName,
+        TableName: 'HourlyStatistics',
         KeyConditionExpression: 'stats_day = :stats_day',
         ExpressionAttributeValues: {
             ":stats_day": day

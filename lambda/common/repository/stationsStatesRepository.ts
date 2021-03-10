@@ -6,12 +6,11 @@ export {updateStationsStates, getStationsStates};
 
 const AWS = AWSXRay.captureAWS(uninstrumentedAWS);
 const client: AWS.DynamoDB.DocumentClient = new AWS.DynamoDB.DocumentClient();
-const stationStatesTableName: string = process.env.STATES_TABLE_NAME;
 
 async function updateStationsStates(stationsStates: StationsStates) {
     let dynamoObject = classToDynamo(stationsStates);
     let request: AWS.DynamoDB.DocumentClient.UpdateItemInput = {
-        TableName: stationStatesTableName,
+        TableName: 'StationState',
         Key: {
             "id": 'stationStates'
         },
@@ -28,7 +27,7 @@ async function updateStationsStates(stationsStates: StationsStates) {
 
 async function getStationsStates(): Promise<StationsStates> {
     let request: AWS.DynamoDB.DocumentClient.GetItemInput = {
-        TableName: stationStatesTableName,
+        TableName: 'StationState',
         Key: {
             id: 'stationStates'
         }
