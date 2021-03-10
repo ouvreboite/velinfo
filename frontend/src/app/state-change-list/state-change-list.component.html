@@ -4,6 +4,7 @@
       <div class="change-datetime">{{change.datetime | parisDate}}</div>
       <div>{{getChangeText(change)}} à la station <span class="station-name">{{getStationName(change.stationCode)}}</span></div>
     </div>
+    <div *ngIf="!changes || changes.length == 0">Aucun évènement la semaine passée.</div>
     <br/>
 </mat-card>
 <mat-card *ngIf="isLoading" style="display: flex; justify-content: center; align-items: center">
