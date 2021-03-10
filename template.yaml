@@ -125,9 +125,9 @@ Resources:
       CodeUri: lambda/ComputeStationsStates
       Environment: 
         Variables:
-          COLD_THRESHOLD_MINUTES_MIN: 5
+          COLD_THRESHOLD_MINUTES_MIN: 30
           COLD_THRESHOLD_MINUTES_MAX: 10080 #one week
-          LOCKED_ACTIVITY_THRESHOLD: 50
+          LOCKED_ACTIVITY_THRESHOLD: 25
       Events:
         StreamAvailability:
           Type: DynamoDB
