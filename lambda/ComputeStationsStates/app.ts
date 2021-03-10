@@ -58,7 +58,7 @@ function getChangedStates(newStates: StationsStates, oldStates: StationsStates):
             let datetime = new Date();
             changes.push({
                 day: toParisDay(datetime),
-                datetime: toParisTZ(datetime),
+                datetime: datetime,
                 stationCode: stationCode,
                 newState: newState,
                 oldState: oldState

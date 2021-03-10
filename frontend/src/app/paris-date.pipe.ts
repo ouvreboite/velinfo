@@ -5,6 +5,6 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class ParisDatePipe implements PipeTransform {
   transform(date: Date): string {
-    return new Date(date).toLocaleDateString('fr-FR', { month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' });
+    return new Date(date).toLocaleDateString('fr-FR', { month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', timeZone: 'Europe/Paris' });
   }
 }
