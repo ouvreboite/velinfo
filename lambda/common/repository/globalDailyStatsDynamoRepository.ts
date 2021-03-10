@@ -7,7 +7,6 @@ export {updateGlobalDailyStats, getGlobalDailyStats};
 
 const AWS = AWSXRay.captureAWS(uninstrumentedAWS);
 const client: AWS.DynamoDB.DocumentClient = new AWS.DynamoDB.DocumentClient();
-const globalDailyStatisticsTableName = process.env.GLOBAL_DAILY_STATISTICS_TABLE_NAME;
 const ttlDays = 60;
 
 async function updateGlobalDailyStats(globalDailyStatistics: GlobalDailyStatistics) {
@@ -15,7 +14,7 @@ async function updateGlobalDailyStats(globalDailyStatistics: GlobalDailyStatisti
     let dynamoObject = classToDynamo(globalDailyStatistics);
     let statsDay = toParisDay(globalDailyStatistics.firstFetchDateTime);
     let request: AWS.DynamoDB.DocumentClient.UpdateItemInput = {
-        TableName: globalDailyStatisticsTableName,
+        TableName: 'GlobalDailyStatistics',
         Key: {
             stats_day: statsDay
         },
@@ -36,7 +35,7 @@ async function getGlobalDailyStats(statsTime: Date): Promise<GlobalDailyStatisti
     let statsDay = toParisDay(statsTime);
 
     let request: AWS.DynamoDB.DocumentClient.GetItemInput ={
-        TableName: globalDailyStatisticsTableName,
+        TableName: 'GlobalDailyStatistics',
         Key: {
             stats_day: statsDay
         }

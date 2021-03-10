@@ -7,12 +7,11 @@ export {updateExpectedHourlyActivities, getExpectedHourlyActivities, getExpected
 
 const AWS = AWSXRay.captureAWS(uninstrumentedAWS);
 const client: AWS.DynamoDB.DocumentClient = new AWS.DynamoDB.DocumentClient();
-const expectedActivitiesTableName: string = process.env.EXPECTED_ACTIVITY_TABLE_NAME;
 
 async function updateExpectedHourlyActivities(expectedActivities: StationsExpectedActivities) {
     let dynamoObject = classToDynamo(expectedActivities);
     let request: AWS.DynamoDB.DocumentClient.UpdateItemInput = {
-        TableName: expectedActivitiesTableName,
+        TableName: 'ExpectedActivity',
         Key: {
             weekday: expectedActivities.weekday,
             hour: expectedActivities.hour
@@ -31,7 +30,7 @@ async function getExpectedHourlyActivities(date: Date): Promise<StationsExpected
     let weekday = toParisTZ(date).getDay();
     let hour = toParisTZ(date).getHours();
     let request: AWS.DynamoDB.DocumentClient.GetItemInput = {
-        TableName: expectedActivitiesTableName,
+        TableName: 'ExpectedActivity',
         Key: {
             weekday: weekday,
             hour: hour
@@ -45,7 +44,7 @@ async function getExpectedHourlyActivities(date: Date): Promise<StationsExpected
 async function getExpectedHourlyActivitiesForDay(date: Date): Promise<StationsExpectedActivities[]> {
     let weekday = toParisTZ(date).getDay();
     let request: AWS.DynamoDB.DocumentClient.QueryInput = {
-        TableName: expectedActivitiesTableName,
+        TableName: 'ExpectedActivity',
         KeyConditionExpression: 'weekday = :weekday',
         ExpressionAttributeValues: {
             ":weekday": weekday
