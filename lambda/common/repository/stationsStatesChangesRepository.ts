@@ -35,6 +35,7 @@ async function getStationStateChangesForDay(date: Date): Promise<StationStateCha
     let day = toParisDay(date);
     let request: AWS.DynamoDB.DocumentClient.QueryInput = {
         TableName: 'StationStateChanges',
+        ScanIndexForward: false,
         KeyConditionExpression: '#day = :day',
         ExpressionAttributeNames: { "#day": "day" },
         ExpressionAttributeValues: {
