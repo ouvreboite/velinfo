@@ -48,13 +48,14 @@ export const lambdaHandler = async (event: DynamoDBStreamEvent) => {
 function getChangedStates(newStates: StationsStates, oldStates: StationsStates): StationStateChange[]{
     let changes : StationStateChange[] = [];
 
+    let datetime = new Date();
     newStates.byStationCode.forEach((newState, stationCode)=>{
         let oldState = oldStates.byStationCode.get(stationCode);
         if(!oldState || !oldState.activityStatus)
             return;
         
         if(newState.activityStatus != oldState.activityStatus || newState.officialStatus != oldState.officialStatus){
-            let datetime = new Date();
+            datetime.setMilliseconds(datetime.getMilliseconds() + 1); //hack to ensure all the pushed changed have a different datetime, as it is part of the key
             changes.push({
                 day: toParisDay(datetime),
                 datetime: datetime,
