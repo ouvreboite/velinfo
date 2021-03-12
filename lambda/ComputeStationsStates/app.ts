@@ -8,7 +8,6 @@ import { getStationsStates, updateStationsStates } from "../common/repository/st
 import { saveStationStateChange } from "../common/repository/stationsStatesChangesRepository";
 
 const coldThresholdMinutesMin: number = +process.env.COLD_THRESHOLD_MINUTES_MIN;
-const coldThresholdMinutesMax: number = +process.env.COLD_THRESHOLD_MINUTES_MAX;
 const lockedActivityThreshold: number = +process.env.LOCKED_ACTIVITY_THRESHOLD;
 
 export const lambdaHandler = async (event: DynamoDBStreamEvent) => {
@@ -109,8 +108,6 @@ function computeActivityStatus(states: StationsStates){
             state.activityStatus = ActivityStatus.Ok;
         } else if (deltaMinutes(state.coldSince, states.fetchDateTime) <= coldThresholdMinutesMin) {
             state.activityStatus = ActivityStatus.Ok;
-        } else if (deltaMinutes(state.coldSince, states.fetchDateTime) >= coldThresholdMinutesMax) {
-            state.activityStatus = ActivityStatus.Locked;
         } else if (state.missingActivity >= lockedActivityThreshold) {
             state.activityStatus = ActivityStatus.Locked;
         } else {
