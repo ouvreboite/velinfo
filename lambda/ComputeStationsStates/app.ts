@@ -109,7 +109,7 @@ function computeActivityStatus(states: StationsStates, oldStates: StationsStates
     states.byStationCode.forEach((state, stationCode) => {
         let oldState = oldStates.byStationCode.get(stationCode);
 
-        if(oldState.activityStatus != ActivityStatus.Locked){
+        if(!oldState || oldState.activityStatus != ActivityStatus.Locked){
             if(state.coldSince && deltaMinutes(state.coldSince, states.fetchDateTime) > coldThresholdMinutesMin && state.missingActivity >= lockedActivityThreshold){
                 state.activityStatus = ActivityStatus.Locked;
             }else{
@@ -129,10 +129,10 @@ function computeActivityStatus(states: StationsStates, oldStates: StationsStates
 }
 function accrueActivitiesSinceLocked(newStates: StationsStates, oldStates: StationsStates, availabilities : StationsFetchedAvailabilities) {
     newStates.byStationCode.forEach((newState, stationCode) => {
-        if(newState.activityStatus == ActivityStatus.Locked){
-            let oldState = oldStates.byStationCode.get(stationCode);
-            newState.activitySinceLocked = oldState && oldState.activitySinceLocked ? oldState.activitySinceLocked : 0;
-            newState.activitySinceLocked += availabilities.byStationCode.get(stationCode).activity;
+        let oldState = oldStates.byStationCode.get(stationCode);
+       
+        if(oldState && oldState.activityStatus == ActivityStatus.Locked){
+            newState.activitySinceLocked = oldState.activitySinceLocked + availabilities.byStationCode.get(stationCode).activity;
         }else{
             newState.activitySinceLocked = 0;
         }
