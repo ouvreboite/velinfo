@@ -126,7 +126,8 @@ Resources:
       Environment: 
         Variables:
           COLD_THRESHOLD_MINUTES_MIN: 60
-          LOCKED_ACTIVITY_THRESHOLD: 50
+          LOCKED_ACTIVITY_THRESHOLD: 40
+          UNLOCKED_ACTIVITY_THRESHOLD: 4
       Events:
         StreamAvailability:
           Type: DynamoDB

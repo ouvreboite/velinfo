@@ -9,6 +9,7 @@ import { saveStationStateChange } from "../common/repository/stationsStatesChang
 
 const coldThresholdMinutesMin: number = +process.env.COLD_THRESHOLD_MINUTES_MIN;
 const lockedActivityThreshold: number = +process.env.LOCKED_ACTIVITY_THRESHOLD;
+const unlockedActivityThreshold: number = +process.env.UNLOCKED_ACTIVITY_THRESHOLD;
 
 export const lambdaHandler = async (event: DynamoDBStreamEvent) => {
     let availabilities = extractStationsFetchedAvailabilities(event);
@@ -31,7 +32,8 @@ export const lambdaHandler = async (event: DynamoDBStreamEvent) => {
 
     let newStates = initStatesFromAvailabilities(availabilities);
     computeMissingActivities(newStates, oldStates, expectedHourlyActivities);
-    computeActivityStatus(newStates);
+    accrueActivitiesSinceLocked(newStates, oldStates, availabilities);
+    computeActivityStatus(newStates, oldStates);
 
     await updateStationsStates(newStates);
 
@@ -103,17 +105,37 @@ function getNewMissingActivity(state: StationState, deltaTimeInSeconds: number, 
     return (state.missingActivity??0)+expectedActivityOnDelta;
 }
 
-function computeActivityStatus(states: StationsStates){
+function computeActivityStatus(states: StationsStates, oldStates: StationsStates){
     states.byStationCode.forEach((state, stationCode) => {
-        if (!state.coldSince) {
-            state.activityStatus = ActivityStatus.Ok;
-        } else if (deltaMinutes(state.coldSince, states.fetchDateTime) <= coldThresholdMinutesMin) {
-            state.activityStatus = ActivityStatus.Ok;
-        } else if (state.missingActivity >= lockedActivityThreshold) {
-            state.activityStatus = ActivityStatus.Locked;
-        } else {
-            state.activityStatus = ActivityStatus.Ok;
+        let oldState = oldStates.byStationCode.get(stationCode);
+
+        if(oldState.activityStatus != ActivityStatus.Locked){
+            if(state.coldSince && deltaMinutes(state.coldSince, states.fetchDateTime) > coldThresholdMinutesMin && state.missingActivity >= lockedActivityThreshold){
+                state.activityStatus = ActivityStatus.Locked;
+            }else{
+                state.activityStatus = ActivityStatus.Ok;
+            }
+        }else{
+            //previously locked
+            if(state.activitySinceLocked > unlockedActivityThreshold){
+                state.activityStatus = ActivityStatus.Ok;
+            }else{
+                //stay locked
+                state.activityStatus = ActivityStatus.Locked;
+            }
         }
     });
 
 }
+function accrueActivitiesSinceLocked(newStates: StationsStates, oldStates: StationsStates, availabilities : StationsFetchedAvailabilities) {
+    newStates.byStationCode.forEach((newState, stationCode) => {
+        if(newState.activityStatus == ActivityStatus.Locked){
+            let oldState = oldStates.byStationCode.get(stationCode);
+            newState.activitySinceLocked = oldState && oldState.activitySinceLocked ? oldState.activitySinceLocked : 0;
+            newState.activitySinceLocked += availabilities.byStationCode.get(stationCode).activity;
+        }else{
+            newState.activitySinceLocked = 0;
+        }
+    });
+}
+

@@ -106,6 +106,7 @@ export class StationState {
     activityStatus: ActivityStatus;
     officialStatus: OfficialStatus;
     missingActivity: number;
+    activitySinceLocked: number;
     @TransformDate()
     coldSince?: Date;
 }
