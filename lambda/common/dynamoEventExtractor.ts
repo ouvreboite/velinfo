@@ -1,9 +1,9 @@
 import {DynamoDB} from "aws-sdk";
 import {DynamoDBStreamEvent} from "aws-lambda";
-import {StationsFetchedAvailabilities} from "./domain";
 import {dynamoToClass} from "./dynamoTransformer";
+import { ClassType } from "class-transformer/ClassTransformer";
 
-export function extractStationsFetchedAvailabilities(event: DynamoDBStreamEvent): StationsFetchedAvailabilities {
+export function extractDynamoEvent<T>(cls: ClassType<T>, event: DynamoDBStreamEvent): T {
     if (event.Records == undefined || event.Records.length == 0) {
         throw new Error('No record defined');
     }
@@ -14,5 +14,5 @@ export function extractStationsFetchedAvailabilities(event: DynamoDBStreamEvent)
 
     let newImage = event.Records[0].dynamodb.NewImage;
     let unmarschalled = DynamoDB.Converter.unmarshall(newImage);
-    return dynamoToClass(StationsFetchedAvailabilities, unmarschalled);
+    return dynamoToClass(cls, unmarschalled);
 }

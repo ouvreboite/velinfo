@@ -2,11 +2,11 @@ import "reflect-metadata";
 import {DynamoDBStreamEvent} from "aws-lambda";
 import {getStationHourlyStats, updateStationHourlyStats} from "../common/repository/hourlyStatsDynamoRepository";
 import {StationsFetchedAvailabilities, StationsHourlyStatistics, Statistic} from "../common/domain";
-import {extractStationsFetchedAvailabilities} from "../common/dynamoEventExtractor";
+import {extractDynamoEvent} from "../common/dynamoEventExtractor";
 import {stripToHour, toParisTZ} from "../common/dateUtil";
 
 export const lambdaHandler = async (event: DynamoDBStreamEvent) => {
-    var currentStationsAvailabilities = extractStationsFetchedAvailabilities(event);
+    var currentStationsAvailabilities = extractDynamoEvent(StationsFetchedAvailabilities, event);
     if(!currentStationsAvailabilities.fetchDateTime){
         console.error("No fetchDateTime in event, pass");
         return;

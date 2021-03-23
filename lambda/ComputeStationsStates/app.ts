@@ -1,7 +1,7 @@
 import "reflect-metadata";
 import { DynamoDBStreamEvent } from "aws-lambda";
 import { StationsFetchedAvailabilities, StationsStates, StationsExpectedActivities, StationState, ExpectedActivity, StationStateChange, ActivityStatus } from "../common/domain";
-import { extractStationsFetchedAvailabilities } from "../common/dynamoEventExtractor";
+import { extractDynamoEvent } from "../common/dynamoEventExtractor";
 import { deltaMinutes, deltaSeconds, toParisDay, toParisTZ } from "../common/dateUtil";
 import { getExpectedHourlyActivities } from "../common/repository/expectedActivitiesRepository";
 import { getStationsStates, updateStationsStates } from "../common/repository/stationsStatesRepository";
@@ -12,7 +12,7 @@ const lockedActivityThreshold: number = +process.env.LOCKED_ACTIVITY_THRESHOLD;
 const unlockedActivityThreshold: number = +process.env.UNLOCKED_ACTIVITY_THRESHOLD;
 
 export const lambdaHandler = async (event: DynamoDBStreamEvent) => {
-    let availabilities = extractStationsFetchedAvailabilities(event);
+    let availabilities = extractDynamoEvent(StationsFetchedAvailabilities, event);
     if(!availabilities.fetchDateTime){
         console.error("No fetchDateTime in event, pass");
         return;
