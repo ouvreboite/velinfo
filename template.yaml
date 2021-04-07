@@ -15,8 +15,14 @@ Parameters:
     Type: String
   HostedZoneId:
     Type: String
-  FrontendBucketName:
+  TwitterConsumerKey:
     Type: String
+  TwitterConsumerSecret:
+    Type: String
+  TwitterAccessToken:
+    Type: String 
+  TwitterAccessTokenSecret:
+    Type: String 
 
 Resources:
   # Lambdas
@@ -127,7 +133,7 @@ Resources:
         Variables:
           COLD_THRESHOLD_MINUTES_MIN: 60
           LOCKED_ACTIVITY_THRESHOLD: 40
-          UNLOCKED_ACTIVITY_THRESHOLD: 4
+          UNLOCKED_ACTIVITY_THRESHOLD: 2
       Events:
         StreamAvailability:
           Type: DynamoDB
@@ -254,6 +260,30 @@ Resources:
       Policies:
       - DynamoDBCrudPolicy:
           TableName: !Ref StationStateChangesTable
+
+  PublishStateChangeTweet:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: PublishStateChangeTweet
+      Description: Tweet when a station state change
+      CodeUri: lambda/PublishStateChangeTweet
+      Environment: 
+        Variables:
+          TWITTER_CONSUMER_KEY: !Ref TwitterConsumerKey
+          TWITTER_CONSUMER_SECRET: !Ref TwitterConsumerSecret
+          TWITTER_ACCESS_TOKEN: !Ref TwitterAccessToken
+          TWITTER_ACCESS_TOKEN_SECRET: !Ref TwitterAccessTokenSecret
+      Events:
+        StreamStateChanges:
+          Type: DynamoDB
+          Properties:
+            Stream: 
+              !GetAtt StationStateChangesTable.StreamArn
+            StartingPosition: LATEST
+            BatchSize: 1
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: !Ref CurrentCharacteristicsTable
      
   # Dynamo tables
   CurrentAvailabilityTable: 
@@ -378,6 +408,8 @@ Resources:
       TimeToLiveSpecification:
         AttributeName : timetolive
         Enabled : true
+      StreamSpecification:
+        StreamViewType: NEW_IMAGE
 
   #Rest API
   RestApi:
@@ -404,8 +436,7 @@ Resources:
   WebsiteS3Bucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: 
-        Ref: FrontendBucketName
+      BucketName: velinfo-frontend
       WebsiteConfiguration:
         IndexDocument: index.html
         ErrorDocument: index.html
