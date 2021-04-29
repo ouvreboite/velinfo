@@ -1,11 +1,15 @@
 import axios from 'axios';
+import https from 'https';
 import { OfficialStatus, StationAvailability, StationCharacteristics, StationsFetchedAvailabilities, StationsFetchedCharacteristics } from "../common/domain";
 export { fetchAvailabilities };
 
 const stationsStatusUrl: string = 'https://velib-metropole-opendata.smoove.pro/opendata/Velib_Metropole/station_status.json';
+const agent = new https.Agent({  
+    rejectUnauthorized: false
+  });
 
-async function fetchAvailabilities(): Promise<StationsFetchedAvailabilities> {
-    const response = await axios.get(stationsStatusUrl);
+async function fetchAvailabilities(): Promise<StationsFetchedAvailabilities> { 
+    const response = await axios.get(stationsStatusUrl, { httpsAgent: agent });
     const fetchedAvailabilities = mapVelibAPI(response.data);
     console.log(fetchedAvailabilities.byStationCode.size + " stations availabilities fetched from Velib API");
     return fetchedAvailabilities;
