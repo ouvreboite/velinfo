@@ -1,11 +1,15 @@
 import axios from 'axios';
+import https from 'https';
 import { StationCharacteristics, StationsFetchedCharacteristics } from "../common/domain";
 export { fetchCharacteristics };
 
 const stationsCharacteristicsUrl: string = 'https://velib-metropole-opendata.smoove.pro/opendata/Velib_Metropole/station_information.json';
+const agent = new https.Agent({  
+    rejectUnauthorized: false
+  });
 
 async function fetchCharacteristics(): Promise<StationsFetchedCharacteristics> {
-    const response = await axios.get(stationsCharacteristicsUrl);
+    const response = await axios.get(stationsCharacteristicsUrl, { httpsAgent: agent });
     const fetchedStationCharacteristics = mapVelibAPI(response.data);
     console.log(fetchedStationCharacteristics.byStationCode.size + " stations characteristics fetched from Velib API");
     return fetchedStationCharacteristics;
