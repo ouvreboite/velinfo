@@ -46,7 +46,6 @@ export class StationsFetchedCharacteristics {
     officialDateTime: Date;
 }
 
-
 export class Statistic {
     activity: number = 0;
 }
@@ -62,6 +61,17 @@ export class StationsHourlyStatistics {
     byStationCode: Map<string, Statistic>;
     @TransformDate()
     lastFetchDateTime: Date;
+    totalActivity: number;
+}
+
+export class StationsUsageStatistics {
+    constructor() {
+        this.byStationCode = new Map();
+    }
+    day: string;
+    timeslot: string;
+    @Type(() => Statistic)
+    byStationCode: Map<string, Statistic>;
     totalActivity: number;
 }
 

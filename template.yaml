@@ -78,6 +78,8 @@ Resources:
       Policies:
       - DynamoDBCrudPolicy:
           TableName: !Ref HourlyStatisticsTable
+      - DynamoDBCrudPolicy:
+          TableName: !Ref StationUsageStatisticsTable
 
   ComputeGlobalDailyStatistics:
     Type: AWS::Serverless::Function
@@ -333,6 +335,27 @@ Resources:
       ProvisionedThroughput: 
         ReadCapacityUnits: 2
         WriteCapacityUnits: 2
+      TimeToLiveSpecification:
+        AttributeName : timetolive
+        Enabled : true
+  
+  StationUsageStatisticsTable: 
+    Type: AWS::DynamoDB::Table
+    Properties: 
+      TableName: StationUsageStatistics
+      KeySchema: 
+        - AttributeName: day
+          KeyType: HASH
+        - AttributeName: timeslot
+          KeyType: RANGE
+      AttributeDefinitions:
+      - AttributeName: day
+        AttributeType: S
+      - AttributeName: timeslot
+        AttributeType: S
+      ProvisionedThroughput: 
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
       TimeToLiveSpecification:
         AttributeName : timetolive
         Enabled : true
