@@ -33,6 +33,12 @@ export class GlobalStatistics{
 
 export class Activities{
     hourlyActivities: HourlyActivity[] = [];
+    activities: Activity[] = [];
+}
+
+export class Activity{
+    stationCode: string;
+    activity: number[];
 }
 
 export class HourlyActivity{

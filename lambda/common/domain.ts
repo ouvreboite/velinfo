@@ -101,6 +101,19 @@ export class ExpectedActivity {
     expectedActivity: number;
 }
 
+export class StationMedianUsage {
+    constructor() {
+        this.byStationCode = new Map();
+    }
+    weekday:number;
+    timeslot:string;
+    @Type(() => ExpectedActivity)
+    byStationCode: Map<string, MedianUsage>;
+}
+
+export class MedianUsage {
+    activity: number;
+}
 
 export class StationsStates {
     constructor() {

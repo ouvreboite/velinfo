@@ -26,3 +26,17 @@ export function toParisTZ(date: Date): Date{
     return utcToZonedTime(date, "Europe/Paris");
 }
 
+export function buildTimeSlot(datetime: Date, minuteSpan = 5): string{
+    let parisTz = toParisTZ(datetime);
+    let minutesSlot = Math.floor(parisTz.getMinutes()/minuteSpan)*minuteSpan;
+    let formattedMinutesSlot = minutesSlot.toLocaleString('fr-FR', {
+        minimumIntegerDigits: 2,
+        useGrouping: false
+    });
+    let formattedHoursSlot = parisTz.getHours().toLocaleString('fr-FR', {
+        minimumIntegerDigits: 2,
+        useGrouping: false
+    });
+    return formattedHoursSlot+":"+formattedMinutesSlot;
+}
+
