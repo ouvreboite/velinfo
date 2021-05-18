@@ -122,6 +122,26 @@ Resources:
       - DynamoDBCrudPolicy:
           TableName: !Ref ExpectedActivityTable
 
+  ComputeMedianUsage:
+    Type: AWS::Serverless::Function
+    DependsOn: 
+      - StationUsageStatisticsTable
+      - MedianUsageTable
+    Properties:
+      FunctionName: ComputeMedianUsage
+      Description: Compute the median usage per week day and 5 minute timeslot
+      CodeUri: lambda/ComputeMedianUsage
+      Events:
+          EveryHour:
+            Type: Schedule
+            Properties:
+              Schedule: rate(5 minutes)
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: !Ref StationUsageStatisticsTable
+      - DynamoDBCrudPolicy:
+          TableName: !Ref MedianUsageTable
+
   ComputeStationsStates:
     Type: AWS::Serverless::Function
     DependsOn:
@@ -225,6 +245,7 @@ Resources:
     Type: AWS::Serverless::Function
     DependsOn:
       - HourlyStatisticsTable
+      - StationUsageStatisticsTable
     Properties:
       FunctionName: GetActualActivities
       Description: Get todays actual activities for each stations
@@ -241,6 +262,8 @@ Resources:
       Policies:
       - DynamoDBCrudPolicy:
           TableName: !Ref HourlyStatisticsTable
+      - DynamoDBCrudPolicy:
+          TableName: !Ref StationUsageStatisticsTable
 
   GetStateChanges:
     Type: AWS::Serverless::Function
@@ -393,6 +416,24 @@ Resources:
         AttributeType: N
       - AttributeName: hour
         AttributeType: N
+      ProvisionedThroughput: 
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 1
+  
+  MedianUsageTable:
+    Type: AWS::DynamoDB::Table
+    Properties: 
+      TableName: MedianUsage
+      KeySchema: 
+        - AttributeName: weekday
+          KeyType: HASH
+        - AttributeName: timeslot
+          KeyType: RANGE
+      AttributeDefinitions:
+      - AttributeName: weekday
+        AttributeType: N
+      - AttributeName: timeslot
+        AttributeType: S
       ProvisionedThroughput: 
         ReadCapacityUnits: 5
         WriteCapacityUnits: 1

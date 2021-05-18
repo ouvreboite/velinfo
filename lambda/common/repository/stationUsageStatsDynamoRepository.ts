@@ -1,6 +1,6 @@
 import * as uninstrumentedAWS from 'aws-sdk';
 import * as AWSXRay from 'aws-xray-sdk';
-import {toParisDay, toParisTZ} from "../dateUtil";
+import {buildTimeSlot, toParisDay} from "../dateUtil";
 import {StationsUsageStatistics} from "../domain";
 import {classToDynamo, dynamoToClass} from "../dynamoTransformer";
 export {updateStationUsageStats, getStationUsageStats, getStationUsageStatsForDay};
@@ -8,6 +8,7 @@ export {updateStationUsageStats, getStationUsageStats, getStationUsageStatsForDa
 const AWS = AWSXRay.captureAWS(uninstrumentedAWS);
 const client: AWS.DynamoDB.DocumentClient = new AWS.DynamoDB.DocumentClient();
 const ttlDays = 60;
+const hours = ["00","01","02","03","04","05","06","07","08","09","10","11","12","13","14","15","16","17","18","19","20","21","22","23"];
 
 async function updateStationUsageStats(stats: StationsUsageStatistics, datetime: Date) {
     let timetolive = new Date(datetime.getTime() + ttlDays * 24 * 60 * 60 * 1000);
@@ -50,29 +51,28 @@ async function getStationUsageStats(datetime: Date): Promise<StationsUsageStatis
 }
 
 async function getStationUsageStatsForDay(date: Date): Promise<StationsUsageStatistics[]> {
-    let day = toParisDay(date);
+    const day = toParisDay(date);
+    console.log("querying "+day);
+    let queries = hours.map((hour)=> getStationUsageStatsForDayAndHour(day, hour));
+    console.log("queries "+queries.length);
+    let allUsagesForDay = await Promise.all(queries);
+    return allUsagesForDay.flat();
+}
+
+async function getStationUsageStatsForDayAndHour(day: string, hour: string): Promise<StationsUsageStatistics[]> {
+    console.log("querying "+day+" "+hour);
     let request: AWS.DynamoDB.DocumentClient.QueryInput = {
         TableName: 'StationUsageStatistics',
-        KeyConditionExpression: 'stats_day = :stats_day',
+        KeyConditionExpression: '#day = :day and begins_with(timeslot, :hour)',
         ExpressionAttributeValues: {
-            ":stats_day": day
-        }
+            ":day": day,
+            ":hour":hour
+        },
+        ExpressionAttributeNames: {
+            "#day": "day"
+          }
     };
 
     let data = await client.query(request).promise();
     return data.Items.map(item => dynamoToClass(StationsUsageStatistics, item));
-}
-
-function buildTimeSlot(datetime: Date): string{
-    let parisTz = toParisTZ(datetime);
-    let minutesSlot = Math.floor(parisTz.getMinutes()/5)*5;
-    let formattedMinutesSlot = minutesSlot.toLocaleString('fr-FR', {
-        minimumIntegerDigits: 2,
-        useGrouping: false
-    });
-    let formattedHoursSlot = parisTz.getHours().toLocaleString('fr-FR', {
-        minimumIntegerDigits: 2,
-        useGrouping: false
-    });
-    return formattedHoursSlot+":"+formattedMinutesSlot;
 }
