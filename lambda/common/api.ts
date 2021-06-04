@@ -32,7 +32,6 @@ export class GlobalStatistics{
 }
 
 export class Activities{
-    hourlyActivities: Activity[] = [];
     accurateActivities: Activity[] = [];
 }
 

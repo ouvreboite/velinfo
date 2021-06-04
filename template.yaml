@@ -223,7 +223,6 @@ Resources:
   GetExpectedActivities:
     Type: AWS::Serverless::Function
     DependsOn:
-      - ExpectedActivityTable
       - MedianUsageTable
     Properties:
       FunctionName: GetExpectedActivities
@@ -240,14 +239,11 @@ Resources:
             Method: GET
       Policies:
       - DynamoDBCrudPolicy:
-          TableName: !Ref ExpectedActivityTable
-      - DynamoDBCrudPolicy:
           TableName: !Ref MedianUsageTable  
 
   GetActualActivities:
     Type: AWS::Serverless::Function
     DependsOn:
-      - HourlyStatisticsTable
       - StationUsageStatisticsTable
     Properties:
       FunctionName: GetActualActivities
@@ -263,8 +259,6 @@ Resources:
             Path: /activities/actual
             Method: GET
       Policies:
-      - DynamoDBCrudPolicy:
-          TableName: !Ref HourlyStatisticsTable
       - DynamoDBCrudPolicy:
           TableName: !Ref StationUsageStatisticsTable
 

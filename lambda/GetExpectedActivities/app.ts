@@ -1,17 +1,14 @@
 import { classToPlain } from "class-transformer";
 import "reflect-metadata";
-import { Activities, Activity } from "../common/api";
-import { StationMedianUsage, StationsExpectedActivities } from "../common/domain";
-import { getExpectedHourlyActivitiesForDay } from "../common/repository/expectedActivitiesRepository";
+import { Activities } from "../common/api";
+import { StationMedianUsage } from "../common/domain";
 import { getMedianUsagesForDay } from "../common/repository/medianUsageRepository";
 
 export const lambdaHandler = async () => {
     let today = new Date();
-    let [hourlyExpectedActivities, medianUsages] = await Promise.all([
-        getExpectedHourlyActivitiesForDay(today), getMedianUsagesForDay(today)
-    ]);  
+    let medianUsages = await getMedianUsagesForDay(today);
 
-    let todaysExpectedActivities = map(hourlyExpectedActivities, medianUsages);
+    let todaysExpectedActivities = map(medianUsages);
 
     return {
         statusCode: 200,
@@ -23,25 +20,9 @@ export const lambdaHandler = async () => {
     };
 }
 
-function map(hourlyExpectedActivities: StationsExpectedActivities[], medianUsages: StationMedianUsage[]): Activities{
+function map(medianUsages: StationMedianUsage[]): Activities{
     let byStationCode = new Map<string, number[]>();
-    hourlyExpectedActivities.forEach(activities => {
-        activities.byStationCode.forEach((expected, stationCode)=>{
-            if(!byStationCode.get(stationCode)){
-                byStationCode.set(stationCode, Array(24).fill(0));
-            }
-            byStationCode.get(stationCode)[activities.hour]=expected.expectedActivity;
-        });
-    });
-
     let expectedActivities = new Activities();
-    byStationCode.forEach((hourlyExpectedActivities, stationCode)=>{
-        let hourlyExpectedActivity = {
-            stationCode: stationCode,
-            activity: hourlyExpectedActivities
-        } as Activity;
-        expectedActivities.hourlyActivities.push(hourlyExpectedActivity);
-    });
 
     //downgrade the usage from 5 minutes to 15 minutes aggregation for lighter payload
     byStationCode = new Map<string, number[]>();
