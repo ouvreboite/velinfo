@@ -1,18 +1,14 @@
 import { classToPlain } from "class-transformer";
 import "reflect-metadata";
 import { Activities } from "../common/api";
-import { toParisTZ } from "../common/dateUtil";
-import { StationsHourlyStatistics, StationsUsageStatistics } from "../common/domain";
-import { getStationHourlyStatsForDay } from "../common/repository/hourlyStatsDynamoRepository";
+import { StationsUsageStatistics } from "../common/domain";
 import { getStationUsageStatsForDay } from "../common/repository/stationUsageStatsDynamoRepository";
 
 export const lambdaHandler = async () => {
     var today = new Date();
-    let [hourlyStats, usageStats] = await Promise.all([
-        getStationHourlyStatsForDay(today), getStationUsageStatsForDay(today)
-    ]);  
+    let usageStats = await getStationUsageStatsForDay(today);
 
-    let todaysActivities = map(hourlyStats, usageStats);
+    let todaysActivities = map(usageStats);
 
     return {
         statusCode: 200,
@@ -24,25 +20,9 @@ export const lambdaHandler = async () => {
     };
 }
 
-function map(hourlyStats: StationsHourlyStatistics[], usageStats : StationsUsageStatistics[]): Activities{
+function map(usageStats : StationsUsageStatistics[]): Activities{
     let byStationCode = new Map<string, number[]>();
-    hourlyStats.forEach(stats => {
-        var parisHour = toParisTZ(stats.lastFetchDateTime).getHours();
-        stats.byStationCode.forEach((stat, stationCode)=>{
-            if(!byStationCode.get(stationCode)){
-                byStationCode.set(stationCode, Array(hourlyStats.length).fill(0));
-            }
-            byStationCode.get(stationCode)[parisHour]=stat.activity;
-        });
-    });
-
     let activities = new Activities();
-    byStationCode.forEach((hourlyActivities, stationCode)=>{
-        activities.hourlyActivities.push({
-            stationCode: stationCode,
-            activity: hourlyActivities
-        });
-    });
 
     //downgrade the usage from 5 minutes to 15 minutes aggregation for lighter payload
     byStationCode = new Map<string, number[]>();
