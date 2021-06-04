@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { forkJoin } from 'rxjs';
-import { ActivitiesService, HourlyActivity, ActivityType } from '../activities.service';
+import { ActivitiesService, Activity, ActivityType } from '../activities.service';
 import { Station } from '../current-stations.service';
 import * as shape from 'd3-shape';
 import format from 'date-fns/format';
@@ -19,7 +19,7 @@ export class ActivityChartComponent implements OnInit {
   chartColorScheme = {
     domain: ['#C0C0C0', '#59b0e3']
   };
-  curve = shape.curveCatmullRom;
+  curve = shape.curveLinear;
 
   constructor(
     private activitiesService: ActivitiesService) { }
@@ -33,26 +33,39 @@ export class ActivityChartComponent implements OnInit {
         actual: this.activitiesService.getStationActivities(this.station.code, ActivityType.Actual)
       }
     ).subscribe((activity)=>{
+        console.log("actual "+activity.actual.activity.length);
+        console.log("expected "+activity.expected.activity.length);
         this.chartData = this.buildChartData(activity.expected, activity.actual);
         this.isLoading = false;
-        this.todaysActivity = activity.actual.hourlyActivity.reduce((a,b)=> a+b, 0);
+        this.todaysActivity = activity.actual.activity.reduce((a,b)=> a+b, 0);
     });
   }
 
+  public axisFormat(tick: string) {
+    if(tick.endsWith('00'))
+      return tick;
+    return '';
+ }
 
-  buildChartData(expected: HourlyActivity, actual: HourlyActivity): any[] {
-    let expectedValues = expected.hourlyActivity
-      .map((value, hour) => {
+  private indexToTime(index: number): string{
+    let hours = Math.floor(index/4)+"";
+    let minutes = (index%4)*15+"";
+    return hours.padStart(2, '0')+":"+minutes.padStart(2, '0');
+  }
+
+  buildChartData(expected: Activity, actual: Activity): any[] {
+    let expectedValues = expected.activity
+      .map((value, index) => {
         return {
-          "name": hour+"h",
+          "name": this.indexToTime(index),
           "value": value
         };
       });
 
-    let actualValues = actual.hourlyActivity
-      .map((value, hour) => {
+    let actualValues = actual.activity
+      .map((value, index) => {
         return {
-          "name": hour+"h",
+          "name": this.indexToTime(index),
           "value": value
         };
       });

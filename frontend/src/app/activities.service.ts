@@ -21,11 +21,11 @@ export class ActivitiesService {
   constructor(private http: HttpClient) {
   }
 
-  getStationActivities(stationCode: string, type: ActivityType): Observable<HourlyActivity>{
+  getStationActivities(stationCode: string, type: ActivityType): Observable<Activity>{
     return this.getActivities(type)
       .pipe(
         map(activities => 
-          activities.hourlyActivities.find(hourly => hourly.stationCode === stationCode)
+          activities.accurateActivities.find(hourly => hourly.stationCode === stationCode)
         )
       );
   }
@@ -33,9 +33,9 @@ export class ActivitiesService {
   getTotalActivitiesByStation(type: ActivityType): Observable<Map<string, number>>{
     return this.getActivities(type)
     .pipe(
-      map(activities => activities.hourlyActivities.reduce(function(map, activity) 
+      map(activities => activities.accurateActivities.reduce(function(map, accurateActivity) 
         {
-        map.set(activity.stationCode,activity.hourlyActivity.reduce((a, b) => a + b, 0));
+        map.set(accurateActivity.stationCode,accurateActivity.activity.reduce((a, b) => a + b, 0));
         return map;
         }, 
         new Map<string,number>())
@@ -135,12 +135,12 @@ export class ActivitiesService {
 }
 
 class Activities{
-  hourlyActivities: HourlyActivity[] = [];
+  accurateActivities: Activity[] = [];
 }
 
-export class HourlyActivity{
+export class Activity{
   stationCode: string;
-  hourlyActivity: number[];
+  activity: number[];
 }
 
 export enum ActivityType {

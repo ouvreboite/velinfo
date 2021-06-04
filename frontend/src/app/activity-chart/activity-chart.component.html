@@ -1,14 +1,19 @@
+
 <mat-card-title fxLayout="row" fxLayoutAlign="space-between center">
-Activité aujourd'hui : {{todaysActivity}}
+    Activité aujourd'hui : {{todaysActivity}}
 </mat-card-title>
 <mat-card-subtitle>Nombre d'ajouts/retraits</mat-card-subtitle>
-<div style="width: 100%;height: 300px">
+<div  *ngIf="!isLoading" style="width: 100%;height: 400px">
     <ngx-charts-line-chart *ngIf="!isLoading" 
     [results]="chartData"
     [scheme]="chartColorScheme"
     [curve]="curve"
     [yAxis]=true 
-    [xAxis]=true >
-    
+    [xAxis]=true
+    [xAxisTickFormatting]="axisFormat">
     </ngx-charts-line-chart>
+</div>
+<div *ngIf="isLoading" style="display: flex; justify-content: center; align-items: center">
+    <mat-progress-spinner color="primary" mode="indeterminate">
+    </mat-progress-spinner>
 </div>
