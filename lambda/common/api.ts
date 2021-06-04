@@ -32,18 +32,13 @@ export class GlobalStatistics{
 }
 
 export class Activities{
-    hourlyActivities: HourlyActivity[] = [];
-    activities: Activity[] = [];
+    hourlyActivities: Activity[] = [];
+    accurateActivities: Activity[] = [];
 }
 
 export class Activity{
     stationCode: string;
     activity: number[];
-}
-
-export class HourlyActivity{
-    stationCode: string;
-    hourlyActivity: number[];
 }
 
 export class StateChanges{

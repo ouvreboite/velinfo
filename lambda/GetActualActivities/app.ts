@@ -7,12 +7,10 @@ import { getStationHourlyStatsForDay } from "../common/repository/hourlyStatsDyn
 import { getStationUsageStatsForDay } from "../common/repository/stationUsageStatsDynamoRepository";
 
 export const lambdaHandler = async () => {
-    let hourlyStats = await getStationHourlyStatsForDay(new Date());  
-    let usageStats = await getStationUsageStatsForDay(new Date());
-
-    usageStats.forEach(stats => {
-        console.log(stats.day+" "+stats.timeslot);
-    })
+    var today = new Date();
+    let [hourlyStats, usageStats] = await Promise.all([
+        getStationHourlyStatsForDay(today), getStationUsageStatsForDay(today)
+    ]);  
 
     let todaysActivities = map(hourlyStats, usageStats);
 
@@ -42,26 +40,26 @@ function map(hourlyStats: StationsHourlyStatistics[], usageStats : StationsUsage
     byStationCode.forEach((hourlyActivities, stationCode)=>{
         activities.hourlyActivities.push({
             stationCode: stationCode,
-            hourlyActivity: hourlyActivities
+            activity: hourlyActivities
         });
     });
 
-    //more accurate
+    //downgrade the usage from 5 minutes to 15 minutes aggregation for lighter payload
     byStationCode = new Map<string, number[]>();
     usageStats.forEach(stats => {
         let hour = parseInt(stats.timeslot.split(':')[0], 10);
         let minute = parseInt(stats.timeslot.split(':')[1], 10);
-        let index = 12*hour+Math.floor(minute/5);
+        let index = 4*hour+Math.floor(minute/15);
 
         stats.byStationCode.forEach((stat, stationCode)=>{
             if(!byStationCode.get(stationCode)){
-                byStationCode.set(stationCode, Array(usageStats.length).fill(0));
+                byStationCode.set(stationCode, Array(Math.ceil(usageStats.length/3)).fill(0));
             }
-            byStationCode.get(stationCode)[index]=stat.activity;
+            byStationCode.get(stationCode)[index]+=stat.activity;
         });
     });
     byStationCode.forEach((activityArray, stationCode)=>{
-        activities.activities.push({
+        activities.accurateActivities.push({
             stationCode: stationCode,
             activity: activityArray
         });

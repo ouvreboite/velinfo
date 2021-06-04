@@ -52,15 +52,12 @@ async function getStationUsageStats(datetime: Date): Promise<StationsUsageStatis
 
 async function getStationUsageStatsForDay(date: Date): Promise<StationsUsageStatistics[]> {
     const day = toParisDay(date);
-    console.log("querying "+day);
     let queries = hours.map((hour)=> getStationUsageStatsForDayAndHour(day, hour));
-    console.log("queries "+queries.length);
     let allUsagesForDay = await Promise.all(queries);
     return allUsagesForDay.flat();
 }
 
 async function getStationUsageStatsForDayAndHour(day: string, hour: string): Promise<StationsUsageStatistics[]> {
-    console.log("querying "+day+" "+hour);
     let request: AWS.DynamoDB.DocumentClient.QueryInput = {
         TableName: 'StationUsageStatistics',
         KeyConditionExpression: '#day = :day and begins_with(timeslot, :hour)',
