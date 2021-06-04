@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { forkJoin } from 'rxjs';
+import { ActivitiesService, ActivityType } from '../activities.service';
 import { CurrentStations, CurrentStationsService, Station } from '../current-stations.service';
 import { UserFavoritesService } from '../user-favorites.service';
 
@@ -14,8 +16,9 @@ export class FavoritesPageComponent implements OnInit {
   hasFavorites = false;
 
   constructor(
-    private currentStationsService: CurrentStationsService,
-    private userFavoritesServices: UserFavoritesService) { }
+    private stationService: CurrentStationsService,
+    private userFavoritesServices: UserFavoritesService,
+    private activitiesService: ActivitiesService) { }
 
   ngOnInit(): void {
     var favoriteCodes = this.userFavoritesServices.getUserFavoriteStationsCodes();
@@ -23,13 +26,22 @@ export class FavoritesPageComponent implements OnInit {
 
     if(this.hasFavorites){
       this.isLoading = true;
-      this.currentStationsService.getStations()
-      .subscribe((data: CurrentStations) => {
-          var favoriteCodes = this.userFavoritesServices.getUserFavoriteStationsCodes();
-          this.favoriteStations = data.stations.filter(station => favoriteCodes.includes(station.code));
-          this.isLoading = false;
+      forkJoin(
+        {
+          stations:  this.stationService.getStations(),
+          todaysActivities: this.activitiesService.getTotalActivitiesByStation(ActivityType.Actual)
         }
-      )
+      ).subscribe((observable)=>{
+          let stations = observable.stations.stations;
+  
+          stations.forEach(station =>{
+            const todaysActivity = observable.todaysActivities.get(station.code);
+            station.todaysActivity = todaysActivity;
+          })
+          var favoriteCodes = this.userFavoritesServices.getUserFavoriteStationsCodes();
+          this.favoriteStations = stations.filter(station => favoriteCodes.includes(station.code));
+          this.isLoading = false;
+      });
     }
     
   }
