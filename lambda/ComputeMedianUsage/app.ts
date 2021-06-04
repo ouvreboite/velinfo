@@ -6,13 +6,12 @@ import { updateMedianUsage } from "../common/repository/medianUsageRepository";
 
 export const lambdaHandler = async (event: any) => {
 
-    let oneHourAgo = new Date();
-    oneHourAgo.setHours(oneHourAgo.getHours()-1);
-    oneHourAgo.setMinutes(oneHourAgo.getMinutes()-5);
+    let oneDayAgo = new Date();
+    oneDayAgo.setDate(oneDayAgo.getDate()-1);
 
-    let medianPastUsages = await getMedianPastUsageForSameTimeslotAndDay(oneHourAgo);
+    let medianPastUsages = await getMedianPastUsageForSameTimeslotAndDay(oneDayAgo);
 
-    let medianUsage = buildMedianUsage(oneHourAgo, medianPastUsages);
+    let medianUsage = buildMedianUsage(oneDayAgo, medianPastUsages);
     await updateMedianUsage(medianUsage)
 }
 
