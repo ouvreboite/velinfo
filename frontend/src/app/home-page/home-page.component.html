@@ -9,13 +9,13 @@
       🔎 Parcourir la liste des <a routerLink="/stations">stations</a>.<br/>
     </p>
   </mat-card>
-  <app-global-activity-counter class="counter"></app-global-activity-counter>
-  <app-global-activity-chart class="chart"></app-global-activity-chart>
+  <a routerLink="/stats" class="counter"><app-global-activity-counter></app-global-activity-counter></a>
+  <a routerLink="/stats" class="chart"><app-global-activity-chart></app-global-activity-chart></a>
   <app-state-change-list class="changes"></app-state-change-list>
   <mat-card class="about">
     <mat-card-title>A propos</mat-card-title>
     <p style="text-align:justify">
-      Cette application est développée de manière amateur en se basant sur l'<a href="https://www.velib-metropole.fr/donnees-open-data-gbfs-du-service-velib-metropole">API Velib'</a>.
+      Cette application est développée de manière amateur en se basant sur l'<a href="https://www.velib-metropole.fr/donnees-open-data-gbfs-du-service-velib-metropole">API Velib' Metropole</a>.
       La détection des stations bloquées se base sur l'activité de chaque station sur le mois passé pour détecter les périodes d'inactivité anormales.
       <br/>
       <br/>

@@ -16,10 +16,12 @@ a{
 .counter {
     grid-column: 1 / 2;
     grid-row: 2;
+    text-decoration: none
 }
 .chart {
     grid-column: 2 / -1;
     grid-row: 2;
+    text-decoration: none
 }
 .changes {
     grid-column: 1 / -1;

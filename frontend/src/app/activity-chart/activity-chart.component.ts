@@ -29,12 +29,14 @@ export class ActivityChartComponent implements OnInit {
 
     forkJoin(
       {
-        expected: this.activitiesService.getStationActivities(this.station.code, ActivityType.Expected),
-        actual: this.activitiesService.getStationActivities(this.station.code, ActivityType.Actual)
+        expected: this.station ? 
+          this.activitiesService.getStationDetailledActivities(this.station.code, ActivityType.Expected)
+           : this.activitiesService.getGlobalDetailledActivites(ActivityType.Expected),
+        actual: this.station ? 
+          this.activitiesService.getStationDetailledActivities(this.station.code, ActivityType.Actual)
+           : this.activitiesService.getGlobalDetailledActivites(ActivityType.Actual)
       }
     ).subscribe((activity)=>{
-        console.log("actual "+activity.actual.activity.length);
-        console.log("expected "+activity.expected.activity.length);
         this.chartData = this.buildChartData(activity.expected, activity.actual);
         this.isLoading = false;
         this.todaysActivity = activity.actual.activity.reduce((a,b)=> a+b, 0);
