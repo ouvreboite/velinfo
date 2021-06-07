@@ -147,15 +147,19 @@ Resources:
     DependsOn:
       - StationStateTable
       - CurrentAvailabilityTable
+      - StationUsageStatisticsTable
+      - MedianUsageTable
     Properties:
       FunctionName: ComputeStationsStates
       Description: Compute the state of each station
       CodeUri: lambda/ComputeStationsStates
       Environment: 
         Variables:
-          COLD_THRESHOLD_MINUTES_MIN: 60
-          LOCKED_ACTIVITY_THRESHOLD: 40
+          COLD_THRESHOLD_MINUTES_MIN: 30
+          LOCKED_ACTIVITY_THRESHOLD: 20
           UNLOCKED_ACTIVITY_THRESHOLD: 2
+          GLOBAL_RATIO_MIN: 0.5
+          GLOBAL_RATIO_MAX: 2
       Events:
         StreamAvailability:
           Type: DynamoDB
@@ -171,6 +175,10 @@ Resources:
           TableName: !Ref ExpectedActivityTable
       - DynamoDBCrudPolicy:
           TableName: !Ref StationStateChangesTable
+      - DynamoDBCrudPolicy:
+          TableName: !Ref StationUsageStatisticsTable
+      - DynamoDBCrudPolicy:
+          TableName: !Ref MedianUsageTable
   
   GetStations:
     Type: AWS::Serverless::Function

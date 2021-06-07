@@ -37,6 +37,7 @@ async function updateStationUsageStats(stats: StationsUsageStatistics, datetime:
 async function getStationUsageStats(datetime: Date): Promise<StationsUsageStatistics> {
     let day = toParisDay(datetime);
     let timeslot = buildTimeSlot(datetime);
+    console.log("getStationUsageStats for : "+day+", "+timeslot);
 
     let request: AWS.DynamoDB.DocumentClient.GetItemInput ={
         TableName: 'StationUsageStatistics',
@@ -47,7 +48,9 @@ async function getStationUsageStats(datetime: Date): Promise<StationsUsageStatis
     };
 
     let data = await client.get(request).promise();
-    return dynamoToClass(StationsUsageStatistics, data.Item);
+    let usage = dynamoToClass(StationsUsageStatistics, data.Item);
+    console.log("getStationUsageStats for : "+day+", "+timeslot+" = "+usage?.byStationCode?.size);
+    return usage;
 }
 
 async function getStationUsageStatsForDay(date: Date): Promise<StationsUsageStatistics[]> {

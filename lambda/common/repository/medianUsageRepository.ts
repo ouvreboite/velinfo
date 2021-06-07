@@ -30,6 +30,7 @@ async function updateMedianUsage(medianUsage: StationMedianUsage) {
 async function getMedianUsage(date: Date): Promise<StationMedianUsage> {
     let weekday = toParisTZ(date).getDay();
     let timeslot = buildTimeSlot(date);
+    console.log("getMedianUsage for : "+weekday+", "+timeslot);
     let request: AWS.DynamoDB.DocumentClient.GetItemInput = {
         TableName: 'MedianUsage',
         Key: {
@@ -39,7 +40,9 @@ async function getMedianUsage(date: Date): Promise<StationMedianUsage> {
     };
 
     let data = await client.get(request).promise();
-    return dynamoToClass(StationMedianUsage, data.Item);
+    let median = dynamoToClass(StationMedianUsage, data.Item);
+    console.log("getMedianUsage for : "+weekday+", "+timeslot+" = "+median?.byStationCode?.size);
+    return median;
 }
 
 async function getMedianUsagesForDay(date: Date): Promise<StationMedianUsage[]> {
