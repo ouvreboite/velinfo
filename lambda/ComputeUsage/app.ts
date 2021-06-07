@@ -1,9 +1,7 @@
 import "reflect-metadata";
 import {DynamoDBStreamEvent} from "aws-lambda";
-import {getStationHourlyStats, updateStationHourlyStats} from "../common/repository/hourlyStatsDynamoRepository";
-import {StationsFetchedAvailabilities, StationsHourlyStatistics, StationsUsageStatistics, Statistic} from "../common/domain";
+import {StationsFetchedAvailabilities, StationsUsageStatistics, Statistic} from "../common/domain";
 import {extractDynamoEvent} from "../common/dynamoEventExtractor";
-import {stripToHour, toParisTZ} from "../common/dateUtil";
 import { getStationUsageStats, updateStationUsageStats } from "../common/repository/stationUsageStatsDynamoRepository";
 
 export const lambdaHandler = async (event: DynamoDBStreamEvent) => {
@@ -12,33 +10,11 @@ export const lambdaHandler = async (event: DynamoDBStreamEvent) => {
         console.error("No fetchDateTime in event, pass");
         return;
     }
-
-    var prevStats = await getStationHourlyStats(currentStationsAvailabilities.fetchDateTime);
-    var statisticsMap = buildStatisticMap(currentStationsAvailabilities, prevStats?.byStationCode);
-    var hourlyStats = buildHourlyStatistics(statisticsMap, currentStationsAvailabilities.fetchDateTime);
-    await updateStationHourlyStats(hourlyStats);
-
-    //usage stats (smaller increment)
     var prevUsageStats = await getStationUsageStats(currentStationsAvailabilities.fetchDateTime);
     var usageStatisticsMap = buildStatisticMap(currentStationsAvailabilities, prevUsageStats?.byStationCode);
     var usageStatistics = buildUsageStatistics(usageStatisticsMap);
     await updateStationUsageStats(usageStatistics, currentStationsAvailabilities.fetchDateTime);
 }
-
-function buildHourlyStatistics(statisticsMap: Map<string, Statistic>, fetchDateTime: Date): StationsHourlyStatistics{
-    var statsHour = stripToHour(fetchDateTime)
-    var parisHour = toParisTZ(fetchDateTime).getHours();
-    var totalActivity = computeTotalActivity(statisticsMap);
-
-    var hourlyStats = new StationsHourlyStatistics();
-    hourlyStats.byStationCode = statisticsMap;
-    hourlyStats.statsDateTime = statsHour;
-    hourlyStats.hour = parisHour;
-    hourlyStats.lastFetchDateTime = fetchDateTime;
-    hourlyStats.totalActivity = totalActivity;
-    return hourlyStats;
-}
-
 
 function buildUsageStatistics(statisticsMap: Map<string, Statistic>): StationsUsageStatistics{
     var totalActivity = computeTotalActivity(statisticsMap);
