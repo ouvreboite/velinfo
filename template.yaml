@@ -58,15 +58,15 @@ Resources:
       - DynamoDBCrudPolicy:
           TableName: !Ref CurrentCharacteristicsTable
 
-  ComputeHourlyStatistics:
+  ComputeUsage:
     Type: AWS::Serverless::Function
     DependsOn:
       - CurrentAvailabilityTable
-      - HourlyStatisticsTable
+      - StationUsageStatisticsTable
     Properties:
-      FunctionName: ComputeHourlyStatistics
-      Description: Process every update of the current availability table to compute hourly usage stats for each station
-      CodeUri: lambda/ComputeHourlyStatistics
+      FunctionName: ComputeUsage
+      Description: Process every update of the current availability table to compute usage stats for each station
+      CodeUri: lambda/ComputeUsage
       Events:
         StreamAvailability:
           Type: DynamoDB
@@ -76,8 +76,6 @@ Resources:
             StartingPosition: LATEST
             BatchSize: 1
       Policies:
-      - DynamoDBCrudPolicy:
-          TableName: !Ref HourlyStatisticsTable
       - DynamoDBCrudPolicy:
           TableName: !Ref StationUsageStatisticsTable
 
@@ -101,26 +99,6 @@ Resources:
       Policies:
       - DynamoDBCrudPolicy:
           TableName: !Ref GlobalDailyStatisticsTable
-
-  ComputeExpectedActivities:
-    Type: AWS::Serverless::Function
-    DependsOn: 
-      - HourlyStatisticsTable
-      - ExpectedActivityTable
-    Properties:
-      FunctionName: ComputeExpectedActivities
-      Description: Compute the expected station activity per week day and hour
-      CodeUri: lambda/ComputeExpectedActivities
-      Events:
-          EveryHour:
-            Type: Schedule
-            Properties:
-              Schedule: rate(1 hour)
-      Policies:
-      - DynamoDBCrudPolicy:
-          TableName: !Ref HourlyStatisticsTable
-      - DynamoDBCrudPolicy:
-          TableName: !Ref ExpectedActivityTable
 
   ComputeMedianUsage:
     Type: AWS::Serverless::Function
@@ -171,8 +149,6 @@ Resources:
       Policies:
       - DynamoDBCrudPolicy:
           TableName: !Ref StationStateTable
-      - DynamoDBCrudPolicy:
-          TableName: !Ref ExpectedActivityTable
       - DynamoDBCrudPolicy:
           TableName: !Ref StationStateChangesTable
       - DynamoDBCrudPolicy:
