@@ -47,9 +47,7 @@ export class ActivitiesService {
     return this.getActivities(type)
       .pipe(
         map(activities => {
-          console.log(activities.accurateActivities[0].activity.length);
           let globalActivities : number[] = new Array(activities.accurateActivities[0].activity.length).fill(0);
-          console.log(globalActivities);
           activities.accurateActivities.map(stationActivities => stationActivities.activity).forEach(stationActivities=>{
             stationActivities.forEach((activity, index)=>{globalActivities[index]+=activity});
           })
