@@ -1,8 +1,8 @@
 <mat-card *ngIf="!isLoading">
     <mat-card-title>Derniers évènements</mat-card-title>
-    <div class="station-change" *ngFor="let change of changes" [routerLink]="'/station/'+change.stationCode">
+    <div class="station-change" *ngFor="let change of changes">
       <div class="change-datetime">{{change.datetime | parisDate}}</div>
-      <div>{{getChangeText(change)}} à la station <span class="station-name">{{getStationName(change.stationCode)}}</span></div>
+      <div>{{getChangeText(change)}} à la station <a [routerLink]="'/station/'+change.stationCode">{{getStationName(change.stationCode)}}</a></div>
     </div>
     <div *ngIf="!changes || changes.length == 0">Aucun évènement la semaine passée.</div>
     <br/>
