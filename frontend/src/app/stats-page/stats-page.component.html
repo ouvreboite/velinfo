@@ -1,13 +1,15 @@
 
-<mat-card class="wrapper">
-    <mat-card-title>Statistiques globales</mat-card-title>
-    <p style="text-align:justify">
-      Vous trouverez ici les statistiques d'usage du réseau Velib pour aujourd'hui.
-    </p>
-    <app-global-activity-counter></app-global-activity-counter>
-    <app-global-activity-chart></app-global-activity-chart>
-    <mat-card>
+<div class="wrapper">
+    <mat-card class="introduction">
+      <mat-card-title>Statistiques globales</mat-card-title>
+      <p style="text-align:justify">
+        Vous trouverez ici les statistiques d'usage du réseau Velib pour aujourd'hui.
+      </p>
+    </mat-card>
+    <app-global-activity-counter class="counter"></app-global-activity-counter>
+    <app-global-activity-chart class="chart"></app-global-activity-chart>
+    <mat-card class="comparison">
         <app-activity-chart></app-activity-chart>
         Comparaison de l'activité habituelle (même jour de la semaine sur le mois écoulé) et de l'activité vue aujourd'hui.
     </mat-card>
-</mat-card>
+  </div>
