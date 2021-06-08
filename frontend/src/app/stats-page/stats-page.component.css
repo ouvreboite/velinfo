@@ -1,0 +1,44 @@
+.wrapper {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5px;
+    grid-auto-rows: minmax(50px, auto);
+}
+
+.introduction {
+    grid-column: 1 / -1;
+    grid-row: 1;
+}
+.counter {
+    grid-column: 1 / 2;
+    grid-row: 2;
+    text-decoration: none
+}
+.chart {
+    grid-column: 2 / -1;
+    grid-row: 2;
+    text-decoration: none
+}
+.comparison {
+    grid-column: 1 / -1;
+    grid-row: 3;
+}
+
+@media screen and (max-width: 768px) {
+    .introduction {
+        grid-column: 1 / -1;
+        grid-row: 1;
+    }
+    .counter {
+        grid-column: 1 / -1;
+        grid-row: 2;
+    }
+    .chart {
+        grid-column: 1 / -1;
+        grid-row: 3;
+    }
+    .comparison {
+        grid-column: 1 / -1;
+        grid-row: 4;
+    }
+}
