@@ -50,20 +50,6 @@ export class Statistic {
     activity: number = 0;
 }
 
-export class StationsHourlyStatistics {
-    constructor() {
-        this.byStationCode = new Map();
-    }
-    @TransformDate()
-    statsDateTime: Date;
-    hour:number;
-    @Type(() => Statistic)
-    byStationCode: Map<string, Statistic>;
-    @TransformDate()
-    lastFetchDateTime: Date;
-    totalActivity: number;
-}
-
 export class StationsUsageStatistics {
     constructor() {
         this.byStationCode = new Map();
@@ -87,27 +73,13 @@ export class GlobalDailyStatistics {
     totalActivity: number;
 }
 
-export class StationsExpectedActivities {
-    constructor() {
-        this.byStationCode = new Map();
-    }
-    weekday:number;
-    hour:number;
-    @Type(() => ExpectedActivity)
-    byStationCode: Map<string, ExpectedActivity>;
-}
-
-export class ExpectedActivity {
-    expectedActivity: number;
-}
-
 export class StationMedianUsage {
     constructor() {
         this.byStationCode = new Map();
     }
     weekday:number;
     timeslot:string;
-    @Type(() => ExpectedActivity)
+    @Type(() => MedianUsage)
     byStationCode: Map<string, MedianUsage>;
 }
 
