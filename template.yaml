@@ -134,9 +134,9 @@ Resources:
       Environment: 
         Variables:
           COLD_THRESHOLD_MINUTES_MIN: 30
-          LOCKED_ACTIVITY_THRESHOLD: 20
+          LOCKED_ACTIVITY_THRESHOLD: 30
           UNLOCKED_ACTIVITY_THRESHOLD: 2
-          GLOBAL_RATIO_MIN: 0.5
+          GLOBAL_RATIO_MIN: 0
           GLOBAL_RATIO_MAX: 2
       Events:
         StreamAvailability:
@@ -321,27 +321,6 @@ Resources:
       ProvisionedThroughput: 
         ReadCapacityUnits: 2
         WriteCapacityUnits: 3
-
-  HourlyStatisticsTable: 
-    Type: AWS::DynamoDB::Table
-    Properties: 
-      TableName: HourlyStatistics
-      KeySchema: 
-        - AttributeName: stats_day
-          KeyType: HASH
-        - AttributeName: stats_datetime
-          KeyType: RANGE
-      AttributeDefinitions:
-      - AttributeName: stats_day
-        AttributeType: S
-      - AttributeName: stats_datetime
-        AttributeType: S
-      ProvisionedThroughput: 
-        ReadCapacityUnits: 2
-        WriteCapacityUnits: 2
-      TimeToLiveSpecification:
-        AttributeName : timetolive
-        Enabled : true
   
   StationUsageStatisticsTable: 
     Type: AWS::DynamoDB::Table
@@ -382,24 +361,6 @@ Resources:
         Enabled : true
       StreamSpecification:
         StreamViewType: NEW_IMAGE
-
-  ExpectedActivityTable:
-    Type: AWS::DynamoDB::Table
-    Properties: 
-      TableName: ExpectedActivity
-      KeySchema: 
-        - AttributeName: weekday
-          KeyType: HASH
-        - AttributeName: hour
-          KeyType: RANGE
-      AttributeDefinitions:
-      - AttributeName: weekday
-        AttributeType: N
-      - AttributeName: hour
-        AttributeType: N
-      ProvisionedThroughput: 
-        ReadCapacityUnits: 5
-        WriteCapacityUnits: 1
   
   MedianUsageTable:
     Type: AWS::DynamoDB::Table
