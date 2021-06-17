@@ -48,8 +48,14 @@ function postTweet (message: string) {
     }
     
     return new Promise((resolve, reject) => {
-        twit.post('statuses/update', content, function(err, data, response) {
-            if (err) { 
+        twit.post('statuses/update', content, function(err: any, data, response) {
+            if (err) {
+                console.log(err.code);
+                if(err.code == 187){
+                    //cf https://developer.twitter.com/en/support/twitter-api/error-troubleshooting
+                    console.log("Tweet refused because duplicate");
+                    return resolve({ status: 'Tweet refused because duplicate' })
+                } 
                 return reject(err);
             }else{
                 return resolve({ status: 'Tweet sent' });
