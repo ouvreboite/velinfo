@@ -1,7 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { MatSort } from '@angular/material/sort';
-import { forkJoin } from 'rxjs';
-import { ActivitiesService, ActivityType } from '../activities.service';
+import { Component, OnInit } from '@angular/core';
 import { CurrentStations, CurrentStationsService, Station } from '../current-stations.service';
 
 @Component({
@@ -16,24 +13,13 @@ export class StationsListPageComponent implements OnInit {
   numberOfStations = 0;
 
   constructor(
-    private stationService: CurrentStationsService,
-    private activitiesService: ActivitiesService) { }
+    private stationService: CurrentStationsService) { }
 
   ngOnInit(): void {
     this.isLoading = true;
 
-    forkJoin(
-      {
-        stations:  this.stationService.getStations(),
-        todaysActivities: this.activitiesService.getTotalActivitiesByStation(ActivityType.Actual)
-      }
-    ).subscribe((observable)=>{
-        this.stations = observable.stations.stations;
-
-        this.stations.forEach(station =>{
-          const todaysActivity = observable.todaysActivities.get(station.code);
-          station.todaysActivity = todaysActivity;
-        })
+    this.stationService.getStations().subscribe((data: CurrentStations)=>{
+        this.stations = data.stations;
         this.numberOfStations = this.stations.length;
         this.isLoading = false;
     });

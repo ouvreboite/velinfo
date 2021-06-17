@@ -19,7 +19,7 @@ export class StationsTableComponent implements AfterViewInit  {
   onlyBlocked = false;
   currentFilterValue = "";
   dataSource = new MatTableDataSource<Station>();
-  displayedColumns: string[] = ['name', 'status', 'availability', 'lastActivityAgo', 'todaysActivity'];
+  displayedColumns: string[] = ['name', 'status', 'availability', 'lastActivityAgo'];
 
   ngAfterViewInit() {
     this.setupTable();
@@ -54,7 +54,7 @@ export class StationsTableComponent implements AfterViewInit  {
     this.dataSource.sortingDataAccessor = (station, property) => {
           switch(property) {
             case 'lastActivityAgo': return station.lastActivity;
-            case 'occupation': return station.occupation;
+            case 'availability': return station.occupation;
             default: return station[property];
           }
         };

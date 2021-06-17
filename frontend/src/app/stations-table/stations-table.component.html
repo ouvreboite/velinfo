@@ -33,11 +33,6 @@
         <td class="hiddable-smallscreen" mat-cell *matCellDef="let station"> {{station.lastActivityAgo}} </td>
     </ng-container>
 
-    <ng-container matColumnDef="todaysActivity">
-        <th class="hiddable-smallscreen" mat-header-cell *matHeaderCellDef mat-sort-header>Activité aujourd'hui</th>
-        <td class="hiddable-smallscreen" mat-cell *matCellDef="let station"> {{station.todaysActivity}} </td>
-    </ng-container>
-
     <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
     <tr mat-row *matRowDef="let station; columns: displayedColumns;" [routerLink]="'/station/'+station.code"
         class="row-hover"></tr>
