@@ -81,5 +81,5 @@ export class StationState {
   activityStatus: ActivityStatus;
   officialStatus: OfficialStatus;
   missingActivity: number;
-  coldSince?: Date;
+  inactiveSince?: Date;
 }

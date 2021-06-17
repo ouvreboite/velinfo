@@ -40,7 +40,7 @@ function buildStations(stationCharacteristics: StationsFetchedCharacteristics, a
             station.electrical = availability.electrical;
             station.mechanical = availability.mechanical;
             station.empty = availability.empty;
-            station.coldSince = availability.coldSince;
+            station.inactiveSince = availability.inactiveSince;
             station.officialStatus = availability.officialStatus;
         }
 

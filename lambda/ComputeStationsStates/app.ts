@@ -165,7 +165,7 @@ function initStatesFromAvailabilities(availabilities: StationsFetchedAvailabilit
     availabilities.byStationCode.forEach((availability, stationCode) => {
         let newState = new StationState();
         newStates.byStationCode.set(stationCode, newState);
-        newState.coldSince = availability.coldSince;
+        newState.inactiveSince = availability.inactiveSince;
         newState.officialStatus = availability.officialStatus;
     });
     return newStates;
@@ -186,7 +186,7 @@ function computeMissingActivities(newStates: StationsStates, oldStates: Stations
 }
 
 function getNewMissingActivity(state: StationState, deltaTimeInSeconds: number, medianUsage : MedianUsage, globalUsageRatio: number) : number{
-    if (!state.coldSince) {
+    if (!state.inactiveSince) {
         return null;
     }
     let expectedActivityOnDelta = (deltaTimeInSeconds / 1800) * (medianUsage?.activity || 0) * globalUsageRatio;
@@ -198,7 +198,7 @@ function computeActivityStatus(states: StationsStates, oldStates: StationsStates
         let oldState = oldStates.byStationCode.get(stationCode);
 
         if(!oldState || oldState.activityStatus != ActivityStatus.Locked){
-            if(state.coldSince && deltaMinutes(state.coldSince, states.fetchDateTime) > coldThresholdMinutesMin && state.missingActivity >= lockedActivityThreshold){
+            if(state.inactiveSince && deltaMinutes(state.inactiveSince, states.fetchDateTime) > coldThresholdMinutesMin && state.missingActivity >= lockedActivityThreshold){
                 state.activityStatus = ActivityStatus.Locked;
             }else{
                 state.activityStatus = ActivityStatus.Ok;

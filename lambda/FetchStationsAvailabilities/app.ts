@@ -32,7 +32,7 @@ function mergeAndDiff(current: StationsFetchedAvailabilities, previous: Stations
             currAvailability.activity = activity;
 
             if (deltaElectrical == 0 && deltaMechanical == 0) {
-                currAvailability.coldSince = prevAvailability.coldSince || previous.fetchDateTime;
+                currAvailability.inactiveSince = prevAvailability.inactiveSince || previous.fetchDateTime;
             }
         }
     });

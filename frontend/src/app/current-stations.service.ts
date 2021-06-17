@@ -68,7 +68,7 @@ export class CurrentStationsService {
   private addLastActivityAgo(currentStations: CurrentStations): CurrentStations{
     let now = new Date();
     currentStations.stations.forEach(station => {
-      station.lastActivity = station.coldSince?new Date(station.coldSince):now;
+      station.lastActivity = station.inactiveSince?new Date(station.inactiveSince):now;
       station.lastActivityAgo = formatDistanceToNow(station.lastActivity, {locale: fr});
     });
     return currentStations;
@@ -101,7 +101,7 @@ export class Station{
   empty: number;
   occupation: number;
   officialStatus: OfficialStatus;
-  coldSince: Date;
+  inactiveSince: Date;
   lastActivity : Date;
   lastActivityAgo : string;
   missingActivity?: number;
