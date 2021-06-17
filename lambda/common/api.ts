@@ -12,7 +12,7 @@ export class Station{
     empty: number;
     officialStatus: string;
     @TransformDate()
-    coldSince: Date;
+    inactiveSince?: Date;
     missingActivity?: number;
 }
 
@@ -55,6 +55,6 @@ export class StationState {
     activityStatus: string;
     officialStatus: string;
     missingActivity: number;
-    coldSince?: Date;
+    inactiveSince?: Date;
 }
 

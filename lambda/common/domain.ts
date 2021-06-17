@@ -11,7 +11,7 @@ export class StationAvailability {
     deltaMechanical?: number;
     activity?: number;
     @TransformDate()
-    coldSince?: Date;
+    inactiveSince?: Date;
 }
 
 export class StationsFetchedAvailabilities {
@@ -103,7 +103,7 @@ export class StationState {
     missingActivity: number;
     activitySinceLocked: number;
     @TransformDate()
-    coldSince?: Date;
+    inactiveSince?: Date;
 }
 
 export class StationStateChange {
