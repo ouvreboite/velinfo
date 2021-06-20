@@ -26,13 +26,13 @@ Parameters:
 
 Resources:
   # Lambdas
-  FetchStationsAvailabilities:
+  FetchStationsContent:
     Type: AWS::Serverless::Function
-    DependsOn: CurrentAvailabilityTable
+    DependsOn: CurrentStationsContentTable
     Properties:
-      FunctionName: FetchStationsAvailabilities
-      Description: Fetch the station availabilities from the Paris API every minute and update the current availability dynamo table
-      CodeUri: lambda/FetchStationsAvailabilities
+      FunctionName: FetchStationsContent
+      Description: Fetch the station content from the Paris API every minute and update the current stations content dynamo table
+      CodeUri: lambda/FetchStationsContent
       Events:
           EveryMinute:
             Type: Schedule
@@ -40,7 +40,7 @@ Resources:
               Schedule: rate(1 minute)
       Policies:
       - DynamoDBCrudPolicy:
-          TableName: !Ref CurrentAvailabilityTable
+          TableName: !Ref CurrentStationsContentTable
 
   FetchStationsCharacteristics:
     Type: AWS::Serverless::Function
@@ -61,18 +61,18 @@ Resources:
   ComputeUsage:
     Type: AWS::Serverless::Function
     DependsOn:
-      - CurrentAvailabilityTable
+      - CurrentStationsContentTable
       - StationUsageStatisticsTable
     Properties:
       FunctionName: ComputeUsage
-      Description: Process every update of the current availability table to compute usage stats for each station
+      Description: Process every update of the current content table to compute usage stats for each station
       CodeUri: lambda/ComputeUsage
       Events:
-        StreamAvailability:
+        StreamContent:
           Type: DynamoDB
           Properties:
             Stream: 
-              !GetAtt CurrentAvailabilityTable.StreamArn
+              !GetAtt CurrentStationsContentTable.StreamArn
             StartingPosition: LATEST
             BatchSize: 1
       Policies:
@@ -82,18 +82,18 @@ Resources:
   ComputeGlobalDailyStatistics:
     Type: AWS::Serverless::Function
     DependsOn:
-      - CurrentAvailabilityTable
+      - CurrentStationsContentTable
       - GlobalDailyStatisticsTable
     Properties:
       FunctionName: ComputeGlobalDailyStatistics
-      Description: Process every update of the current availability table to compute global daily usage stats
+      Description: Process every update of the current content table to compute global daily usage stats
       CodeUri: lambda/ComputeGlobalDailyStatistics
       Events:
-        StreamAvailability:
+        StreamContent:
           Type: DynamoDB
           Properties:
             Stream: 
-              !GetAtt CurrentAvailabilityTable.StreamArn
+              !GetAtt CurrentStationsContentTable.StreamArn
             StartingPosition: LATEST
             BatchSize: 1
       Policies:
@@ -124,7 +124,7 @@ Resources:
     Type: AWS::Serverless::Function
     DependsOn:
       - StationStateTable
-      - CurrentAvailabilityTable
+      - CurrentStationsContentTable
       - StationUsageStatisticsTable
       - MedianUsageTable
     Properties:
@@ -139,11 +139,11 @@ Resources:
           GLOBAL_RATIO_MIN: 0
           GLOBAL_RATIO_MAX: 2
       Events:
-        StreamAvailability:
+        StreamContent:
           Type: DynamoDB
           Properties:
             Stream: 
-              !GetAtt CurrentAvailabilityTable.StreamArn
+              !GetAtt CurrentStationsContentTable.StreamArn
             StartingPosition: LATEST
             BatchSize: 1
       Policies:
@@ -160,7 +160,7 @@ Resources:
     Type: AWS::Serverless::Function
     DependsOn:
       - StationStateTable
-      - CurrentAvailabilityTable
+      - CurrentStationsContentTable
       - CurrentCharacteristicsTable
     Properties:
       FunctionName: GetStations
@@ -179,7 +179,7 @@ Resources:
       - DynamoDBCrudPolicy:
           TableName: !Ref StationStateTable
       - DynamoDBCrudPolicy:
-          TableName: !Ref CurrentAvailabilityTable
+          TableName: !Ref CurrentStationsContentTable
       - DynamoDBCrudPolicy:
           TableName: !Ref CurrentCharacteristicsTable
 
@@ -292,10 +292,10 @@ Resources:
           TableName: !Ref CurrentCharacteristicsTable
      
   # Dynamo tables
-  CurrentAvailabilityTable: 
+  CurrentStationsContentTable: 
     Type: AWS::DynamoDB::Table
     Properties: 
-      TableName: CurrentAvailability
+      TableName: CurrentStationsContent
       KeySchema: 
         - AttributeName: id
           KeyType: HASH

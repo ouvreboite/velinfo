@@ -1,15 +1,15 @@
 import "reflect-metadata";
 import { CurrentStations, Station } from "../common/api";
-import { ActivityStatus, StationsFetchedAvailabilities, StationsFetchedCharacteristics, StationsStates } from "../common/domain";
-import { getAvailabilities } from "../common/repository/availabilitiesDynamoRepository";
+import { ActivityStatus, StationsContent, StationsFetchedCharacteristics, StationsStates } from "../common/domain";
+import { getStationsContent } from "../common/repository/stationsContentDynamoRepository";
 import { getCharacteristics } from "../common/repository/characteristicsDynamoRepository";
 import { getStationsStates } from "../common/repository/stationsStatesRepository";
 
 export const lambdaHandler = async () => {
-    let [availabilities, stationCharacteristics, stationStates] = await Promise
-        .all([getAvailabilities(), getCharacteristics(), getStationsStates()])
+    let [contents, stationCharacteristics, stationStates] = await Promise
+        .all([getStationsContent(), getCharacteristics(), getStationsStates()])
 
-    let stations: Station[] = buildStations(stationCharacteristics, availabilities, stationStates);
+    let stations: Station[] = buildStations(stationCharacteristics, contents, stationStates);
     
     let currentStations = {
         stations: stations
@@ -25,7 +25,7 @@ export const lambdaHandler = async () => {
     };
 }
 
-function buildStations(stationCharacteristics: StationsFetchedCharacteristics, availabilities: StationsFetchedAvailabilities, stationStates: StationsStates): Station[] {
+function buildStations(stationCharacteristics: StationsFetchedCharacteristics, contents: StationsContent, stationStates: StationsStates): Station[] {
     let stations: Station[] = [];
     for (const [stationCode, characteristics] of stationCharacteristics.byStationCode) {
         let station = new Station();
@@ -35,13 +35,13 @@ function buildStations(stationCharacteristics: StationsFetchedCharacteristics, a
         station.longitude = characteristics.longitude;
         station.capacity = characteristics.capacity;
 
-        if (availabilities.byStationCode.has(stationCode)) {
-            let availability = availabilities.byStationCode.get(stationCode);
-            station.electrical = availability.electrical;
-            station.mechanical = availability.mechanical;
-            station.empty = availability.empty;
-            station.inactiveSince = availability.inactiveSince;
-            station.officialStatus = availability.officialStatus;
+        if (contents.byStationCode.has(stationCode)) {
+            let content = contents.byStationCode.get(stationCode);
+            station.electrical = content.electrical;
+            station.mechanical = content.mechanical;
+            station.empty = content.empty;
+            station.inactiveSince = content.inactiveSince;
+            station.officialStatus = content.officialStatus;
         }
 
         if (stationStates.byStationCode.has(stationCode)) {
