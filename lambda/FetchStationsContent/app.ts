@@ -5,8 +5,16 @@ import {StationContent, StationsContent} from "../common/domain";
 
 export const lambdaHandler = async (event: any) => {
     let [newStationsContent, previousStationsContent] = await Promise.all([fetchStationsContent(), getStationsContent()]);
-    let mergedContent = mergeAndDiff(newStationsContent, previousStationsContent);
-    await updateStationsContent(mergedContent);
+    
+    try{
+        let mergedContent = mergeAndDiff(newStationsContent, previousStationsContent);
+        await updateStationsContent(mergedContent);
+    }catch(e){
+        console.error(e);
+        console.error(newStationsContent);
+        throw e;
+    }
+    
 }
 
 function mergeAndDiff(current: StationsContent, previous: StationsContent): StationsContent {
