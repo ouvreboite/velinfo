@@ -1,6 +1,6 @@
 import axios from 'axios';
 import https from 'https';
-import { OfficialStatus, StationContent, StationCharacteristics, StationsContent, StationsFetchedCharacteristics } from "../common/domain";
+import { OfficialStatus, StationContent, StationsContent } from "../common/domain";
 export { fetchStationsContent };
 
 const stationsStatusUrl: string = 'https://velib-metropole-opendata.smoove.pro/opendata/Velib_Metropole/station_status.json';
@@ -10,6 +10,11 @@ const agent = new https.Agent({
 
 async function fetchStationsContent(): Promise<StationsContent> { 
     const response = await axios.get(stationsStatusUrl, { httpsAgent: agent });
+    if(response.status != 200){
+        console.error("Reponse status "+response.status);
+        console.error(response.data);
+        throw "Incorrect response status "+response.status;
+    }
     const fetchedContent = mapVelibAPI(response.data);
     console.log(fetchedContent.byStationCode.size + " stations content fetched from Velib API");
     return fetchedContent;

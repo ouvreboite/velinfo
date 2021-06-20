@@ -10,6 +10,11 @@ const agent = new https.Agent({
 
 async function fetchCharacteristics(): Promise<StationsFetchedCharacteristics> {
     const response = await axios.get(stationsCharacteristicsUrl, { httpsAgent: agent });
+    if(response.status != 200){
+        console.error("Reponse status "+response.status);
+        console.error(response.data);
+        throw "Incorrect response status "+response.status;
+    }
     const fetchedStationCharacteristics = mapVelibAPI(response.data);
     console.log(fetchedStationCharacteristics.byStationCode.size + " stations characteristics fetched from Velib API");
     return fetchedStationCharacteristics;
