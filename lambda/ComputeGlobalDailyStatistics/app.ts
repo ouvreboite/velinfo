@@ -1,41 +1,49 @@
 import "reflect-metadata";
 import {DynamoDBStreamEvent} from "aws-lambda";
-import {GlobalDailyStatistics, StationsFetchedAvailabilities, Statistic} from "../common/domain";
+import {GlobalDailyStatistics, StationsContent, Statistic} from "../common/domain";
 import {extractDynamoEvent} from "../common/dynamoEventExtractor";
 import { getGlobalDailyStats, updateGlobalDailyStats } from "../common/repository/globalDailyStatsDynamoRepository";
 import { toParisTZ } from "../common/dateUtil";
 
 export const lambdaHandler = async (event: DynamoDBStreamEvent) => {
-    var currentStationsAvailabilities = extractDynamoEvent(StationsFetchedAvailabilities, event);
-    if(!currentStationsAvailabilities.fetchDateTime){
+    var currentStationsContent = extractDynamoEvent(StationsContent, event);
+    if(!currentStationsContent.fetchDateTime){
         console.error("No fetchDateTime in event, pass");
         return;
     }
 
-    var prevStats = await getGlobalDailyStats(currentStationsAvailabilities.fetchDateTime);
-    var stats = buildStatistics(currentStationsAvailabilities, prevStats);
+    var prevStats = await getGlobalDailyStats(currentStationsContent.fetchDateTime);
+    console.log("prevStats loaded");
+    var stats = buildStatistics(currentStationsContent, prevStats);
+    console.log("updating stats");
+    console.log(stats);
     await updateGlobalDailyStats(stats);
 }
 
-function buildStatistics(fetchedAvailabilities: StationsFetchedAvailabilities, prevStats: GlobalDailyStatistics): GlobalDailyStatistics {
+function buildStatistics(stationsContent: StationsContent, prevStats: GlobalDailyStatistics): GlobalDailyStatistics {
     if(!prevStats){
         prevStats = new GlobalDailyStatistics();
         prevStats.totalActivity = 0;
-        prevStats.firstFetchDateTime = fetchedAvailabilities.fetchDateTime;
+        prevStats.firstFetchDateTime = stationsContent.fetchDateTime;
     }
 
     var newActivityForHour = 0;
-    for (const availability of fetchedAvailabilities.byStationCode.values()) {
-        newActivityForHour += Math.abs(availability.deltaElectrical);
-        newActivityForHour += Math.abs(availability.deltaMechanical);
+    for (const content of stationsContent.byStationCode.values()) {   
+        if(isNaN(content.deltaElectrical) || isNaN(content.deltaMechanical)){
+            console.error("NaN");
+            console.log(content);
+        }else{
+            newActivityForHour += Math.abs(content.deltaElectrical);
+            newActivityForHour += Math.abs(content.deltaMechanical);
+        }
     }
 
     prevStats.totalActivity+=newActivityForHour;
 
-    var statsHour = toParisTZ(fetchedAvailabilities.fetchDateTime).getHours()+""; //map keys need to be string to be properly ser/deser when stored in dynamo
-    var hourStat = prevStats.byHour.get(statsHour)??new Statistic();
-    hourStat.activity+=newActivityForHour;
-    prevStats.byHour.set(statsHour, hourStat);
+    var statsHour = toParisTZ(stationsContent.fetchDateTime).getHours()+""; //map keys need to be string to be properly ser/deser when stored in dynamo
+    var statistic = prevStats.byHour.get(statsHour)??new Statistic();
+    statistic.activity+=newActivityForHour;
+    prevStats.byHour.set(statsHour, statistic);
 
     return prevStats;
 }

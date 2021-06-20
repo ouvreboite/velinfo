@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import { DynamoDBStreamEvent } from "aws-lambda";
-import { StationsFetchedAvailabilities, StationsStates, StationState, StationStateChange, ActivityStatus, StationMedianUsage, MedianUsage, StationsUsageStatistics } from "../common/domain";
+import { StationsContent, StationsStates, StationState, StationStateChange, ActivityStatus, StationMedianUsage, MedianUsage, StationsUsageStatistics } from "../common/domain";
 import { extractDynamoEvent } from "../common/dynamoEventExtractor";
 import { deltaMinutes, deltaSeconds, toParisDay } from "../common/dateUtil";
 import { getStationsStates, updateStationsStates } from "../common/repository/stationsStatesRepository";
@@ -15,15 +15,15 @@ const globalRatioMin: number = +process.env.GLOBAL_RATIO_MIN;
 const globalRatioMax: number = +process.env.GLOBAL_RATIO_MAX;
 
 export const lambdaHandler = async (event: DynamoDBStreamEvent) => {
-    let availabilities = extractDynamoEvent(StationsFetchedAvailabilities, event);
-    if(!availabilities.fetchDateTime){
+    let currentStationsContent = extractDynamoEvent(StationsContent, event);
+    if(!currentStationsContent.fetchDateTime){
         console.error("No fetchDateTime in event, pass");
         return;
     }
 
     //compute median usage on past 30 minutes ?
     let [medianUsagesForPast30, usagesForPast30, oldStates] = await Promise
-        .all([getMedianUsageForPast30Minutes(availabilities.fetchDateTime), getUsageForPast30Minutes(availabilities.fetchDateTime), getStationsStates()]);
+        .all([getMedianUsageForPast30Minutes(currentStationsContent.fetchDateTime), getUsageForPast30Minutes(currentStationsContent.fetchDateTime), getStationsStates()]);
 
     
     console.log("mergeMedianUsages");
@@ -33,18 +33,19 @@ export const lambdaHandler = async (event: DynamoDBStreamEvent) => {
 
     if (oldStates === undefined) { //special case for first run
         oldStates = new StationsStates();
-        oldStates.fetchDateTime = availabilities.fetchDateTime;
+        oldStates.fetchDateTime = currentStationsContent.fetchDateTime;
     }
 
     console.log("computeGlobalUsageRatio");
     let globalUsageRatio = computeGlobalUsageRatio(medianUsages, usages);
-    console.log("Global usage ratio : "+globalUsageRatio);
+    console.log("global usage ratio : "+globalUsageRatio);
 
-    let newStates = initStatesFromAvailabilities(availabilities);
+    let newStates = initStatesFromContent(currentStationsContent);
     computeMissingActivities(newStates, oldStates, medianUsages, globalUsageRatio);
-    accrueActivitiesSinceLocked(newStates, oldStates, availabilities);
+    accrueActivitiesSinceLocked(newStates, oldStates, currentStationsContent);
     computeActivityStatus(newStates, oldStates);
 
+    console.log("updateStationsStates");
     await updateStationsStates(newStates);
 
     let stateChanges = getChangedStates(newStates, oldStates);
@@ -123,12 +124,10 @@ function minusMinutes(date: Date, minutes: number): Date{
     return newDate;
 }
 
-
 function computeGlobalUsageRatio(medianUsages: StationMedianUsage, usages: StationsUsageStatistics): number{
     let medianTotal = 0;
     medianUsages.byStationCode.forEach(usage => medianTotal+=usage.activity);
 
-    
     let usageTotal = 0;
     usages.byStationCode.forEach(usage => usageTotal+=usage.activity);
 
@@ -159,14 +158,14 @@ function getChangedStates(newStates: StationsStates, oldStates: StationsStates):
     return changes;
 }
 
-function initStatesFromAvailabilities(availabilities: StationsFetchedAvailabilities): StationsStates{
+function initStatesFromContent(stationsContent: StationsContent): StationsStates{
     let newStates = new StationsStates();
-    newStates.fetchDateTime = availabilities.fetchDateTime;
-    availabilities.byStationCode.forEach((availability, stationCode) => {
+    newStates.fetchDateTime = stationsContent.fetchDateTime;
+    stationsContent.byStationCode.forEach((content, stationCode) => {
         let newState = new StationState();
         newStates.byStationCode.set(stationCode, newState);
-        newState.inactiveSince = availability.inactiveSince;
-        newState.officialStatus = availability.officialStatus;
+        newState.inactiveSince = content.inactiveSince;
+        newState.officialStatus = content.officialStatus;
     });
     return newStates;
 }
@@ -181,7 +180,13 @@ function computeMissingActivities(newStates: StationsStates, oldStates: Stations
         }
         let medianUsage = medianUsages.byStationCode.get(stationCode);
         let newMissingActivity = getNewMissingActivity(oldState, deltaTimeInSeconds, medianUsage, globalUsageRatio);
+        if(isNaN(newMissingActivity)){
+            console.error("NaN newMissingActivity");
+            console.log(stationCode);
+            newMissingActivity = 0;
+        }
         newState.missingActivity = newMissingActivity;
+        
     });
 }
 
@@ -215,13 +220,18 @@ function computeActivityStatus(states: StationsStates, oldStates: StationsStates
     });
 
 }
-function accrueActivitiesSinceLocked(newStates: StationsStates, oldStates: StationsStates, availabilities : StationsFetchedAvailabilities) {
+function accrueActivitiesSinceLocked(newStates: StationsStates, oldStates: StationsStates, stationsContent : StationsContent) {
     newStates.byStationCode.forEach((newState, stationCode) => {
         let oldState = oldStates.byStationCode.get(stationCode);
        
         if(oldState && oldState.activityStatus == ActivityStatus.Locked){
-            newState.activitySinceLocked = oldState.activitySinceLocked + availabilities.byStationCode.get(stationCode).activity;
+            newState.activitySinceLocked = oldState.activitySinceLocked + stationsContent.byStationCode.get(stationCode).activity;
         }else{
+            newState.activitySinceLocked = 0;
+        }
+        if(isNaN(newState.activitySinceLocked)){
+            console.error("NaN activitySinceLocked");
+            console.log(stationCode);
             newState.activitySinceLocked = 0;
         }
     });

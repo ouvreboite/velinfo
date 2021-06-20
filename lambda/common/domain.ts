@@ -1,7 +1,7 @@
 import { Type } from 'class-transformer';
 import { TransformDate } from './classTranformerUtil';
 
-export class StationAvailability {
+export class StationContent {
     stationCode: string;
     electrical: number;
     mechanical: number;
@@ -14,16 +14,14 @@ export class StationAvailability {
     inactiveSince?: Date;
 }
 
-export class StationsFetchedAvailabilities {
+export class StationsContent {
     constructor() {
         this.byStationCode = new Map();
     }
-    @Type(() => StationAvailability)
-    byStationCode: Map<string, StationAvailability>;
+    @Type(() => StationContent)
+    byStationCode: Map<string, StationContent>;
     @TransformDate()
     fetchDateTime: Date;
-    @TransformDate()
-    mostRecentOfficialDueDateTime: Date;
 }
 
 export class StationCharacteristics {
