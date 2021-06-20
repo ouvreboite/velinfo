@@ -303,7 +303,7 @@ Resources:
         - AttributeName: id
           AttributeType: S 
       ProvisionedThroughput: 
-        ReadCapacityUnits: 3
+        ReadCapacityUnits: 1
         WriteCapacityUnits: 4
       StreamSpecification:
         StreamViewType: NEW_IMAGE
@@ -319,7 +319,7 @@ Resources:
         - AttributeName: id
           AttributeType: S 
       ProvisionedThroughput: 
-        ReadCapacityUnits: 2
+        ReadCapacityUnits: 1
         WriteCapacityUnits: 3
   
   StationUsageStatisticsTable: 
@@ -337,8 +337,8 @@ Resources:
       - AttributeName: timeslot
         AttributeType: S
       ProvisionedThroughput: 
-        ReadCapacityUnits: 5
-        WriteCapacityUnits: 5
+        ReadCapacityUnits: 10
+        WriteCapacityUnits: 1
       TimeToLiveSpecification:
         AttributeName : timetolive
         Enabled : true
@@ -377,7 +377,7 @@ Resources:
       - AttributeName: timeslot
         AttributeType: S
       ProvisionedThroughput: 
-        ReadCapacityUnits: 5
+        ReadCapacityUnits: 10
         WriteCapacityUnits: 1
 
   StationStateTable: 
@@ -391,8 +391,8 @@ Resources:
         - AttributeName: id
           AttributeType: S 
       ProvisionedThroughput: 
-        ReadCapacityUnits: 3
-        WriteCapacityUnits: 5
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 4
   
   StationStateChangesTable: 
     Type: AWS::DynamoDB::Table
