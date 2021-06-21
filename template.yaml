@@ -133,7 +133,7 @@ Resources:
       CodeUri: lambda/ComputeStationsStates
       Environment: 
         Variables:
-          COLD_THRESHOLD_MINUTES_MIN: 30
+          LOCKED_THRESHOLD_MINUTES_MIN: 30
           LOCKED_ACTIVITY_THRESHOLD: 30
           UNLOCKED_ACTIVITY_THRESHOLD: 2
           GLOBAL_RATIO_MIN: 0
