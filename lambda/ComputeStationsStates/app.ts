@@ -8,7 +8,7 @@ import { saveStationStateChange } from "../common/repository/stationsStatesChang
 import { getMedianUsage } from "../common/repository/medianUsageRepository";
 import { getStationUsageStats } from "../common/repository/stationUsageStatsDynamoRepository";
 
-const coldThresholdMinutesMin: number = +process.env.COLD_THRESHOLD_MINUTES_MIN;
+const lockedThresholdMinutesMin: number = +process.env.LOCKED_THRESHOLD_MINUTES_MIN;
 const lockedActivityThreshold: number = +process.env.LOCKED_ACTIVITY_THRESHOLD;
 const unlockedActivityThreshold: number = +process.env.UNLOCKED_ACTIVITY_THRESHOLD;
 const globalRatioMin: number = +process.env.GLOBAL_RATIO_MIN;
@@ -203,7 +203,7 @@ function computeActivityStatus(states: StationsStates, oldStates: StationsStates
         let oldState = oldStates.byStationCode.get(stationCode);
 
         if(!oldState || oldState.activityStatus != ActivityStatus.Locked){
-            if(state.inactiveSince && deltaMinutes(state.inactiveSince, states.fetchDateTime) > coldThresholdMinutesMin && state.missingActivity >= lockedActivityThreshold){
+            if(state.inactiveSince && deltaMinutes(state.inactiveSince, states.fetchDateTime) > lockedThresholdMinutesMin && state.missingActivity >= lockedActivityThreshold){
                 state.activityStatus = ActivityStatus.Locked;
             }else{
                 state.activityStatus = ActivityStatus.Ok;
