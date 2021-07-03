@@ -1,13 +1,16 @@
 import "reflect-metadata";
 import { CurrentStations, Station } from "../common/api";
-import { ActivityStatus, StationsContent, StationsFetchedCharacteristics, StationsStates } from "../common/domain";
-import { getStationsContent } from "../common/repository/stationsContentDynamoRepository";
-import { getCharacteristics } from "../common/repository/characteristicsDynamoRepository";
+import { getLastStationsContent } from "../common/repository/stationsContentDynamoRepository";
 import { getStationsStates } from "../common/repository/stationsStatesRepository";
+import { StationsContent } from "../common/domain/station-content";
+import { ActivityStatus } from "../common/domain/enums";
+import { StationsCharacteristics } from "../common/domain/station-characteristics";
+import { StationsStates } from "../common/domain/station-state";
+import { getLastStationsCharacteristics } from "../common/repository/stationsCharacteristicsDynamoRepository";
 
 export const lambdaHandler = async () => {
     let [contents, stationCharacteristics, stationStates] = await Promise
-        .all([getStationsContent(), getCharacteristics(), getStationsStates()])
+        .all([getLastStationsContent(), getLastStationsCharacteristics(), getStationsStates()])
 
     let stations: Station[] = buildStations(stationCharacteristics, contents, stationStates);
     
@@ -25,7 +28,7 @@ export const lambdaHandler = async () => {
     };
 }
 
-function buildStations(stationCharacteristics: StationsFetchedCharacteristics, contents: StationsContent, stationStates: StationsStates): Station[] {
+function buildStations(stationCharacteristics: StationsCharacteristics, contents: StationsContent, stationStates: StationsStates): Station[] {
     let stations: Station[] = [];
     for (const [stationCode, characteristics] of stationCharacteristics.byStationCode) {
         let station = new Station();
@@ -40,8 +43,8 @@ function buildStations(stationCharacteristics: StationsFetchedCharacteristics, c
             station.electrical = content.electrical;
             station.mechanical = content.mechanical;
             station.empty = content.empty;
-            station.inactiveSince = content.inactiveSince;
             station.officialStatus = content.officialStatus;
+            station.inactiveSince = content.delta?.inactiveSince;
         }
 
         if (stationStates.byStationCode.has(stationCode)) {

@@ -1,12 +1,16 @@
 import "reflect-metadata";
 import { DynamoDBStreamEvent } from "aws-lambda";
-import { StationsContent, StationsStates, StationState, StationStateChange, ActivityStatus, StationMedianUsage, MedianUsage, StationsUsageStatistics } from "../common/domain";
 import { extractDynamoEvent } from "../common/dynamoEventExtractor";
 import { deltaMinutes, deltaSeconds, toParisDay } from "../common/dateUtil";
 import { getStationsStates, updateStationsStates } from "../common/repository/stationsStatesRepository";
 import { saveStationStateChange } from "../common/repository/stationsStatesChangesRepository";
 import { getMedianUsage } from "../common/repository/medianUsageRepository";
 import { getStationUsageStats } from "../common/repository/stationUsageStatsDynamoRepository";
+import { StationsContent } from "../common/domain/station-content";
+import { ActivityStatus } from "../common/domain/enums";
+import { StationsStates, StationState, StationStateChange } from "../common/domain/station-state";
+import { MedianUsage, StationMedianUsage } from "../common/domain/station-usage";
+import { StationsUsageStatistics } from "../common/domain/statistic";
 
 const lockedThresholdMinutesMin: number = +process.env.LOCKED_THRESHOLD_MINUTES_MIN;
 const lockedActivityThreshold: number = +process.env.LOCKED_ACTIVITY_THRESHOLD;
@@ -16,14 +20,14 @@ const globalRatioMax: number = +process.env.GLOBAL_RATIO_MAX;
 
 export const lambdaHandler = async (event: DynamoDBStreamEvent) => {
     let currentStationsContent = extractDynamoEvent(StationsContent, event);
-    if(!currentStationsContent.fetchDateTime){
+    if(!currentStationsContent.dateTime){
         console.error("No fetchDateTime in event, pass");
         return;
     }
 
     //compute median usage on past 30 minutes ?
     let [medianUsagesForPast30, usagesForPast30, oldStates] = await Promise
-        .all([getMedianUsageForPast30Minutes(currentStationsContent.fetchDateTime), getUsageForPast30Minutes(currentStationsContent.fetchDateTime), getStationsStates()]);
+        .all([getMedianUsageForPast30Minutes(currentStationsContent.dateTime), getUsageForPast30Minutes(currentStationsContent.dateTime), getStationsStates()]);
 
     
     console.log("mergeMedianUsages");
@@ -33,7 +37,7 @@ export const lambdaHandler = async (event: DynamoDBStreamEvent) => {
 
     if (oldStates === undefined) { //special case for first run
         oldStates = new StationsStates();
-        oldStates.fetchDateTime = currentStationsContent.fetchDateTime;
+        oldStates.fetchDateTime = currentStationsContent.dateTime;
     }
 
     console.log("computeGlobalUsageRatio");
@@ -160,11 +164,11 @@ function getChangedStates(newStates: StationsStates, oldStates: StationsStates):
 
 function initStatesFromContent(stationsContent: StationsContent): StationsStates{
     let newStates = new StationsStates();
-    newStates.fetchDateTime = stationsContent.fetchDateTime;
+    newStates.fetchDateTime = stationsContent.dateTime;
     stationsContent.byStationCode.forEach((content, stationCode) => {
         let newState = new StationState();
         newStates.byStationCode.set(stationCode, newState);
-        newState.inactiveSince = content.inactiveSince;
+        newState.inactiveSince = content.delta?.inactiveSince ?? null;
         newState.officialStatus = content.officialStatus;
     });
     return newStates;
@@ -225,7 +229,7 @@ function accrueActivitiesSinceLocked(newStates: StationsStates, oldStates: Stati
         let oldState = oldStates.byStationCode.get(stationCode);
        
         if(oldState && oldState.activityStatus == ActivityStatus.Locked){
-            newState.activitySinceLocked = oldState.activitySinceLocked + stationsContent.byStationCode.get(stationCode).activity;
+            newState.activitySinceLocked = oldState.activitySinceLocked + stationsContent.byStationCode.get(stationCode).delta?.activity ?? 0;
         }else{
             newState.activitySinceLocked = 0;
         }

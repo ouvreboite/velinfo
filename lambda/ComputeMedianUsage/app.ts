@@ -1,8 +1,9 @@
 import "reflect-metadata";
-import { Statistic, StationMedianUsage } from "../common/domain";
 import { buildTimeSlot, toParisTZ } from "../common/dateUtil";
 import { getStationUsageStats } from "../common/repository/stationUsageStatsDynamoRepository";
 import { updateMedianUsage } from "../common/repository/medianUsageRepository";
+import { StationMedianUsage } from "../common/domain/station-usage";
+import { Statistic } from "../common/domain/statistic";
 
 export const lambdaHandler = async (event: any) => {
 

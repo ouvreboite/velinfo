@@ -1,7 +1,7 @@
 import * as uninstrumentedAWS from 'aws-sdk';
 import * as AWSXRay from 'aws-xray-sdk';
 import {buildTimeSlot, toParisDay} from "../dateUtil";
-import {StationsUsageStatistics} from "../domain";
+import { StationsUsageStatistics } from '../domain/statistic';
 import {classToDynamo, dynamoToClass} from "../dynamoTransformer";
 export {updateStationUsageStats, getStationUsageStats, getStationUsageStatsForDay};
 

@@ -1,6 +1,6 @@
 import * as uninstrumentedAWS from 'aws-sdk';
 import * as AWSXRay from 'aws-xray-sdk';
-import {StationsStates} from "../domain";
+import { StationsStates } from '../domain/station-state';
 import {classToDynamo, dynamoToClass} from "../dynamoTransformer";
 export {updateStationsStates, getStationsStates};
 

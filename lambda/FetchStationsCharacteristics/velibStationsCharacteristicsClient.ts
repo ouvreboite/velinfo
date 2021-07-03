@@ -1,14 +1,14 @@
 import axios from 'axios';
 import https from 'https';
-import { StationCharacteristics, StationsFetchedCharacteristics } from "../common/domain";
-export { fetchCharacteristics };
+import { StationCharacteristics, StationsCharacteristics } from '../common/domain/station-characteristics';
+export { fetchStationCharacteristics };
 
 const stationsCharacteristicsUrl: string = 'https://velib-metropole-opendata.smoove.pro/opendata/Velib_Metropole/station_information.json';
 const agent = new https.Agent({  
     rejectUnauthorized: false
   });
 
-async function fetchCharacteristics(): Promise<StationsFetchedCharacteristics> {
+async function fetchStationCharacteristics(): Promise<StationsCharacteristics> {
     const response = await axios.get(stationsCharacteristicsUrl, { httpsAgent: agent });
     if(response.status != 200){
         console.error("Reponse status "+response.status);
@@ -20,7 +20,7 @@ async function fetchCharacteristics(): Promise<StationsFetchedCharacteristics> {
     return fetchedStationCharacteristics;
 }
 
-function mapVelibAPI(data: any): StationsFetchedCharacteristics {
+function mapVelibAPI(data: any): StationsCharacteristics {
     let stationsMap: Map<string, StationCharacteristics> = data.data.stations
         .map(stationCharacteristic => {
             var characteristics = new StationCharacteristics();
@@ -36,9 +36,8 @@ function mapVelibAPI(data: any): StationsFetchedCharacteristics {
             return map;
         }, new Map<string, StationCharacteristics>());
 
-    var fetchedCharacteristics = new StationsFetchedCharacteristics();
+    var fetchedCharacteristics = new StationsCharacteristics();
     fetchedCharacteristics.byStationCode = stationsMap;
-    fetchedCharacteristics.fetchDateTime = new Date();
-    fetchedCharacteristics.officialDateTime = new Date(data.lastUpdatedOther*1000);
+    fetchedCharacteristics.dateTime = new Date();
     return fetchedCharacteristics;
 }

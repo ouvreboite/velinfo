@@ -3,3 +3,4 @@ samconfig.toml
 .vscode
 node_modules
 package-lock.json
+docs/velinfo_architecture/*

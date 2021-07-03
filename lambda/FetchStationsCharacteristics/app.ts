@@ -1,8 +1,13 @@
 import "reflect-metadata";
-import {fetchCharacteristics} from "./velibStationsCharacteristicsClient";
-import {updateCharacteristics} from "../common/repository/characteristicsDynamoRepository";
+import { updateStationsCharacteristics } from "../common/repository/stationsCharacteristicsDynamoRepository";
+import { fetchStationCharacteristics } from "./velibStationsCharacteristicsClient";
 
 export const lambdaHandler = async (event: any) => {
-    let stationsCharacteristics = await fetchCharacteristics()
-    await updateCharacteristics(stationsCharacteristics);
+    let stationsCharacteristics = await fetchStationCharacteristics();
+
+    if(stationsCharacteristics.byStationCode.size == 1){
+        throw "Only one station fetched, retrying";
+    }
+
+    await updateStationsCharacteristics(stationsCharacteristics);
 }
