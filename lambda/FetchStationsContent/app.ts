@@ -6,6 +6,11 @@ import {StationContent, StationsContent} from "../common/domain";
 export const lambdaHandler = async (event: any) => {
     let [newStationsContent, previousStationsContent] = await Promise.all([fetchStationsContent(), getStationsContent()]);
     
+    if(newStationsContent.byStationCode.size == 1){
+        console.error("Only one station fetched, retrying");
+        newStationsContent = await fetchStationsContent();
+    }
+    
     try{
         let mergedContent = mergeAndDiff(newStationsContent, previousStationsContent);
         await updateStationsContent(mergedContent);
