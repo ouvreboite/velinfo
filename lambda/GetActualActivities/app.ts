@@ -1,7 +1,7 @@
 import { classToPlain } from "class-transformer";
 import "reflect-metadata";
 import { Activities } from "../common/api";
-import { StationsUsageStatistics } from "../common/domain";
+import { StationsUsageStatistics } from "../common/domain/statistic";
 import { getStationUsageStatsForDay } from "../common/repository/stationUsageStatsDynamoRepository";
 
 export const lambdaHandler = async () => {

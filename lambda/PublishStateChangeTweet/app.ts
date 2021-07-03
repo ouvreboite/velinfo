@@ -1,16 +1,18 @@
 import "reflect-metadata";
 import { DynamoDBStreamEvent } from "aws-lambda";
-import { OfficialStatus, StationCharacteristics, StationsFetchedCharacteristics, StationStateChange } from "../common/domain";
 import { extractDynamoEvent } from "../common/dynamoEventExtractor";
 import Twit, { Params } from "twit";
-import { getCharacteristics } from "../common/repository/characteristicsDynamoRepository";
+import { StationCharacteristics, StationsCharacteristics } from "../common/domain/station-characteristics";
+import { StationStateChange } from "../common/domain/station-state";
+import { OfficialStatus } from "../common/domain/enums";
+import { getLastStationsCharacteristics } from "../common/repository/stationsCharacteristicsDynamoRepository";
 
 const twitterConsumerKey: string = process.env.TWITTER_CONSUMER_KEY;
 const twitterConsumerSecret: string = process.env.TWITTER_CONSUMER_SECRET;
 const twitterAccessToken: string = process.env.TWITTER_ACCESS_TOKEN;
 const twitterAccessTokenSecret: string = process.env.TWITTER_ACCESS_TOKEN_SECRET;
 
-var stationCharacteristics: StationsFetchedCharacteristics = null;
+var stationCharacteristics: StationsCharacteristics = null;
 
 export const lambdaHandler = async (event: DynamoDBStreamEvent) => {
     let stateChange = extractDynamoEvent(StationStateChange, event);
@@ -20,7 +22,7 @@ export const lambdaHandler = async (event: DynamoDBStreamEvent) => {
         return;
 
     if(!stationCharacteristics){
-        stationCharacteristics = await getCharacteristics();
+        stationCharacteristics = await getLastStationsCharacteristics();
     }
 
     let station = stationCharacteristics.byStationCode.get(stateChange.stationCode);

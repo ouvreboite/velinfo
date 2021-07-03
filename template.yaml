@@ -28,7 +28,7 @@ Resources:
   # Lambdas
   FetchStationsContent:
     Type: AWS::Serverless::Function
-    DependsOn: CurrentStationsContentTable
+    DependsOn: StationsContentTable
     Properties:
       FunctionName: FetchStationsContent
       Description: Fetch the station content from the Paris API every minute and update the current stations content dynamo table
@@ -40,11 +40,11 @@ Resources:
               Schedule: rate(1 minute)
       Policies:
       - DynamoDBCrudPolicy:
-          TableName: !Ref CurrentStationsContentTable
+          TableName: !Ref StationsContentTable
 
   FetchStationsCharacteristics:
     Type: AWS::Serverless::Function
-    DependsOn: CurrentCharacteristicsTable
+    DependsOn: StationCharacteristicsTable
     Properties:
       FunctionName: FetchStationsCharacteristics
       Description: Fetch the station characteristics from the Velib API every hour and update the current characteristics dynamo table
@@ -56,12 +56,12 @@ Resources:
               Schedule: rate(1 hour)
       Policies:
       - DynamoDBCrudPolicy:
-          TableName: !Ref CurrentCharacteristicsTable
+          TableName: !Ref StationCharacteristicsTable
 
   ComputeUsage:
     Type: AWS::Serverless::Function
     DependsOn:
-      - CurrentStationsContentTable
+      - StationsContentTable
       - StationUsageStatisticsTable
     Properties:
       FunctionName: ComputeUsage
@@ -72,7 +72,7 @@ Resources:
           Type: DynamoDB
           Properties:
             Stream: 
-              !GetAtt CurrentStationsContentTable.StreamArn
+              !GetAtt StationsContentTable.StreamArn
             StartingPosition: LATEST
             BatchSize: 1
       Policies:
@@ -82,7 +82,7 @@ Resources:
   ComputeGlobalDailyStatistics:
     Type: AWS::Serverless::Function
     DependsOn:
-      - CurrentStationsContentTable
+      - StationsContentTable
       - GlobalDailyStatisticsTable
     Properties:
       FunctionName: ComputeGlobalDailyStatistics
@@ -93,7 +93,7 @@ Resources:
           Type: DynamoDB
           Properties:
             Stream: 
-              !GetAtt CurrentStationsContentTable.StreamArn
+              !GetAtt StationsContentTable.StreamArn
             StartingPosition: LATEST
             BatchSize: 1
       Policies:
@@ -124,7 +124,7 @@ Resources:
     Type: AWS::Serverless::Function
     DependsOn:
       - StationStateTable
-      - CurrentStationsContentTable
+      - StationsContentTable
       - StationUsageStatisticsTable
       - MedianUsageTable
     Properties:
@@ -143,7 +143,7 @@ Resources:
           Type: DynamoDB
           Properties:
             Stream: 
-              !GetAtt CurrentStationsContentTable.StreamArn
+              !GetAtt StationsContentTable.StreamArn
             StartingPosition: LATEST
             BatchSize: 1
       Policies:
@@ -160,8 +160,8 @@ Resources:
     Type: AWS::Serverless::Function
     DependsOn:
       - StationStateTable
-      - CurrentStationsContentTable
-      - CurrentCharacteristicsTable
+      - StationsContentTable
+      - StationCharacteristicsTable
     Properties:
       FunctionName: GetStations
       Description: Get the current stations states
@@ -179,9 +179,9 @@ Resources:
       - DynamoDBCrudPolicy:
           TableName: !Ref StationStateTable
       - DynamoDBCrudPolicy:
-          TableName: !Ref CurrentStationsContentTable
+          TableName: !Ref StationsContentTable
       - DynamoDBCrudPolicy:
-          TableName: !Ref CurrentCharacteristicsTable
+          TableName: !Ref StationCharacteristicsTable
 
   GetGlobalStatistics:
     Type: AWS::Serverless::Function
@@ -289,38 +289,52 @@ Resources:
             BatchSize: 1
       Policies:
       - DynamoDBCrudPolicy:
-          TableName: !Ref CurrentCharacteristicsTable
+          TableName: !Ref StationCharacteristicsTable
      
-  # Dynamo tables
-  CurrentStationsContentTable: 
+  # Dynamo tables  
+  StationsContentTable: 
     Type: AWS::DynamoDB::Table
     Properties: 
-      TableName: CurrentStationsContent
+      TableName: StationsContent
       KeySchema: 
         - AttributeName: id
           KeyType: HASH
+        - AttributeName: dateTime
+          KeyType: RANGE
       AttributeDefinitions:
         - AttributeName: id
           AttributeType: S 
+        - AttributeName: dateTime
+          AttributeType: S
       ProvisionedThroughput: 
         ReadCapacityUnits: 1
         WriteCapacityUnits: 4
       StreamSpecification:
         StreamViewType: NEW_IMAGE
+      TimeToLiveSpecification:
+        AttributeName : timetolive
+        Enabled : true
 
-  CurrentCharacteristicsTable: 
+  StationCharacteristicsTable: 
     Type: AWS::DynamoDB::Table
     Properties: 
-      TableName: CurrentCharacteristics
+      TableName: StationsCharacteristics
       KeySchema: 
         - AttributeName: id
           KeyType: HASH
+        - AttributeName: dateTime
+          KeyType: RANGE
       AttributeDefinitions:
         - AttributeName: id
           AttributeType: S 
+        - AttributeName: dateTime
+          AttributeType: S
       ProvisionedThroughput: 
         ReadCapacityUnits: 1
         WriteCapacityUnits: 3
+      TimeToLiveSpecification:
+        AttributeName : timetolive
+        Enabled : true
   
   StationUsageStatisticsTable: 
     Type: AWS::DynamoDB::Table

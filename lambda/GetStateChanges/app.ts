@@ -1,7 +1,6 @@
 import { differenceInDays } from "date-fns";
 import "reflect-metadata";
-import { StateChanges } from "../common/api";
-import { StationStateChange } from "../common/domain";
+import { StateChanges, StationStateChange } from "../common/api";
 import { getStationStateChangesForDay } from "../common/repository/stationsStatesChangesRepository";
 
 export const lambdaHandler = async () => {

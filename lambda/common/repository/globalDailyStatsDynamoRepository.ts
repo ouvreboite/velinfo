@@ -1,7 +1,7 @@
 import * as uninstrumentedAWS from 'aws-sdk';
 import * as AWSXRay from 'aws-xray-sdk';
 import {toParisDay} from "../dateUtil";
-import {GlobalDailyStatistics} from "../domain";
+import { GlobalDailyStatistics } from '../domain/statistic';
 import {classToDynamo, dynamoToClass} from "../dynamoTransformer";
 export {updateGlobalDailyStats, getGlobalDailyStats};
 

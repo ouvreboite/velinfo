@@ -1,7 +1,7 @@
 import * as uninstrumentedAWS from 'aws-sdk';
 import * as AWSXRay from 'aws-xray-sdk';
 import { buildTimeSlot, toParisTZ } from '../dateUtil';
-import {StationMedianUsage} from "../domain";
+import { StationMedianUsage } from '../domain/station-usage';
 import {classToDynamo, dynamoToClass} from "../dynamoTransformer";
 export {updateMedianUsage, getMedianUsage, getMedianUsagesForDay};
 

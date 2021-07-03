@@ -1,7 +1,7 @@
 import * as uninstrumentedAWS from 'aws-sdk';
 import * as AWSXRay from 'aws-xray-sdk';
 import { toParisDay } from '../dateUtil';
-import {StationStateChange} from "../domain";
+import { StationStateChange } from '../domain/station-state';
 import {classToDynamo, dynamoToClass,} from "../dynamoTransformer";
 export {saveStationStateChange, getStationStateChangesForDay};
 

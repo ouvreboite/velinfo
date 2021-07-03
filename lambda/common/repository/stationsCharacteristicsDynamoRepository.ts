@@ -1,21 +1,21 @@
 
 import * as uninstrumentedAWS from 'aws-sdk';
 import * as AWSXRay from 'aws-xray-sdk';
-import { StationsContent } from '../domain/station-content';
+import { StationsCharacteristics } from '../domain/station-characteristics';
 import { classToDynamo, dynamoToClass } from "../dynamoTransformer";
-export { updateStationsContent, getLastStationsContent };
+export { updateStationsCharacteristics, getLastStationsCharacteristics };
 
 const AWS = AWSXRay.captureAWS(uninstrumentedAWS);
 const client: AWS.DynamoDB.DocumentClient = new AWS.DynamoDB.DocumentClient();
 const ttlDays = 1;
 
-async function updateStationsContent(stationsContent: StationsContent) {
-    let timetolive = new Date(stationsContent.dateTime.getTime() + ttlDays * 24 * 60 * 60 * 1000);
-    let dynamoObject = classToDynamo(stationsContent);
+async function updateStationsCharacteristics(stationsCharacteristics: StationsCharacteristics) {
+    let timetolive = new Date(stationsCharacteristics.dateTime.getTime() + ttlDays * 24 * 60 * 60 * 1000);
+    let dynamoObject = classToDynamo(stationsCharacteristics);
     let request: AWS.DynamoDB.DocumentClient.UpdateItemInput = {
-        TableName: 'StationsContent',
+        TableName: 'StationsCharacteristics',
         Key: {
-            "id": 'stationsContent',
+            "id": 'stationsCharacteristics',
             "dateTime":dynamoObject.dateTime
         },
         UpdateExpression: "set byStationCode = :byStationCode, timetolive = :timetolive",
@@ -26,21 +26,21 @@ async function updateStationsContent(stationsContent: StationsContent) {
     };
 
     await client.update(request).promise();
-    console.log("updateStationsContent");
+    console.log("updateStationsCharacteristics");
 }
 
-async function getLastStationsContent(): Promise<StationsContent> {
+async function getLastStationsCharacteristics(): Promise<StationsCharacteristics> {
     let request: AWS.DynamoDB.DocumentClient.QueryInput = {
-        TableName: 'StationsContent',
+        TableName: 'StationsCharacteristics',
         ScanIndexForward: false,
         KeyConditionExpression: 'id = :id',
         ExpressionAttributeValues: {
-            ":id": 'stationsContent'
+            ":id": 'stationsCharacteristics'
         },
         Limit: 1
     };
 
     let data = await client.query(request).promise()
-    let contents = data.Items.map(item => dynamoToClass(StationsContent, item));
+    let contents = data.Items.map(item => dynamoToClass(StationsCharacteristics, item));
     return contents.length>0?contents[0]:undefined;
 }

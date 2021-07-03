@@ -1,6 +1,7 @@
 import axios from 'axios';
 import https from 'https';
-import { OfficialStatus, StationContent, StationsContent } from "../common/domain";
+import { OfficialStatus } from '../common/domain/enums';
+import { StationContent, StationsContent } from '../common/domain/station-content';
 export { fetchStationsContent };
 
 const stationsStatusUrl: string = 'https://velib-metropole-opendata.smoove.pro/opendata/Velib_Metropole/station_status.json';
@@ -38,7 +39,7 @@ function mapVelibAPI(data: any): StationsContent {
 
     var fetchedContent = new StationsContent();
     fetchedContent.byStationCode = stationsMap;
-    fetchedContent.fetchDateTime = new Date();
+    fetchedContent.dateTime = new Date();
     return fetchedContent;
 }
 

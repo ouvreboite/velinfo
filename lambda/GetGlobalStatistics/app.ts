@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import { GlobalStatistic, GlobalStatistics } from "../common/api";
-import { GlobalDailyStatistics } from "../common/domain";
+import { GlobalDailyStatistics } from "../common/domain/statistic";
 import { getGlobalDailyStats } from "../common/repository/globalDailyStatsDynamoRepository";
 
 export const lambdaHandler = async () => {
