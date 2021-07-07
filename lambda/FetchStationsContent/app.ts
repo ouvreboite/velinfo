@@ -38,15 +38,11 @@ function fillDelta(current: StationsContent, previous: StationsContent): Station
             delta.activity = 0;
         }
         else {
-            var deltaElectrical = stationContent.electrical - previousStationContent.electrical;
-            var deltaMechanical = stationContent.mechanical - previousStationContent.mechanical;
-            var activity = Math.abs(deltaElectrical) + Math.abs(deltaMechanical);
+            delta.electrical = stationContent.electrical - previousStationContent.electrical;
+            delta.mechanical = stationContent.mechanical - previousStationContent.mechanical;
+            delta.activity = Math.abs(delta.electrical) + Math.abs(delta.mechanical);
 
-            delta.electrical = deltaElectrical;
-            delta.mechanical = deltaMechanical;
-            delta.activity = activity;
-
-            if (deltaElectrical == 0 && deltaMechanical == 0) {
+            if (delta.activity == 0) {
                 delta.inactiveSince = previousStationContent.delta?.inactiveSince || previous.dateTime;
             }
         }
