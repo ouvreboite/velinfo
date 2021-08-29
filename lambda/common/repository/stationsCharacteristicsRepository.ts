@@ -1,6 +1,7 @@
 
 import * as uninstrumentedAWS from 'aws-sdk';
 import * as AWSXRay from 'aws-xray-sdk';
+import { inXDays } from '../dateUtil';
 import { StationsCharacteristics } from '../domain/station-characteristics';
 import { classToDynamo, dynamoToClass } from "../dynamoTransformer";
 export { updateStationsCharacteristics, getLastStationsCharacteristics };
@@ -10,7 +11,7 @@ const client: AWS.DynamoDB.DocumentClient = new AWS.DynamoDB.DocumentClient();
 const ttlDays = 1;
 
 async function updateStationsCharacteristics(stationsCharacteristics: StationsCharacteristics) {
-    let timetolive = new Date(stationsCharacteristics.dateTime.getTime() + ttlDays * 24 * 60 * 60 * 1000);
+    let timetolive = inXDays(ttlDays);
     let dynamoObject = classToDynamo(stationsCharacteristics);
     let request: AWS.DynamoDB.DocumentClient.UpdateItemInput = {
         TableName: 'StationsCharacteristics',

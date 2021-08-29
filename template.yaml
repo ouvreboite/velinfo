@@ -36,6 +36,7 @@ Resources:
       FunctionName: FetchStationsContent
       Description: Fetch the station content from the Paris API every minute and update the current stations content dynamo table
       CodeUri: lambda/FetchStationsContent
+      MemorySize: 160
       Events:
           EveryMinute:
             Type: Schedule
@@ -52,6 +53,7 @@ Resources:
       FunctionName: FetchStationsCharacteristics
       Description: Fetch the station characteristics from the Velib API every hour and update the current characteristics dynamo table
       CodeUri: lambda/FetchStationsCharacteristics
+      MemorySize: 160
       Events:
           EveryHour:
             Type: Schedule
@@ -66,6 +68,7 @@ Resources:
     DependsOn:
       - StationsContentTable
       - StationUsageStatisticsTable
+      - DailyNetworkUsageStatisticsTable
     Properties:
       FunctionName: ComputeUsage
       Description: Process every update of the current content table to compute usage stats for each station
@@ -81,6 +84,8 @@ Resources:
       Policies:
       - DynamoDBCrudPolicy:
           TableName: !Ref StationUsageStatisticsTable
+      - DynamoDBCrudPolicy:
+          TableName: !Ref DailyNetworkUsageStatisticsTable
 
   ComputeGlobalDailyStatistics:
     Type: AWS::Serverless::Function
@@ -134,6 +139,7 @@ Resources:
       FunctionName: ComputeStationsStates
       Description: Compute the state of each station
       CodeUri: lambda/ComputeStationsStates
+      MemorySize: 160
       Environment: 
         Variables:
           LOCKED_THRESHOLD_MINUTES_MIN: 30
@@ -356,6 +362,23 @@ Resources:
       ProvisionedThroughput: 
         ReadCapacityUnits: 10
         WriteCapacityUnits: 1
+      TimeToLiveSpecification:
+        AttributeName : timetolive
+        Enabled : true
+
+  DailyNetworkUsageStatisticsTable: 
+    Type: AWS::DynamoDB::Table
+    Properties: 
+      TableName: DailyNetworkUsageStatistics
+      KeySchema: 
+        - AttributeName: day
+          KeyType: HASH
+      AttributeDefinitions:
+      - AttributeName: day
+        AttributeType: S
+      ProvisionedThroughput: 
+        ReadCapacityUnits: 10
+        WriteCapacityUnits: 10
       TimeToLiveSpecification:
         AttributeName : timetolive
         Enabled : true

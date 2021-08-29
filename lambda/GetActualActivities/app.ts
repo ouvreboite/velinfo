@@ -2,7 +2,7 @@ import { classToPlain } from "class-transformer";
 import "reflect-metadata";
 import { Activities } from "../common/api";
 import { StationsUsageStatistics } from "../common/domain/statistic";
-import { getStationUsageStatsForDay } from "../common/repository/stationUsageStatsDynamoRepository";
+import { getStationUsageStatsForDay } from "../common/repository/stationUsageStatsRepository";
 
 export const lambdaHandler = async () => {
     var today = new Date();
@@ -24,12 +24,12 @@ function map(usageStats : StationsUsageStatistics[]): Activities{
     let byStationCode = new Map<string, number[]>();
     let activities = new Activities();
 
-    //downgrade the usage from 5 minutes to 15 minutes aggregation for lighter payload
+    //downgrade the usage 30 minutes aggregation for lighter payload
     byStationCode = new Map<string, number[]>();
     usageStats.forEach(stats => {
         let hour = parseInt(stats.timeslot.split(':')[0], 10);
         let minute = parseInt(stats.timeslot.split(':')[1], 10);
-        let index = 4*hour+Math.floor(minute/15);
+        let index = 2*hour+Math.floor(minute/30);
 
         stats.byStationCode.forEach((stat, stationCode)=>{
             if(!byStationCode.get(stationCode)){

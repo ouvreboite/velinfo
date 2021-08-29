@@ -1,7 +1,7 @@
 import "reflect-metadata";
 import {DynamoDBStreamEvent} from "aws-lambda";
 import {extractDynamoEvent} from "../common/dynamoEventExtractor";
-import { getGlobalDailyStats, updateGlobalDailyStats } from "../common/repository/globalDailyStatsDynamoRepository";
+import { getGlobalDailyStats, updateGlobalDailyStats } from "../common/repository/globalDailyStatsRepository";
 import { toParisTZ } from "../common/dateUtil";
 import { StationsContent } from "../common/domain/station-content";
 import { GlobalDailyStatistics, Statistic } from "../common/domain/statistic";

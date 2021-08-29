@@ -1,6 +1,6 @@
 import * as uninstrumentedAWS from 'aws-sdk';
 import * as AWSXRay from 'aws-xray-sdk';
-import {buildTimeSlot, toParisDay} from "../dateUtil";
+import {buildTimeSlot, inXDays, toParisDay} from "../dateUtil";
 import { StationsUsageStatistics } from '../domain/statistic';
 import {classToDynamo, dynamoToClass} from "../dynamoTransformer";
 export {updateStationUsageStats, getStationUsageStats, getStationUsageStatsForDay};
@@ -11,7 +11,7 @@ const ttlDays = 60;
 const hours = ["00","01","02","03","04","05","06","07","08","09","10","11","12","13","14","15","16","17","18","19","20","21","22","23"];
 
 async function updateStationUsageStats(stats: StationsUsageStatistics, datetime: Date) {
-    let timetolive = new Date(datetime.getTime() + ttlDays * 24 * 60 * 60 * 1000);
+    let timetolive = inXDays(ttlDays);
     let day = toParisDay(datetime);
     let timeslot = buildTimeSlot(datetime);
     let dynamoObject = classToDynamo(stats);

@@ -1,9 +1,11 @@
 import "reflect-metadata";
 import { DynamoDBStreamEvent } from "aws-lambda";
 import { extractDynamoEvent } from "../common/dynamoEventExtractor";
-import { getStationUsageStats, updateStationUsageStats } from "../common/repository/stationUsageStatsDynamoRepository";
+import { getStationUsageStats, updateStationUsageStats } from "../common/repository/stationUsageStatsRepository";
 import { StationsContent } from "../common/domain/station-content";
-import { StationsUsageStatistics, Statistic } from "../common/domain/statistic";
+import { NetworkDailyUsageStatistics, StationsUsageStatistics, Statistic } from "../common/domain/statistic";
+import { getNetworkDailyUsageStats, updateNetworkDailyUsageStats } from "../common/repository/dailynetworkUsageStatsRepository";
+import { buildTimeSlot, toParisDay } from "../common/dateUtil";
 
 export const lambdaHandler = async (event: DynamoDBStreamEvent) => {
     var currentStationsContent = extractDynamoEvent(StationsContent, event);
@@ -11,17 +13,36 @@ export const lambdaHandler = async (event: DynamoDBStreamEvent) => {
         console.error("No dateTime in event, pass");
         return;
     }
-    var prevUsageStats = await getStationUsageStats(currentStationsContent.dateTime);
-    var usageStatisticsMap = buildStatisticMap(currentStationsContent, prevUsageStats?.byStationCode);
-    var usageStatistics = buildUsageStatistics(usageStatisticsMap);
-    await updateStationUsageStats(usageStatistics, currentStationsContent.dateTime);
+
+    let datetime = currentStationsContent.dateTime;
+
+    let [prevStationUsageStats, prevDailyNetworkUsageStats] = await Promise.all([getStationUsageStats(datetime), getNetworkDailyUsageStats(datetime)]);
+
+    var usageStatisticsMap = buildStatisticMap(currentStationsContent, prevStationUsageStats?.byStationCode);
+    var stationUsageStats = buildStationUsageStatistics(usageStatisticsMap);
+    await updateStationUsageStats(stationUsageStats, currentStationsContent.dateTime);
+
+    var dailyNetworkUsageStats = buildDailyNetworkUsageStatistics(prevDailyNetworkUsageStats, currentStationsContent.dateTime, stationUsageStats.totalActivity);
+    await updateNetworkDailyUsageStats(dailyNetworkUsageStats, currentStationsContent.dateTime);
 }
 
-function buildUsageStatistics(statisticsMap: Map<string, Statistic>): StationsUsageStatistics{
+function buildStationUsageStatistics(statisticsMap: Map<string, Statistic>): StationsUsageStatistics{
     var hourlyStats = new StationsUsageStatistics();
     hourlyStats.byStationCode = statisticsMap;
     hourlyStats.totalActivity = computeTotalActivity(statisticsMap);
     return hourlyStats;
+}
+
+function buildDailyNetworkUsageStatistics(networkDailyUsageStatistics: NetworkDailyUsageStatistics, datetime: Date, activityOnSlot: number): NetworkDailyUsageStatistics{
+    networkDailyUsageStatistics = networkDailyUsageStatistics ?? new NetworkDailyUsageStatistics();
+    
+    let timeslot = buildTimeSlot(datetime);
+    networkDailyUsageStatistics.byTimeSlot.set(timeslot, {activity:activityOnSlot});
+
+    let totalActivity = Array.from(networkDailyUsageStatistics.byTimeSlot.values()).map(stat => stat.activity).reduce((prev, cur) => prev+cur);
+    networkDailyUsageStatistics.totalActivity = totalActivity;
+
+    return networkDailyUsageStatistics;
 }
 
 function buildStatisticMap(stationsContent: StationsContent, prevStats: Map<string, Statistic>): Map<string, Statistic> {

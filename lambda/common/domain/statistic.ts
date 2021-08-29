@@ -16,6 +16,16 @@ export class StationsUsageStatistics {
     totalActivity: number;
 }
 
+export class NetworkDailyUsageStatistics {
+    constructor() {
+        this.byTimeSlot = new Map();
+    }
+    day: string;
+    @Type(() => Statistic)
+    byTimeSlot: Map<string, Statistic>;
+    totalActivity: number;
+}
+
 export class GlobalDailyStatistics {
     constructor() {
         this.byHour = new Map();

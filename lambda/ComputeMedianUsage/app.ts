@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import { buildTimeSlot, toParisTZ } from "../common/dateUtil";
-import { getStationUsageStats } from "../common/repository/stationUsageStatsDynamoRepository";
+import { getStationUsageStats } from "../common/repository/stationUsageStatsRepository";
 import { updateMedianUsage } from "../common/repository/medianUsageRepository";
 import { StationMedianUsage } from "../common/domain/station-usage";
 import { Statistic } from "../common/domain/statistic";
@@ -11,7 +11,6 @@ export const lambdaHandler = async (event: any) => {
     oneDayAgo.setDate(oneDayAgo.getDate()-1);
 
     let medianPastUsages = await getMedianPastUsageForSameTimeslotAndDay(oneDayAgo);
-
     let medianUsage = buildMedianUsage(oneDayAgo, medianPastUsages);
     await updateMedianUsage(medianUsage)
 }

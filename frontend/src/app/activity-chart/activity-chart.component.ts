@@ -50,8 +50,8 @@ export class ActivityChartComponent implements OnInit {
  }
 
   private indexToTime(index: number): string{
-    let hours = Math.floor(index/4)+"";
-    let minutes = (index%4)*15+"";
+    let hours = Math.floor(index/2)+"";
+    let minutes = (index%2)*30+"";
     return hours.padStart(2, '0')+":"+minutes.padStart(2, '0');
   }
 

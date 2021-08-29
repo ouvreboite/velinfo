@@ -1,6 +1,6 @@
 import * as uninstrumentedAWS from 'aws-sdk';
 import * as AWSXRay from 'aws-xray-sdk';
-import { toParisDay } from '../dateUtil';
+import { inXDays, toParisDay } from '../dateUtil';
 import { StationStateChange } from '../domain/station-state';
 import {classToDynamo, dynamoToClass,} from "../dynamoTransformer";
 export {saveStationStateChange, getStationStateChangesForDay};
@@ -11,7 +11,7 @@ const ttlDays = 60;
 
 async function saveStationStateChange(change: StationStateChange) {
     let dynamoObject = classToDynamo(change);
-    let timetolive = new Date(change.datetime.getTime() + ttlDays * 24 * 60 * 60 * 1000);
+    let timetolive = inXDays(ttlDays);
     let request: AWS.DynamoDB.DocumentClient.UpdateItemInput = {
         TableName: 'StationStateChanges',
         Key: {

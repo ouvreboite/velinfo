@@ -1,6 +1,6 @@
 import * as uninstrumentedAWS from 'aws-sdk';
 import * as AWSXRay from 'aws-xray-sdk';
-import {toParisDay} from "../dateUtil";
+import {inXDays, toParisDay} from "../dateUtil";
 import { GlobalDailyStatistics } from '../domain/statistic';
 import {classToDynamo, dynamoToClass} from "../dynamoTransformer";
 export {updateGlobalDailyStats, getGlobalDailyStats};
@@ -10,7 +10,7 @@ const client: AWS.DynamoDB.DocumentClient = new AWS.DynamoDB.DocumentClient();
 const ttlDays = 60;
 
 async function updateGlobalDailyStats(globalDailyStatistics: GlobalDailyStatistics) {
-    let timetolive = new Date(new Date().getTime() + ttlDays * 24 * 60 * 60 * 1000);
+    let timetolive = inXDays(ttlDays);
     let dynamoObject = classToDynamo(globalDailyStatistics);
     let statsDay = toParisDay(globalDailyStatistics.firstFetchDateTime);
     let request: AWS.DynamoDB.DocumentClient.UpdateItemInput = {

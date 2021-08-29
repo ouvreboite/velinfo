@@ -1,12 +1,12 @@
 import "reflect-metadata";
 import { CurrentStations, Station } from "../common/api";
-import { getLastStationsContent } from "../common/repository/stationsContentDynamoRepository";
+import { getLastStationsContent } from "../common/repository/stationsContentRepository";
 import { getStationsStates } from "../common/repository/stationsStatesRepository";
 import { StationsContent } from "../common/domain/station-content";
 import { ActivityStatus } from "../common/domain/enums";
 import { StationsCharacteristics } from "../common/domain/station-characteristics";
 import { StationsStates } from "../common/domain/station-state";
-import { getLastStationsCharacteristics } from "../common/repository/stationsCharacteristicsDynamoRepository";
+import { getLastStationsCharacteristics } from "../common/repository/stationsCharacteristicsRepository";
 
 export const lambdaHandler = async () => {
     let [contents, stationCharacteristics, stationStates] = await Promise

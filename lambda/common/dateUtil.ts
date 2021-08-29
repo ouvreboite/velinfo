@@ -26,7 +26,7 @@ export function toParisTZ(date: Date): Date{
     return utcToZonedTime(date, "Europe/Paris");
 }
 
-export function buildTimeSlot(datetime: Date, minuteSpan = 5): string{
+export function buildTimeSlot(datetime: Date, minuteSpan = 10): string{
     let parisTz = toParisTZ(datetime);
     let minutesSlot = Math.floor(parisTz.getMinutes()/minuteSpan)*minuteSpan;
     let formattedMinutesSlot = minutesSlot.toLocaleString('fr-FR', {
@@ -40,3 +40,6 @@ export function buildTimeSlot(datetime: Date, minuteSpan = 5): string{
     return formattedHoursSlot+":"+formattedMinutesSlot;
 }
 
+export function inXDays(days: number): Date{
+    return new Date(new Date().getTime() + days * 24 * 60 * 60 * 1000);
+}

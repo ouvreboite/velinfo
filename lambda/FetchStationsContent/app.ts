@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import { fetchStationsContent } from "./velibStationsStatusClient";
-import { getLastStationsContent, updateStationsContent } from "../common/repository/stationsContentDynamoRepository";
+import { getLastStationsContent, updateStationsContent } from "../common/repository/stationsContentRepository";
 import { ContentDelta } from "../common/domain/content-delta";
 import { StationContent, StationsContent } from "../common/domain/station-content";
 
@@ -8,9 +8,13 @@ export const lambdaHandler = async (event: any) => {
     let [newStationsContent, previousStationsContent] = await Promise.all([fetchStationsContent(), getLastStationsContent()]);
     console.log("previous:"+ previousStationsContent?.dateTime);
 
-    if(newStationsContent.byStationCode.size == 1){
-        console.error("Only one station fetched, retrying");
+    if(newStationsContent.byStationCode.size <= 1){
+        console.error("No station fetched, retrying");
         newStationsContent = await fetchStationsContent();
+    }
+
+    if(newStationsContent.byStationCode.size <= 1){
+        throw "No station fetched";
     }
     
     try{

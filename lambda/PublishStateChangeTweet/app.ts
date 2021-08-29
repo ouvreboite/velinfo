@@ -5,7 +5,7 @@ import Twit, { Params } from "twit";
 import { StationCharacteristics, StationsCharacteristics } from "../common/domain/station-characteristics";
 import { StationStateChange } from "../common/domain/station-state";
 import { OfficialStatus } from "../common/domain/enums";
-import { getLastStationsCharacteristics } from "../common/repository/stationsCharacteristicsDynamoRepository";
+import { getLastStationsCharacteristics } from "../common/repository/stationsCharacteristicsRepository";
 
 const twitterConsumerKey: string = process.env.TWITTER_CONSUMER_KEY;
 const twitterConsumerSecret: string = process.env.TWITTER_CONSUMER_SECRET;

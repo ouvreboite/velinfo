@@ -5,7 +5,7 @@ import { deltaMinutes, deltaSeconds, toParisDay } from "../common/dateUtil";
 import { getStationsStates, updateStationsStates } from "../common/repository/stationsStatesRepository";
 import { saveStationStateChange } from "../common/repository/stationsStatesChangesRepository";
 import { getMedianUsage } from "../common/repository/medianUsageRepository";
-import { getStationUsageStats } from "../common/repository/stationUsageStatsDynamoRepository";
+import { getStationUsageStats } from "../common/repository/stationUsageStatsRepository";
 import { StationsContent } from "../common/domain/station-content";
 import { ActivityStatus } from "../common/domain/enums";
 import { StationsStates, StationState, StationStateChange } from "../common/domain/station-state";
@@ -103,22 +103,16 @@ function mergeUsages(medianUsagesForPast30: StationsUsageStatistics[]) : Station
 function getMedianUsageForPast30Minutes(datetime: Date) : Promise<StationMedianUsage[]>{
     return Promise.all([
         getMedianUsage(datetime), 
-        getMedianUsage(minusMinutes(datetime, 5)), 
         getMedianUsage(minusMinutes(datetime, 10)), 
-        getMedianUsage(minusMinutes(datetime, 15)), 
         getMedianUsage(minusMinutes(datetime, 20)),
-        getMedianUsage(minusMinutes(datetime, 25))
     ]);
 }
 
 function getUsageForPast30Minutes(datetime: Date) : Promise<StationsUsageStatistics[]>{
     return Promise.all([
         getStationUsageStats(datetime), 
-        getStationUsageStats(minusMinutes(datetime, 5)), 
         getStationUsageStats(minusMinutes(datetime, 10)), 
-        getStationUsageStats(minusMinutes(datetime, 15)), 
         getStationUsageStats(minusMinutes(datetime, 20)),
-        getStationUsageStats(minusMinutes(datetime, 25))
     ]);
 }
 
