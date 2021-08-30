@@ -26,6 +26,8 @@ Parameters:
     Type: String 
   TwitterAccessTokenSecret:
     Type: String 
+  AlarmNotificationArn: 
+    Type: String
 
 Resources:
   # Lambdas
@@ -557,6 +559,56 @@ Resources:
           AliasTarget:
             DNSName: !GetAtt CDN.DomainName
             HostedZoneId: Z2FDTNDATAQYW2
+
+  FetchStationsContentError:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+        AlarmName: FetchStationsContentError
+        AlarmActions: 
+            - !Ref AlarmNotificationArn
+        MetricName: Errors
+        Namespace: AWS/Lambda
+        Statistic: Sum
+        Dimensions:
+            - Name: FunctionName
+              Value: FetchStationsContent
+        Period: 300
+        EvaluationPeriods: 1
+        Threshold: 2
+        ComparisonOperator: GreaterThanOrEqualToThreshold
+
+  FetchStationsCharacteristicsError:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+        AlarmName: FetchStationsCharacteristicsError
+        AlarmActions:
+            - !Ref AlarmNotificationArn
+        MetricName: Errors
+        Namespace: AWS/Lambda
+        Statistic: Sum
+        Dimensions:
+            - Name: FunctionName
+              Value: FetchStationsCharacteristics
+        Period: 21600
+        EvaluationPeriods: 1
+        Threshold: 2
+        ComparisonOperator: GreaterThanOrEqualToThreshold
+
+  AnyLambdaError:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: AnyLambdaError
+      AlarmActions:
+          - !Ref AlarmNotificationArn
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Statistic: Sum
+      Dimensions: []
+      Period: 900
+      EvaluationPeriods: 1
+      DatapointsToAlarm: 1
+      Threshold: 2
+      ComparisonOperator: GreaterThanOrEqualToThreshold
 
 Outputs:
   WebsiteBucketUrl:
