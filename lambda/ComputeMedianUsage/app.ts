@@ -1,18 +1,27 @@
 import "reflect-metadata";
 import { buildTimeSlot, toParisTZ } from "../common/dateUtil";
-import { getStationUsageStats } from "../common/repository/stationUsageStatsRepository";
-import { updateMedianUsage } from "../common/repository/medianUsageRepository";
-import { StationMedianUsage } from "../common/domain/station-usage";
+import { NetworkDailyUsagePredictions, StationMedianUsage } from "../common/domain/station-usage";
 import { Statistic } from "../common/domain/statistic";
+import { updateMedianUsage } from "../common/repository/medianUsageRepository";
+import { getStationUsageStats } from "../common/repository/stationUsageStatsRepository";
+
+import { getNetworkDailyUsagePredictions, updateNetworkDailyUsagePredictions } from "../common/repository/dailyNetworkUsagePredictionsRepository";
 
 export const lambdaHandler = async (event: any) => {
 
     let oneDayAgo = new Date();
     oneDayAgo.setDate(oneDayAgo.getDate()-1);
 
-    let medianPastUsages = await getMedianPastUsageForSameTimeslotAndDay(oneDayAgo);
+
+    let [medianPastUsages, prevDailyNetworkUsagePredictions] = await Promise.all([
+        getMedianPastUsageForSameTimeslotAndDay(oneDayAgo), 
+        getNetworkDailyUsagePredictions(oneDayAgo)]);
+
     let medianUsage = buildMedianUsage(oneDayAgo, medianPastUsages);
-    await updateMedianUsage(medianUsage)
+    await updateMedianUsage(medianUsage);
+
+    var dailyNetworkUsagePredictions = buildDailyNetworkUsagePredictions(prevDailyNetworkUsagePredictions, medianUsage);
+    await updateNetworkDailyUsagePredictions(dailyNetworkUsagePredictions, oneDayAgo);
 }
 
 function buildMedianUsage(date: Date, medianPastUsages: Map<string, number>): StationMedianUsage {
@@ -85,4 +94,23 @@ function median(mapOfArray: Map<string, number[]>): Map<string, number> {
         }
     });
     return medianMap;
+}
+
+
+function buildDailyNetworkUsagePredictions(previousPredictions: NetworkDailyUsagePredictions, medianUsage: StationMedianUsage): NetworkDailyUsagePredictions{
+    let networkPredictions = previousPredictions ?? new NetworkDailyUsagePredictions();
+    
+    const medianActivityOnSlot = Array.from(medianUsage.byStationCode.values())
+    .map((usage) => usage.activity)
+    .reduce((prev, curr)=> curr + prev, 0);
+   
+    networkPredictions.byTimeSlot.set(medianUsage.timeslot, {activity:medianActivityOnSlot});
+
+    const totalMedianActivity = Array.from(networkPredictions.byTimeSlot.values())
+    .map((usage) => usage.activity)
+    .reduce((prev, curr)=> curr + prev, 0);
+
+    networkPredictions.totalActivity = totalMedianActivity;
+    
+    return networkPredictions;
 }

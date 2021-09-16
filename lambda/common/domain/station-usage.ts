@@ -13,3 +13,13 @@ export class StationMedianUsage {
 export class MedianUsage {
     activity: number;
 }
+
+export class NetworkDailyUsagePredictions {
+    constructor() {
+        this.byTimeSlot = new Map();
+    }
+    weekday: number;
+    @Type(() => MedianUsage)
+    byTimeSlot: Map<string, MedianUsage>;
+    totalActivity: number;
+}

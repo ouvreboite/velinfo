@@ -115,6 +115,7 @@ Resources:
     DependsOn: 
       - StationUsageStatisticsTable
       - MedianUsageTable
+      - DailyNetworkUsagePredictionsTable
     Properties:
       FunctionName: ComputeMedianUsage
       Description: Compute the median usage per week day and 5 minute timeslot
@@ -129,6 +130,8 @@ Resources:
           TableName: !Ref StationUsageStatisticsTable
       - DynamoDBCrudPolicy:
           TableName: !Ref MedianUsageTable
+      - DynamoDBCrudPolicy:
+          TableName: !Ref DailyNetworkUsagePredictionsTable
 
   ComputeStationsStates:
     Type: AWS::Serverless::Function
@@ -385,6 +388,23 @@ Resources:
         AttributeName : timetolive
         Enabled : true
 
+  DailyNetworkUsagePredictionsTable: 
+    Type: AWS::DynamoDB::Table
+    Properties: 
+      TableName: DailyNetworkUsagePredictions
+      KeySchema: 
+        - AttributeName: weekday
+          KeyType: HASH
+      AttributeDefinitions:
+      - AttributeName: weekday
+        AttributeType: N
+      ProvisionedThroughput: 
+        ReadCapacityUnits: 10
+        WriteCapacityUnits: 10
+      TimeToLiveSpecification:
+        AttributeName : timetolive
+        Enabled : true
+
   GlobalDailyStatisticsTable: 
     Type: AWS::DynamoDB::Table
     Properties: 
@@ -508,7 +528,7 @@ Resources:
           CachedMethods:
             - GET
             - HEAD
-          Compress: 'true'
+          Compress: true
           ForwardedValues:
             QueryString: True
           TargetOriginId: !Sub "S3-origin-${WebsiteS3Bucket}"
