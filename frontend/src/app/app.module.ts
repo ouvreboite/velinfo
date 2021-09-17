@@ -32,14 +32,16 @@ import { FavoriteIconComponent } from './favorite-icon/favorite-icon.component';
 import { FavoritesPageComponent } from './favorites-page/favorites-page.component';
 import { StationsTableComponent } from './stations-table/stations-table.component';
 import { HomePageComponent } from './home-page/home-page.component';
-import { GlobalActivityChartComponent } from './global-activity-chart/global-activity-chart.component';
-import { GlobalActivityCounterComponent } from './global-activity-counter/global-activity-counter.component';
-import { GlobalStatisticsService } from './global-statistics.service';
+import { GlobalActivityChartComponent } from './network-activity-chart/network-activity-chart.component';
+import { GlobalActivityCounterComponent } from './network-activity-counter/network-activity-counter.component';
+import { NetworkActivityService } from './network-activity.service';
 import { ActivitiesService } from './activities.service';
 import { ActivityChartComponent } from './activity-chart/activity-chart.component';
 import { StateChangeListComponent } from './state-change-list/state-change-list.component';
 import { ParisDatePipe } from './paris-date.pipe';
 import { StatsPageComponent } from './stats-page/stats-page.component';
+import { NetworkPredictionsService } from './network-predictions.service';
+import { NetworkDetailledActivityChartComponent } from './network-detailled-activity-chart/network-detailled-activity-chart.component';
 
 @NgModule({
   declarations: [
@@ -58,7 +60,8 @@ import { StatsPageComponent } from './stats-page/stats-page.component';
     ActivityChartComponent,
     StateChangeListComponent,
     ParisDatePipe,
-    StatsPageComponent
+    StatsPageComponent,
+    NetworkDetailledActivityChartComponent
   ],
   imports: [
     BrowserModule,
@@ -87,7 +90,8 @@ import { StatsPageComponent } from './stats-page/stats-page.component';
     UserFavoritesService, 
     StationStatusService, 
     CurrentStationsService, 
-    GlobalStatisticsService,
+    NetworkActivityService,
+    NetworkPredictionsService,
     ActivitiesService],
   bootstrap: [AppComponent]
 })

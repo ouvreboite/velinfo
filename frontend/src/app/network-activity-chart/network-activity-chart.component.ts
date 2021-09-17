@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { GlobalStatistics, GlobalStatisticsService } from '../global-statistics.service';
+import { NetworkActivityService,  } from '../network-activity.service';
 import { curveNatural } from 'd3-shape';
+import { DailyActivity } from '../daily-activity-base-service';
 
 @Component({
-  selector: 'app-global-activity-chart',
-  templateUrl: './global-activity-chart.component.html',
-  styleUrls: ['./global-activity-chart.component.css']
+  selector: 'app-network-activity-chart',
+  templateUrl: './network-activity-chart.component.html',
+  styleUrls: ['./network-activity-chart.component.css']
 })
 export class GlobalActivityChartComponent implements OnInit {
 
@@ -15,22 +16,22 @@ export class GlobalActivityChartComponent implements OnInit {
   isLoading = true;
 
   constructor(
-    private service: GlobalStatisticsService) { }
+    private service: NetworkActivityService) { }
 
   ngOnInit(): void {
     this.isLoading = true;
-    this.service.getGlobalStatistics()
-      .subscribe((data: GlobalStatistics) => {
+    this.service.getDailyActivity()
+      .subscribe((data: DailyActivity) => {
         this.chartData = this.buildChartData(data);
         this.chartColors = this.buildChartColors(data);
         this.isLoading = false;
       });
   }
 
-  buildChartData(globalStatistics: GlobalStatistics): any[] {
-    let data = globalStatistics.statistics.map(stat => {
+  buildChartData(networkActivity: DailyActivity): any[] {
+    let data = networkActivity.hourlySortedActivity.map(stat => {
       return {
-        "name": stat.hour+"h", 
+        "name": stat.timeslot+"h", 
         "value":Math.trunc(stat.activity/2)
       };
     });
@@ -45,10 +46,10 @@ export class GlobalActivityChartComponent implements OnInit {
     return data;
   }
 
-  buildChartColors(globalStatistics: GlobalStatistics): any[] {
-    let colors = globalStatistics.statistics.map(stat => {
+  buildChartColors(networkActivity: DailyActivity): any[] {
+    let colors = networkActivity.hourlySortedActivity.map(stat => {
       return {
-        "name": stat.hour+"h", 
+        "name": stat.timeslot+"h", 
         "value":"#59b0e3"
       };
     });
