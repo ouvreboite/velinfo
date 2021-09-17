@@ -281,6 +281,48 @@ Resources:
       - DynamoDBCrudPolicy:
           TableName: !Ref StationStateChangesTable
 
+  GetDailyNetworkActivity:
+    Type: AWS::Serverless::Function
+    DependsOn:
+      - DailyNetworkUsageStatisticsTable
+    Properties:
+      FunctionName: GetDailyNetworkActivity
+      Description: Get today's network's activity
+      CodeUri: lambda/GetDailyNetworkActivity
+      MemorySize: 1769 #minimal memory to have a full vCPU
+      Tracing: Active
+      Events:
+        GetApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref RestApi
+            Path: /network/activity
+            Method: GET
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: !Ref DailyNetworkUsageStatisticsTable
+
+  GetDailyNetworkPredictions:
+    Type: AWS::Serverless::Function
+    DependsOn:
+      - DailyNetworkUsagePredictionsTable
+    Properties:
+      FunctionName: GetDailyNetworkPredictions
+      Description: Get today's network's predictions
+      CodeUri: lambda/GetDailyNetworkPredictions
+      MemorySize: 1769 #minimal memory to have a full vCPU
+      Tracing: Active
+      Events:
+        GetApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref RestApi
+            Path: /network/predictions
+            Method: GET
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: !Ref DailyNetworkUsagePredictionsTable
+
   PublishStateChangeTweet:
     Type: AWS::Serverless::Function
     Properties:

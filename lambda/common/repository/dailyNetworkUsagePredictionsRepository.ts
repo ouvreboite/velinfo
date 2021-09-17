@@ -1,8 +1,10 @@
 import * as uninstrumentedAWS from 'aws-sdk';
 import * as AWSXRay from 'aws-xray-sdk';
-import {inXDays, toParisTZ} from "../dateUtil";
+
+import { inXDays, toParisTZ } from "../dateUtil";
 import { NetworkDailyUsagePredictions } from '../domain/station-usage';
-import {classToDynamo, dynamoToClass} from "../dynamoTransformer";
+import { classToDynamo, dynamoToClass } from "../dynamoTransformer";
+
 export {getNetworkDailyUsagePredictions, updateNetworkDailyUsagePredictions}
 
 const AWS = AWSXRay.captureAWS(uninstrumentedAWS);
