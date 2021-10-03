@@ -365,7 +365,7 @@ Resources:
       - AttributeName: timeslot
         AttributeType: S
       ProvisionedThroughput: 
-        ReadCapacityUnits: 10
+        ReadCapacityUnits: 9
         WriteCapacityUnits: 1
       TimeToLiveSpecification:
         AttributeName : timetolive
@@ -382,8 +382,8 @@ Resources:
       - AttributeName: day
         AttributeType: S
       ProvisionedThroughput: 
-        ReadCapacityUnits: 10
-        WriteCapacityUnits: 10
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
       TimeToLiveSpecification:
         AttributeName : timetolive
         Enabled : true
@@ -399,8 +399,8 @@ Resources:
       - AttributeName: weekday
         AttributeType: N
       ProvisionedThroughput: 
-        ReadCapacityUnits: 10
-        WriteCapacityUnits: 10
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
       TimeToLiveSpecification:
         AttributeName : timetolive
         Enabled : true
@@ -420,7 +420,7 @@ Resources:
       - AttributeName: timeslot
         AttributeType: S
       ProvisionedThroughput: 
-        ReadCapacityUnits: 10
+        ReadCapacityUnits: 9
         WriteCapacityUnits: 1
 
   StationStateTable: 
