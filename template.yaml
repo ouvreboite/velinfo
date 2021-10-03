@@ -89,27 +89,6 @@ Resources:
       - DynamoDBCrudPolicy:
           TableName: !Ref DailyNetworkUsageStatisticsTable
 
-  ComputeGlobalDailyStatistics:
-    Type: AWS::Serverless::Function
-    DependsOn:
-      - StationsContentTable
-      - GlobalDailyStatisticsTable
-    Properties:
-      FunctionName: ComputeGlobalDailyStatistics
-      Description: Process every update of the current content table to compute global daily usage stats
-      CodeUri: lambda/ComputeGlobalDailyStatistics
-      Events:
-        StreamContent:
-          Type: DynamoDB
-          Properties:
-            Stream: 
-              !GetAtt StationsContentTable.StreamArn
-            StartingPosition: LATEST
-            BatchSize: 1
-      Policies:
-      - DynamoDBCrudPolicy:
-          TableName: !Ref GlobalDailyStatisticsTable
-
   ComputeMedianUsage:
     Type: AWS::Serverless::Function
     DependsOn: 
@@ -196,27 +175,6 @@ Resources:
           TableName: !Ref StationsContentTable
       - DynamoDBCrudPolicy:
           TableName: !Ref StationCharacteristicsTable
-
-  GetGlobalStatistics:
-    Type: AWS::Serverless::Function
-    DependsOn:
-      - GlobalDailyStatisticsTable
-    Properties:
-      FunctionName: GetGlobalStatistics
-      Description: Get todays global statistics
-      CodeUri: lambda/GetGlobalStatistics
-      MemorySize: 1769 #minimal memory to have a full vCPU
-      Tracing: Active
-      Events:
-        GetApi:
-          Type: Api
-          Properties:
-            RestApiId: !Ref RestApi
-            Path: /global-statistics
-            Method: GET
-      Policies:
-      - DynamoDBCrudPolicy:
-          TableName: !Ref GlobalDailyStatisticsTable
 
   GetExpectedActivities:
     Type: AWS::Serverless::Function
@@ -447,25 +405,6 @@ Resources:
         AttributeName : timetolive
         Enabled : true
 
-  GlobalDailyStatisticsTable: 
-    Type: AWS::DynamoDB::Table
-    Properties: 
-      TableName: GlobalDailyStatistics
-      KeySchema: 
-        - AttributeName: stats_day
-          KeyType: HASH
-      AttributeDefinitions:
-      - AttributeName: stats_day
-        AttributeType: S
-      ProvisionedThroughput: 
-        ReadCapacityUnits: 1
-        WriteCapacityUnits: 1
-      TimeToLiveSpecification:
-        AttributeName : timetolive
-        Enabled : true
-      StreamSpecification:
-        StreamViewType: NEW_IMAGE
-  
   MedianUsageTable:
     Type: AWS::DynamoDB::Table
     Properties: 

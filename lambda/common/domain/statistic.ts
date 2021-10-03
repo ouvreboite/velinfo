@@ -25,15 +25,3 @@ export class NetworkDailyUsageStatistics {
     byTimeSlot: Map<string, Statistic>;
     totalActivity: number;
 }
-
-export class GlobalDailyStatistics {
-    constructor() {
-        this.byHour = new Map();
-    }
-    stats_day: string;
-    @TransformDate()
-    firstFetchDateTime: Date;
-    @Type(() => Statistic)
-    byHour: Map<string, Statistic>;
-    totalActivity: number;
-}
