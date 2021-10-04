@@ -1,8 +1,13 @@
 <agm-map *ngIf="!isLoading" [latitude]="userLatitude" [longitude]="userLongitude" [zoom]="16" [usePanning]="true"
     (zoomChange)="zoomChange($event)">
-    <agm-marker *ngFor="let station of stations" [visible]="showStations" [latitude]="station.latitude"
-            [longitude]="station.longitude" [iconUrl]="$any(getStationIcon(station))"
-            (markerClick)="markerClick(station, iw)">
+    <agm-marker *ngFor="let station of stations" [visible]="fullIcon" 
+        [latitude]="station.latitude" [longitude]="station.longitude" [iconUrl]="$any(getStationIcon(station))"
+        (markerClick)="markerClick(station, iw)">
+    </agm-marker>
+    <<agm-marker *ngFor="let station of stations" [visible]="!fullIcon" 
+        [latitude]="station.latitude" [longitude]="station.longitude"
+        [iconUrl]="$any(getStationSmallPin(station))"
+        (markerClick)="markerClick(station, iw)">
     </agm-marker>
     <agm-marker *ngIf="displayUserPin" [latitude]="userLatitude" [longitude]="userLongitude"></agm-marker>
 

@@ -11,12 +11,24 @@ export class StationStatusService {
   stationIcon = { url: '/assets/velib_blue_pin.png', anchor: { x: 26, y: 60 }, scaledSize: { width: 52, height: 60 } };
   warningIcon =  { url: '/assets/warning_orange.png', anchor: { x: 26, y: 60 }, scaledSize: { width: 52, height: 60 } };
   koIcon =  { url: '/assets/warning_red.png', anchor: { x: 26, y: 60 }, scaledSize: { width: 52, height: 60 } };
+  
+  stationIconSmall = { url: '/assets/velib_blue_pin_small.svg', anchor: { x: 5, y: 5 }, scaledSize: { width: 20, height: 20 } };
+  warningIconSmall = { url: '/assets/warning_orange_small.svg', anchor: { x: 5, y: 5 }, scaledSize: { width: 20, height: 20 } };
+  koIconSmall = { url: '/assets/warning_red_small.svg', anchor: { x: 5, y: 5 }, scaledSize: { width: 20, height: 20 } };
 
   getStatusMapIcon(station: Station) {
     switch (this.getStatusEmoji(station.officialStatus, station.activityStatus)) {
       case '⛔': return this.koIcon;
       case '⚠️': return this.warningIcon;
       default: return this.stationIcon;
+    }
+  }
+
+  getStatusMapSmallIcon(station: Station) {
+    switch (this.getStatusEmoji(station.officialStatus, station.activityStatus)) {
+      case '⛔': return this.koIconSmall;
+      case '⚠️': return this.warningIconSmall;
+      default: return this.stationIconSmall;
     }
   }
 

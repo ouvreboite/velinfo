@@ -14,7 +14,7 @@ export class StationsMapPageComponent implements OnInit {
   displayUserPin = false;
   userLatitude = 48.8534;
   userLongitude = 2.3488;
-  showStations=true;
+  fullIcon=true;
   
   selectedStation : Station;
   iwLatitude = 48.8534;
@@ -38,6 +38,10 @@ export class StationsMapPageComponent implements OnInit {
     return this.stationStatusService.getStatusMapIcon(station);
   }
 
+  getStationSmallPin(station: Station){
+    return this.stationStatusService.getStatusMapSmallIcon(station);
+  }
+
   private getUserLocation() {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(position => {
@@ -49,10 +53,10 @@ export class StationsMapPageComponent implements OnInit {
   }
 
   zoomChange(zoomLevel: number){
-    if(zoomLevel<15)
-      this.showStations = false;
+    if(zoomLevel<16)
+      this.fullIcon = false;
     else
-      this.showStations = true;
+      this.fullIcon = true;
   }
 
   markerClick(station, iw){
