@@ -8,13 +8,13 @@ export const lambdaHandler = async () => {
     let today = new Date();
     let medianUsages = await getMedianUsagesForDay(today);
 
-    let todaysExpectedActivities = map(medianUsages);
+    let todaysPredictedActivities = map(medianUsages);
     return {
         statusCode: 200,
         headers:{
             "Access-Control-Allow-Origin": 'https://www.velinfo.fr',
         },
-        body: JSON.stringify(classToPlain(todaysExpectedActivities)),
+        body: JSON.stringify(classToPlain(todaysPredictedActivities)),
         isBase64Encoded: false
     };
 }

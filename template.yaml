@@ -176,14 +176,14 @@ Resources:
       - DynamoDBCrudPolicy:
           TableName: !Ref StationCharacteristicsTable
 
-  GetExpectedActivities:
+  GetPredictionByStations:
     Type: AWS::Serverless::Function
     DependsOn:
       - MedianUsageTable
     Properties:
-      FunctionName: GetExpectedActivities
-      Description: Get todays expected activities for each stations
-      CodeUri: lambda/GetExpectedActivities
+      FunctionName: GetPredictionByStations
+      Description: Get todays predicted activity for each stations
+      CodeUri: lambda/GetPredictionByStations
       MemorySize: 1769 #minimal memory to have a full vCPU
       Tracing: Active
       Events:
@@ -191,20 +191,20 @@ Resources:
           Type: Api
           Properties:
             RestApiId: !Ref RestApi
-            Path: /activities/expected
+            Path: /prediction/by-station
             Method: GET
       Policies:
       - DynamoDBCrudPolicy:
           TableName: !Ref MedianUsageTable  
 
-  GetActualActivities:
+  GetActivityByStations:
     Type: AWS::Serverless::Function
     DependsOn:
       - StationUsageStatisticsTable
     Properties:
-      FunctionName: GetActualActivities
-      Description: Get todays actual activities for each stations
-      CodeUri: lambda/GetActualActivities
+      FunctionName: GetActivityByStations
+      Description: Get todays activity for each stations
+      CodeUri: lambda/GetActivityByStations
       MemorySize: 1769 #minimal memory to have a full vCPU
       Tracing: Active
       Events:
@@ -212,7 +212,7 @@ Resources:
           Type: Api
           Properties:
             RestApiId: !Ref RestApi
-            Path: /activities/actual
+            Path: /activity/by-station
             Method: GET
       Policies:
       - DynamoDBCrudPolicy:
@@ -239,14 +239,14 @@ Resources:
       - DynamoDBCrudPolicy:
           TableName: !Ref StationStateChangesTable
 
-  GetDailyNetworkActivity:
+  GetNetworkActivity:
     Type: AWS::Serverless::Function
     DependsOn:
       - DailyNetworkUsageStatisticsTable
     Properties:
-      FunctionName: GetDailyNetworkActivity
+      FunctionName: GetNetworkActivity
       Description: Get today's network's activity
-      CodeUri: lambda/GetDailyNetworkActivity
+      CodeUri: lambda/GetNetworkActivity
       MemorySize: 1769 #minimal memory to have a full vCPU
       Tracing: Active
       Events:
@@ -254,20 +254,20 @@ Resources:
           Type: Api
           Properties:
             RestApiId: !Ref RestApi
-            Path: /network/activity
+            Path: /activity
             Method: GET
       Policies:
       - DynamoDBCrudPolicy:
           TableName: !Ref DailyNetworkUsageStatisticsTable
 
-  GetDailyNetworkPredictions:
+  GetNetworkPrediction:
     Type: AWS::Serverless::Function
     DependsOn:
       - DailyNetworkUsagePredictionsTable
     Properties:
-      FunctionName: GetDailyNetworkPredictions
+      FunctionName: GetNetworkPrediction
       Description: Get today's network's predictions
-      CodeUri: lambda/GetDailyNetworkPredictions
+      CodeUri: lambda/GetNetworkPrediction
       MemorySize: 1769 #minimal memory to have a full vCPU
       Tracing: Active
       Events:
@@ -275,7 +275,7 @@ Resources:
           Type: Api
           Properties:
             RestApiId: !Ref RestApi
-            Path: /network/predictions
+            Path: /prediction
             Method: GET
       Policies:
       - DynamoDBCrudPolicy:
