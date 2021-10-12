@@ -3,19 +3,20 @@ import { Injectable } from '@angular/core';
 import { differenceInSeconds } from 'date-fns';
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
+
 import { environment } from '../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ActivitiesService {
-  private expectedUrl = environment.apiUrl+'/activities/expected';
-  private actualUrl = environment.apiUrl+'/activities/actual';
-  private expectedLoadTimestamp: Date;
+  private predictionByStationUrl = environment.apiUrl+'/prediction/by-station';
+  private activityByStationUrl = environment.apiUrl+'/activity/by-station';
+  private predictionLoadTimestamp: Date;
   private actualLoadTimestamp: Date;
-  private expectedActivities: Activities;
+  private predictionActivities: Activities;
   private actualActivities: Activities;
-  private expectedObservable: Observable<Activities>; 
+  private predictionObservable: Observable<Activities>; 
   private actualObservable: Observable<Activities>; 
 
   constructor(private http: HttpClient) {
@@ -82,8 +83,8 @@ export class ActivitiesService {
 
   private getCached(type: ActivityType):Activities{
     switch(type){
-      case ActivityType.Expected:
-        return this.expectedActivities;
+      case ActivityType.Prediction:
+        return this.predictionActivities;
       case ActivityType.Actual:
         return this.actualActivities;
     }
@@ -91,8 +92,8 @@ export class ActivitiesService {
 
   private setCached(type: ActivityType, activities: Activities){
     switch(type){
-      case ActivityType.Expected:
-        this.expectedActivities = activities;
+      case ActivityType.Prediction:
+        this.predictionActivities = activities;
         break;
       case ActivityType.Actual:
         this.actualActivities = activities;
@@ -102,8 +103,8 @@ export class ActivitiesService {
 
   private getObservable(type: ActivityType):Observable<Activities>{
     switch(type){
-      case ActivityType.Expected:
-        return this.expectedObservable;
+      case ActivityType.Prediction:
+        return this.predictionObservable;
       case ActivityType.Actual:
         return this.actualObservable;
     }
@@ -111,8 +112,8 @@ export class ActivitiesService {
 
   private setObservable(type: ActivityType, observable: Observable<Activities>){
     switch(type){
-      case ActivityType.Expected:
-        this.expectedObservable = observable;
+      case ActivityType.Prediction:
+        this.predictionObservable = observable;
         break;
       case ActivityType.Actual:
         this.actualObservable = observable;
@@ -122,26 +123,26 @@ export class ActivitiesService {
 
   private fetchActivities(type: ActivityType): Observable<Activities>{
     switch(type){
-      case ActivityType.Expected:
-        this.expectedLoadTimestamp = new Date();
-        return this.http.get<Activities>(this.expectedUrl);
+      case ActivityType.Prediction:
+        this.predictionLoadTimestamp = new Date();
+        return this.http.get<Activities>(this.predictionByStationUrl);
       case ActivityType.Actual:
-        this.expectedLoadTimestamp = new Date();
-        return this.http.get<Activities>(this.actualUrl);
+        this.predictionLoadTimestamp = new Date();
+        return this.http.get<Activities>(this.activityByStationUrl);
     }
   }
 
   private invalidCacheIfNecessary(type: ActivityType){
     switch(type){
-      case ActivityType.Expected:
-        if(!this.expectedLoadTimestamp || differenceInSeconds(new Date(), this.expectedLoadTimestamp) > 60 ){
-          this.expectedLoadTimestamp = null;
-          this.expectedActivities = null;
-          this.expectedObservable = null;
+      case ActivityType.Prediction:
+        if(!this.predictionLoadTimestamp || differenceInSeconds(new Date(), this.predictionLoadTimestamp) > 60 ){
+          this.predictionLoadTimestamp = null;
+          this.predictionActivities = null;
+          this.predictionObservable = null;
         }
         break;
       case ActivityType.Actual:
-        if(!this.actualLoadTimestamp || differenceInSeconds(new Date(), this.expectedLoadTimestamp) > 60 ){
+        if(!this.actualLoadTimestamp || differenceInSeconds(new Date(), this.predictionLoadTimestamp) > 60 ){
           this.actualLoadTimestamp = null;
           this.actualActivities = null;
           this.actualObservable = null;
@@ -161,6 +162,6 @@ export class Activity{
 }
 
 export enum ActivityType {
-  Expected,
+  Prediction,
   Actual
 }

@@ -11,7 +11,7 @@ import { ActivityStatus, OfficialStatus } from './current-stations.service';
 })
 export class StateChangesService {
 
-  private configUrl = environment.apiUrl+'/state-changes';
+  private url = environment.apiUrl+'/state-changes';
   private loadTimestamp: Date;
   private stateChanges: StateChanges;
   private observable: Observable<StateChanges>; 
@@ -47,7 +47,7 @@ export class StateChangesService {
 
   private fetchStateChanges(): Observable<StateChanges>{
     this.loadTimestamp = new Date();
-    return this.http.get<StateChanges>(this.configUrl);
+    return this.http.get<StateChanges>(this.url);
   }
 
   private invalidCacheIfNecessary(){

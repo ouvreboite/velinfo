@@ -29,15 +29,15 @@ export class ActivityChartComponent implements OnInit {
 
     forkJoin(
       {
-        expected: this.station ? 
-          this.activitiesService.getStationDetailledActivities(this.station.code, ActivityType.Expected)
-           : this.activitiesService.getGlobalDetailledActivites(ActivityType.Expected),
+        prediction: this.station ? 
+          this.activitiesService.getStationDetailledActivities(this.station.code, ActivityType.Prediction)
+           : this.activitiesService.getGlobalDetailledActivites(ActivityType.Prediction),
         actual: this.station ? 
           this.activitiesService.getStationDetailledActivities(this.station.code, ActivityType.Actual)
            : this.activitiesService.getGlobalDetailledActivites(ActivityType.Actual)
       }
     ).subscribe((activity)=>{
-        this.chartData = this.buildChartData(activity.expected, activity.actual);
+        this.chartData = this.buildChartData(activity.prediction, activity.actual);
         this.isLoading = false;
         this.todaysActivity = activity.actual.activity.reduce((a,b)=> a+b, 0);
     });
@@ -55,8 +55,8 @@ export class ActivityChartComponent implements OnInit {
     return hours.padStart(2, '0')+":"+minutes.padStart(2, '0');
   }
 
-  buildChartData(expected: Activity, actual: Activity): any[] {
-    let expectedValues = expected.activity
+  buildChartData(prediction: Activity, actual: Activity): any[] {
+    let predictionValues = prediction.activity
       .map((value, index) => {
         return {
           "name": this.indexToTime(index),
@@ -75,7 +75,7 @@ export class ActivityChartComponent implements OnInit {
     return [
       {
         name: "Habituellement le "+format(new Date(), 'eeee', {locale: fr}),
-        series: expectedValues
+        series: predictionValues
       },
       {
         name: "Aujourd'hui",

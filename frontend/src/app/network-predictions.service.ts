@@ -12,6 +12,6 @@ export class NetworkPredictionsService extends DailyActivityBaseService {
   }
 
   getUrl(): string {
-    return environment.apiUrl + '/network/predictions';
+    return environment.apiUrl + '/prediction';
   }
 }

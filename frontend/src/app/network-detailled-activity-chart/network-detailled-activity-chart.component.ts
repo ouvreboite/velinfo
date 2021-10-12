@@ -30,10 +30,10 @@ export class NetworkDetailledActivityChartComponent implements OnInit {
     forkJoin(
       {
         actual: this.activityService.getDailyActivity(),
-        expected: this.predictionsService.getDailyActivity()
+        prediction: this.predictionsService.getDailyActivity()
       }
-    ).subscribe(({actual,expected})=>{
-        this.chartData = this.buildChartData(actual, expected);
+    ).subscribe(({actual,prediction})=>{
+        this.chartData = this.buildChartData(actual, prediction);
         this.isLoading = false;
     });
   }
@@ -50,8 +50,8 @@ export class NetworkDetailledActivityChartComponent implements OnInit {
     return hours.padStart(2, '0')+":"+minutes.padStart(2, '0');
   }
 
-  buildChartData(actual: DailyActivity, expected: DailyActivity): any[] {
-    let expectedValues = expected.sortedActivity
+  buildChartData(actual: DailyActivity, prediction: DailyActivity): any[] {
+    let predictionValues = prediction.sortedActivity
       .map((value, index) => {
         return {
           "name": this.indexToTime(index),
@@ -70,7 +70,7 @@ export class NetworkDetailledActivityChartComponent implements OnInit {
     return [
       {
         name: "Habituellement le "+format(new Date(), 'eeee', {locale: fr}),
-        series: expectedValues
+        series: predictionValues
       },
       {
         name: "Aujourd'hui",

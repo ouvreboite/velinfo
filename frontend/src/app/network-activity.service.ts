@@ -12,6 +12,6 @@ export class NetworkActivityService extends DailyActivityBaseService{
   }
 
   getUrl(): string {
-    return environment.apiUrl+'/network/activity';
+    return environment.apiUrl+'/activity';
   }
 }
