@@ -4,7 +4,7 @@ import { StateChanges, StationStateChange } from "../common/api";
 import { getStationStateChangesForDay } from "../common/repository/stationsStatesChangesRepository";
 
 export const lambdaHandler = async () => {
-    let changes = await getLastNthStationStateChangesOnPastWeek(10);
+    let changes = await getLastNthStationStateChangesOnPastDays(14,10);
     
     let stationChanges = {
         stationStateChanges: changes
@@ -20,14 +20,14 @@ export const lambdaHandler = async () => {
     };
 }
 
-async function getLastNthStationStateChangesOnPastWeek(nth: number): Promise<StationStateChange[]> {
+async function getLastNthStationStateChangesOnPastDays(days: number, maxNumberOfEvents: number): Promise<StationStateChange[]> {
     let date = new Date();
     let allChanges : StationStateChange[] = [];
     do{
         let changes = await getStationStateChangesForDay(date);
         allChanges.push(... changes);
         date.setDate(date.getDate()-1);
-    }while(allChanges.length < nth && differenceInDays(new Date(), date) < 7)
+    } while(allChanges.length < maxNumberOfEvents && differenceInDays(new Date(), date) < days)
     
-    return allChanges.slice(0, nth);
+    return allChanges.slice(0, maxNumberOfEvents);
 }
