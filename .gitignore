@@ -2,5 +2,4 @@ samconfig.toml
 .aws-sam
 .vscode
 node_modules
-package-lock.json
 docs/velinfo_architecture/*
