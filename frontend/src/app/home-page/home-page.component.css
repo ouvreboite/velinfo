@@ -33,6 +33,9 @@ a{
 }
 
 @media screen and (max-width: 768px) {
+    .chart {
+        display: none;
+    }
     .introduction {
         grid-column: 1 / -1;
         grid-row: 1;
@@ -41,16 +44,12 @@ a{
         grid-column: 1 / -1;
         grid-row: 2;
     }
-    .chart {
+    .changes {
         grid-column: 1 / -1;
         grid-row: 3;
     }
-    .changes {
-        grid-column: 1 / -1;
-        grid-row: 4;
-    }
     .about {
         grid-column: 1 / -1;
-        grid-row: 5;
+        grid-row: 4;
     }
 }
