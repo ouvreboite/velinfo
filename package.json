@@ -17,22 +17,22 @@
   },
   "homepage": "https://github.com/ouvreboite/velinfo#readme",
   "devDependencies": {
-    "@types/aws-lambda": "^8.10.78",
+    "@types/aws-lambda": "^8.10.84",
     "@types/twit": "^2.2.30",
-    "aws-sam-webpack-plugin": "^0.9.0",
+    "aws-sam-webpack-plugin": "^0.11.0",
     "class-transformer": "^0.3.1",
-    "date-fns": "^2.22.1",
+    "date-fns": "^2.25.0",
     "reflect-metadata": "^0.1.13",
     "ts-loader": "^8.3.0",
-    "typescript": "^4.3.5",
-    "webpack": "^5.44.0",
-    "webpack-cli": "^4.7.2"
+    "typescript": "^4.4.4",
+    "webpack": "^5.58.2",
+    "webpack-cli": "^4.9.0"
   },
   "dependencies": {
-    "aws-sdk": "^2.943.0",
+    "aws-sdk": "^2.1009.0",
     "aws-xray-sdk": "^3.3.3",
-    "axios": "^0.21.1",
-    "date-fns-tz": "^1.1.4",
+    "axios": "^0.23.0",
+    "date-fns-tz": "^1.1.6",
     "debug": "^4.3.2",
     "twit": "^2.2.11"
   }
