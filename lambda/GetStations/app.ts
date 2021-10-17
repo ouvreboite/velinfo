@@ -1,14 +1,18 @@
 import "reflect-metadata";
+
+import { APIGatewayProxyEvent } from "aws-lambda";
+
 import { CurrentStations, Station } from "../common/api";
-import { getLastStationsContent } from "../common/repository/stationsContentRepository";
-import { getStationsStates } from "../common/repository/stationsStatesRepository";
-import { StationsContent } from "../common/domain/station-content";
+import { buildHeaders } from "../common/corsHeadersUtil";
 import { ActivityStatus } from "../common/domain/enums";
 import { StationsCharacteristics } from "../common/domain/station-characteristics";
+import { StationsContent } from "../common/domain/station-content";
 import { StationsStates } from "../common/domain/station-state";
 import { getLastStationsCharacteristics } from "../common/repository/stationsCharacteristicsRepository";
+import { getLastStationsContent } from "../common/repository/stationsContentRepository";
+import { getStationsStates } from "../common/repository/stationsStatesRepository";
 
-export const lambdaHandler = async () => {
+export const lambdaHandler = async (event: APIGatewayProxyEvent) => {
     let [contents, stationCharacteristics, stationStates] = await Promise
         .all([getLastStationsContent(), getLastStationsCharacteristics(), getStationsStates()])
 
@@ -20,9 +24,7 @@ export const lambdaHandler = async () => {
 
     return {
         statusCode: 200,
-        headers:{
-            "Access-Control-Allow-Origin": 'https://www.velinfo.fr',
-        },
+        headers: buildHeaders(event.headers),
         body: JSON.stringify(currentStations),
         isBase64Encoded: false
     };

@@ -1,10 +1,14 @@
-import { classToPlain } from "class-transformer";
 import "reflect-metadata";
+
+import { APIGatewayProxyEvent } from "aws-lambda";
+import { classToPlain } from "class-transformer";
+
 import { Activities } from "../common/api";
+import { buildHeaders } from "../common/corsHeadersUtil";
 import { StationsUsageStatistics } from "../common/domain/statistic";
 import { getStationUsageStatsForDay } from "../common/repository/stationUsageStatsRepository";
 
-export const lambdaHandler = async () => {
+export const lambdaHandler = async (event: APIGatewayProxyEvent) => {
     var today = new Date();
     let usageStats = await getStationUsageStatsForDay(today);
 
@@ -12,9 +16,7 @@ export const lambdaHandler = async () => {
 
     return {
         statusCode: 200,
-        headers:{
-            "Access-Control-Allow-Origin": 'https://www.velinfo.fr',
-        },
+        headers: buildHeaders(event.headers),
         body: JSON.stringify(classToPlain(todaysActivities)),
         isBase64Encoded: false
     };

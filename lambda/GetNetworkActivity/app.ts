@@ -1,14 +1,16 @@
 import "reflect-metadata";
-import { classToPlain, } from 'class-transformer';
+
+import { APIGatewayProxyEvent } from 'aws-lambda';
+import { classToPlain } from 'class-transformer';
+
+import { buildHeaders } from "../common/corsHeadersUtil";
 import { getNetworkDailyUsageStats } from "../common/repository/dailynetworkUsageStatsRepository";
 
-export const lambdaHandler = async () => {
+export const lambdaHandler = async (event: APIGatewayProxyEvent) => {
     let networkDailyyUsage = await getNetworkDailyUsageStats(new Date());
     return {
         statusCode: 200,
-        headers:{
-            "Access-Control-Allow-Origin": 'https://www.velinfo.fr',
-        },
+        headers: buildHeaders(event.headers),
         body: JSON.stringify(classToPlain(networkDailyyUsage)),
         isBase64Encoded: false
     };

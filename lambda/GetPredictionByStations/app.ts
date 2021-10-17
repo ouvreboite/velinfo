@@ -1,19 +1,21 @@
-import { classToPlain } from "class-transformer";
 import "reflect-metadata";
+
+import { APIGatewayProxyEvent } from "aws-lambda";
+import { classToPlain } from "class-transformer";
+
 import { Activities } from "../common/api";
+import { buildHeaders } from "../common/corsHeadersUtil";
 import { StationMedianUsage } from "../common/domain/station-usage";
 import { getMedianUsagesForDay } from "../common/repository/medianUsageRepository";
 
-export const lambdaHandler = async () => {
+export const lambdaHandler = async (event: APIGatewayProxyEvent) => {
     let today = new Date();
     let medianUsages = await getMedianUsagesForDay(today);
 
     let todaysPredictedActivities = map(medianUsages);
     return {
         statusCode: 200,
-        headers:{
-            "Access-Control-Allow-Origin": 'https://www.velinfo.fr',
-        },
+        headers: buildHeaders(event.headers),
         body: JSON.stringify(classToPlain(todaysPredictedActivities)),
         isBase64Encoded: false
     };

@@ -1,9 +1,13 @@
-import { differenceInDays } from "date-fns";
 import "reflect-metadata";
+
+import { APIGatewayProxyEvent } from "aws-lambda";
+import { differenceInDays } from "date-fns";
+
 import { StateChanges, StationStateChange } from "../common/api";
+import { buildHeaders } from "../common/corsHeadersUtil";
 import { getStationStateChangesForDay } from "../common/repository/stationsStatesChangesRepository";
 
-export const lambdaHandler = async () => {
+export const lambdaHandler = async (event: APIGatewayProxyEvent) => {
     let changes = await getLastNthStationStateChangesOnPastDays(14,10);
     
     let stationChanges = {
@@ -12,9 +16,7 @@ export const lambdaHandler = async () => {
 
     return {
         statusCode: 200,
-        headers:{
-            "Access-Control-Allow-Origin": 'https://www.velinfo.fr',
-        },
+        headers: buildHeaders(event.headers),
         body: JSON.stringify(stationChanges),
         isBase64Encoded: false
     };

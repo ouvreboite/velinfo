@@ -1,6 +1,6 @@
 # velinfo
 A serveless application to detect locked Velib stations (Paris' bicycle sharing system).
-Hosted on AWS Serveless and visible at www.velinfo.fr and [@Velinfo1](https://twitter.com/velinfo1)
+Hosted on AWS Serveless and visible at https://www.velinfo.fr and [@Velinfo1](https://twitter.com/velinfo1)
 
 The raw data comes from the [Velib official API](https://www.velib-metropole.fr/donnees-open-data-gbfs-du-service-velib-metropole). Thanks to them!
 
