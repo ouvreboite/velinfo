@@ -163,9 +163,9 @@ Resources:
       Tracing: Active
       Events:
         GetApi:
-          Type: Api
+          Type: HttpApi
           Properties:
-            RestApiId: !Ref RestApi
+            ApiId: !Ref HttpApi
             Path: /stations
             Method: GET
       Policies:
@@ -188,9 +188,9 @@ Resources:
       Tracing: Active
       Events:
         GetApi:
-          Type: Api
+          Type: HttpApi
           Properties:
-            RestApiId: !Ref RestApi
+            ApiId: !Ref HttpApi
             Path: /prediction/by-station
             Method: GET
       Policies:
@@ -209,9 +209,9 @@ Resources:
       Tracing: Active
       Events:
         GetApi:
-          Type: Api
+          Type: HttpApi
           Properties:
-            RestApiId: !Ref RestApi
+            ApiId: !Ref HttpApi
             Path: /activity/by-station
             Method: GET
       Policies:
@@ -230,9 +230,9 @@ Resources:
       Tracing: Active
       Events:
         GetApi:
-          Type: Api
+          Type: HttpApi
           Properties:
-            RestApiId: !Ref RestApi
+            ApiId: !Ref HttpApi
             Path: /state-changes
             Method: GET
       Policies:
@@ -251,9 +251,9 @@ Resources:
       Tracing: Active
       Events:
         GetApi:
-          Type: Api
+          Type: HttpApi
           Properties:
-            RestApiId: !Ref RestApi
+            ApiId: !Ref HttpApi
             Path: /activity
             Method: GET
       Policies:
@@ -272,9 +272,9 @@ Resources:
       Tracing: Active
       Events:
         GetApi:
-          Type: Api
+          Type: HttpApi
           Properties:
-            RestApiId: !Ref RestApi
+            ApiId: !Ref HttpApi
             Path: /prediction
             Method: GET
       Policies:
@@ -460,26 +460,15 @@ Resources:
       StreamSpecification:
         StreamViewType: NEW_IMAGE
 
-  #Rest API
-  RestApi:
-    Type: AWS::Serverless::Api
+  #API
+  HttpApi:
+    Type: AWS::Serverless::HttpApi
     Properties:
-      Name: Velinfo REST Api
-      StageName: Production
-      CacheClusterEnabled: true
-      CacheClusterSize: '0.5'
       Domain:
         DomainName: api.velinfo.fr
-        CertificateArn: 
-          Ref: APICertificateArn
+        CertificateArn: !Ref APICertificateArn
         Route53:
-          HostedZoneId: 
-            Ref: HostedZoneId
-      MethodSettings:
-        - ResourcePath: '/*'
-          HttpMethod: '*'
-          CachingEnabled: true
-          CacheTtlInSeconds: 60
+          HostedZoneId: !Ref HostedZoneId
 
   #Website
   WebsiteS3Bucket:
@@ -495,6 +484,20 @@ Resources:
       Properties:
         CloudFrontOriginAccessIdentityConfig:
           Comment: "Cloudfront Origin identity for www.velinfo.Fr"
+
+  WebsiteS3BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref WebsiteS3Bucket
+      PolicyDocument:
+        Statement:
+          - Action:
+              - "s3:GetObject"
+            Effect: Allow
+            Principal:
+              AWS: !Sub "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${CDNOriginIdentity}"
+            Resource: !Sub "arn:aws:s3:::${WebsiteS3Bucket}/*"
+        Version: "2012-10-17"
 
   CDN:
     Type: "AWS::CloudFront::Distribution"
@@ -536,20 +539,6 @@ Resources:
           MinimumProtocolVersion: TLSv1.2_2018
           SslSupportMethod: sni-only
 
-  WebsiteS3BucketPolicy:
-    Type: AWS::S3::BucketPolicy
-    Properties:
-      Bucket: !Ref WebsiteS3Bucket
-      PolicyDocument:
-        Statement:
-          - Action:
-              - "s3:GetObject"
-            Effect: Allow
-            Principal:
-              AWS: !Sub "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${CDNOriginIdentity}"
-            Resource: !Sub "arn:aws:s3:::${WebsiteS3Bucket}/*"
-        Version: "2012-10-17"
-
   DNS:
     Type: AWS::Route53::RecordSetGroup
     Properties:
@@ -560,7 +549,8 @@ Resources:
           AliasTarget:
             DNSName: !GetAtt CDN.DomainName
             HostedZoneId: Z2FDTNDATAQYW2 #CloudFront official hosted zone
-
+  
+  # Alerts
   FetchStationsContentError:
     Type: AWS::CloudWatch::Alarm
     Properties:
@@ -615,4 +605,6 @@ Outputs:
   WebsiteBucketUrl:
     Description: 'S3 Bucket Url'
     Value: !GetAtt 'WebsiteS3Bucket.WebsiteURL'
-    
+  ApiUrl:
+    Description: 'HTTP API Url'
+    Value: !Sub "https://${HttpApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/"
