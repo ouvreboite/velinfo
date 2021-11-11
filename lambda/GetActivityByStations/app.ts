@@ -4,7 +4,6 @@ import { APIGatewayProxyEvent } from "aws-lambda";
 import { classToPlain } from "class-transformer";
 
 import { Activities } from "../common/api";
-import { buildHeaders } from "../common/corsHeadersUtil";
 import { StationsUsageStatistics } from "../common/domain/statistic";
 import { getStationUsageStatsForDay } from "../common/repository/stationUsageStatsRepository";
 
@@ -16,7 +15,6 @@ export const lambdaHandler = async (event: APIGatewayProxyEvent) => {
 
     return {
         statusCode: 200,
-        headers: buildHeaders(event.headers),
         body: JSON.stringify(classToPlain(todaysActivities)),
         isBase64Encoded: false
     };

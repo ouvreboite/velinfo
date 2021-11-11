@@ -3,7 +3,6 @@ import "reflect-metadata";
 import { APIGatewayProxyEvent } from "aws-lambda";
 
 import { CurrentStations, Station } from "../common/api";
-import { buildHeaders } from "../common/corsHeadersUtil";
 import { ActivityStatus } from "../common/domain/enums";
 import { StationsCharacteristics } from "../common/domain/station-characteristics";
 import { StationsContent } from "../common/domain/station-content";
@@ -24,7 +23,6 @@ export const lambdaHandler = async (event: APIGatewayProxyEvent) => {
 
     return {
         statusCode: 200,
-        headers: buildHeaders(event.headers),
         body: JSON.stringify(currentStations),
         isBase64Encoded: false
     };

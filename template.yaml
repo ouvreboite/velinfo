@@ -14,7 +14,7 @@ Globals:
 Parameters:
   CDNCertificateArn:
     Type: String
-  APICertificateArn:
+  CDNApiCertificateArn:
     Type: String
   HostedZoneId:
     Type: String
@@ -464,11 +464,9 @@ Resources:
   HttpApi:
     Type: AWS::Serverless::HttpApi
     Properties:
-      Domain:
-        DomainName: api.velinfo.fr
-        CertificateArn: !Ref APICertificateArn
-        Route53:
-          HostedZoneId: !Ref HostedZoneId
+      CorsConfiguration:
+        AllowOrigins:
+          - "https://www.velinfo.fr"
 
   #Website
   WebsiteS3Bucket:
@@ -505,6 +503,7 @@ Resources:
       DistributionConfig:
         Aliases:
           - 'www.velinfo.fr'
+        HttpVersion: http2
         DefaultCacheBehavior:
           AllowedMethods:
             - GET
@@ -515,7 +514,7 @@ Resources:
           Compress: true
           ForwardedValues:
             QueryString: True
-          TargetOriginId: !Sub "S3-origin-${WebsiteS3Bucket}"
+          TargetOriginId: website
           ViewerProtocolPolicy: redirect-to-https
         DefaultRootObject: index.html
         CustomErrorResponses:
@@ -530,12 +529,69 @@ Resources:
         Enabled: True
         Origins:
           - DomainName: !GetAtt WebsiteS3Bucket.RegionalDomainName
-            Id: !Sub "S3-origin-${WebsiteS3Bucket}"
+            Id: website
             S3OriginConfig:
               OriginAccessIdentity: !Sub "origin-access-identity/cloudfront/${CDNOriginIdentity}"
         PriceClass: PriceClass_100
         ViewerCertificate:
           AcmCertificateArn: !Ref CDNCertificateArn
+          MinimumProtocolVersion: TLSv1.2_2018
+          SslSupportMethod: sni-only
+
+  ApiCachePolicy:
+    Type: AWS::CloudFront::CachePolicy
+    Properties: 
+      CachePolicyConfig: 
+        Name: ApiCachePolicy
+        DefaultTTL: 60
+        MinTTL: 60
+        MaxTTL: 60
+        ParametersInCacheKeyAndForwardedToOrigin:
+          CookiesConfig: 
+            CookieBehavior: none
+          EnableAcceptEncodingGzip: true
+          HeadersConfig: 
+            HeaderBehavior: whitelist
+            Headers:
+              - Access-Control-Request-Headers
+              - Access-Control-Request-Method
+              - Origin 
+          QueryStringsConfig: 
+            QueryStringBehavior: none 
+
+  ApiCDN:
+    Type: "AWS::CloudFront::Distribution"
+    Properties:
+      DistributionConfig:
+        Aliases:
+          - 'api.velinfo.fr'
+        HttpVersion: http2
+        DefaultCacheBehavior:
+          CachePolicyId: !Ref ApiCachePolicy
+          AllowedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+          CachedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+          Compress: true
+          ForwardedValues:
+            QueryString: false
+            Cookies:
+              Forward: none
+          TargetOriginId: api
+          ViewerProtocolPolicy: redirect-to-https
+        Enabled: True
+        Origins:
+          - DomainName: !Sub "${HttpApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}"
+            Id: api
+            CustomOriginConfig:
+              OriginProtocolPolicy: https-only
+        PriceClass: PriceClass_100
+        ViewerCertificate:
+          AcmCertificateArn: !Ref CDNApiCertificateArn
           MinimumProtocolVersion: TLSv1.2_2018
           SslSupportMethod: sni-only
 
@@ -549,6 +605,12 @@ Resources:
           AliasTarget:
             DNSName: !GetAtt CDN.DomainName
             HostedZoneId: Z2FDTNDATAQYW2 #CloudFront official hosted zone
+        - Name: !Sub 'api.velinfo.fr'
+          Type: A
+          AliasTarget:
+            DNSName: !GetAtt ApiCDN.DomainName
+            HostedZoneId: Z2FDTNDATAQYW2 #CloudFront official hosted zone
+  
   
   # Alerts
   FetchStationsContentError:
@@ -608,3 +670,9 @@ Outputs:
   ApiUrl:
     Description: 'HTTP API Url'
     Value: !Sub "https://${HttpApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/"
+  CDNDomainName:
+    Description: 'HTTP API Url'
+    Value: !GetAtt CDN.DomainName
+  ApiCDNDomainName:
+    Description: 'HTTP API Url'
+    Value: !GetAtt ApiCDN.DomainName

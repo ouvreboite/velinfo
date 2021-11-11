@@ -4,7 +4,6 @@ import { APIGatewayProxyEvent } from "aws-lambda";
 import { differenceInDays } from "date-fns";
 
 import { StateChanges, StationStateChange } from "../common/api";
-import { buildHeaders } from "../common/corsHeadersUtil";
 import { getStationStateChangesForDay } from "../common/repository/stationsStatesChangesRepository";
 
 export const lambdaHandler = async (event: APIGatewayProxyEvent) => {
@@ -16,7 +15,6 @@ export const lambdaHandler = async (event: APIGatewayProxyEvent) => {
 
     return {
         statusCode: 200,
-        headers: buildHeaders(event.headers),
         body: JSON.stringify(stationChanges),
         isBase64Encoded: false
     };
