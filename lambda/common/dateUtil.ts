@@ -43,3 +43,7 @@ export function buildTimeSlot(datetime: Date, minuteSpan = 10): string{
 export function inXDays(days: number): Date{
     return new Date(new Date().getTime() + days * 24 * 60 * 60 * 1000);
 }
+
+export function toUnixTimestamp(date: Date): number{
+    return Math.round(date.getTime()/1000);
+}

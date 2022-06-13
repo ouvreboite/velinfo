@@ -1,6 +1,6 @@
 import * as uninstrumentedAWS from 'aws-sdk';
 import * as AWSXRay from 'aws-xray-sdk';
-import { inXDays, toParisDay } from '../dateUtil';
+import { inXDays, toParisDay, toUnixTimestamp } from '../dateUtil';
 import { StationStateChange } from '../domain/station-state';
 import {classToDynamo, dynamoToClass,} from "../dynamoTransformer";
 export {saveStationStateChange, getStationStateChangesForDay};
@@ -23,7 +23,7 @@ async function saveStationStateChange(change: StationStateChange) {
             ":stationCode": dynamoObject.stationCode,
             ":oldState": dynamoObject.oldState,
             ":newState": dynamoObject.newState,
-            ":timetolive": timetolive.getTime()
+            ":timetolive": toUnixTimestamp(timetolive)
         }
     };
 

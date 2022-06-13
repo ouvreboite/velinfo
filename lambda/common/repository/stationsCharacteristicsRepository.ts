@@ -1,7 +1,7 @@
 
 import * as uninstrumentedAWS from 'aws-sdk';
 import * as AWSXRay from 'aws-xray-sdk';
-import { inXDays } from '../dateUtil';
+import { inXDays, toUnixTimestamp } from '../dateUtil';
 import { StationsCharacteristics } from '../domain/station-characteristics';
 import { classToDynamo, dynamoToClass } from "../dynamoTransformer";
 export { updateStationsCharacteristics, getLastStationsCharacteristics };
@@ -22,7 +22,7 @@ async function updateStationsCharacteristics(stationsCharacteristics: StationsCh
         UpdateExpression: "set byStationCode = :byStationCode, timetolive = :timetolive",
         ExpressionAttributeValues: {
             ":byStationCode": dynamoObject.byStationCode,
-            ":timetolive": timetolive.getTime()
+            ":timetolive": toUnixTimestamp(timetolive)
         }
     };
 

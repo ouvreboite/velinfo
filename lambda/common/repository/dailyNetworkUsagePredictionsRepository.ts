@@ -1,7 +1,7 @@
 import * as uninstrumentedAWS from 'aws-sdk';
 import * as AWSXRay from 'aws-xray-sdk';
 
-import { inXDays, toParisTZ } from "../dateUtil";
+import { inXDays, toParisTZ, toUnixTimestamp } from "../dateUtil";
 import { NetworkDailyUsagePredictions } from '../domain/station-usage';
 import { classToDynamo, dynamoToClass } from "../dynamoTransformer";
 
@@ -37,7 +37,7 @@ async function updateNetworkDailyUsagePredictions(predictions: NetworkDailyUsage
         ExpressionAttributeValues: {
             ":byTimeSlot": dynamoObject.byTimeSlot,
             ":totalActivity": dynamoObject.totalActivity,
-            ":timetolive": timetolive.getTime()
+            ":timetolive": toUnixTimestamp(timetolive)
         }
     };
 
