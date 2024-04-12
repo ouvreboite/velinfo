@@ -4,7 +4,7 @@ import { OfficialStatus } from '../common/domain/enums';
 import { StationContent, StationsContent } from '../common/domain/station-content';
 export { fetchStationsContent };
 
-const stationsStatusUrl: string = 'https://velib-metropole-opendata.smoove.pro/opendata/Velib_Metropole/station_status.json';
+const stationsStatusUrl: string = 'https://velib-metropole-opendata.smovengo.cloud/opendata/Velib_Metropole/station_status.json';
 const agent = new https.Agent({  
     rejectUnauthorized: false
   });
