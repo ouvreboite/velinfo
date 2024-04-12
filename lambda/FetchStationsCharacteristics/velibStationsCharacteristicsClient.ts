@@ -3,7 +3,7 @@ import https from 'https';
 import { StationCharacteristics, StationsCharacteristics } from '../common/domain/station-characteristics';
 export { fetchStationCharacteristics };
 
-const stationsCharacteristicsUrl: string = 'https://velib-metropole-opendata.smoove.pro/opendata/Velib_Metropole/station_information.json';
+const stationsCharacteristicsUrl: string = 'https://velib-metropole-opendata.smovengo.cloud/opendata/Velib_Metropole/station_information.json';
 const agent = new https.Agent({  
     rejectUnauthorized: false
   });
